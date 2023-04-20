@@ -33,7 +33,8 @@ export class SignIn {
                 const password = localStorage.getItem('password');
                 const users = await getEntitiesData('User');
                 const type = users.filter((data) => `${data.userType}`.includes('CUSTOMER'));
-                const data = type.filter((data) => `${data.email}`.includes(`${email}`));
+                const FSuper = type.filter((data) => data.isSuper === true);
+                const data = FSuper.filter((data) => `${data.email}`.includes(`${email}`));
                 const reqOptions = {
                     method: reqOP.method,
                     body: `grant_type=password&username=${data[0].username}&password=${password}`,
