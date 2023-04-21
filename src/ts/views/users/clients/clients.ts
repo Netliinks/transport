@@ -734,7 +734,9 @@ export class Clients {
                         },100);
                     }
                 })
-
+                cancelButton.onclick = () => {
+                    new CloseDialog().x(modalContainer)
+                }
 
             })
         })
