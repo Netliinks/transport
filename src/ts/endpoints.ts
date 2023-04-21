@@ -126,6 +126,22 @@ export const getEntityData = async (entities: string, entity: string): Endpoint 
     return getData(URL)
 }
 
+export const getFilterEntityData = async (entities: string, raw: any) => {
+    const req = {
+        url: `${NetliinksUrl}${entities}/search?fetchPlan=full&sort=-createdDate`,
+        method: 'POST'
+    };
+    const requestOptions: {} = {
+        method: req.method,
+        headers: headers,
+        body: raw,
+        redirect: 'follow'
+    };
+    const res = await fetch(req.url, requestOptions);
+    return await res.json()
+        .catch(err => new SignIn().signOut());
+};
+
 export const updateEntity = async (entities: string, entity: string, raw: any): Endpoint => {
     const URL: string = `${NetliinksUrl}${entities}/${entity}`
     const ReqOptions: any = {
