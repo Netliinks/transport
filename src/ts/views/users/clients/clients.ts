@@ -13,7 +13,7 @@ import { tableLayoutTemplate } from "./Templates.js"
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
 const customerId = localStorage.getItem('customer_id')
-let currentUserInfo
+let currentUserInfo : any
 const getUsers = async (): Promise<void> => {
     const currentUser = await getUserInfo()
     currentUserInfo = await getEntityData('User', `${currentUser.attributes.id}`)
@@ -266,17 +266,17 @@ export class Clients {
                         "id": `${inputsCollection.state.dataset.optionid}`
                     },
                     "contractor": {
-                        "id": "06b476c4-d151-d7dc-cf0e-2a1e19295a00",
+                        "id": `${currentUserInfo.contractor.id}`,
                     },
                     "customer": {
-                        "id": `${inputsCollection.customer.dataset.optionid}`
+                        "id": `${customerId}`
                     },
                     "citadel": {
-                        "id": `${inputsCollection.citadel.dataset.optionid}`
+                        "id": `${currentUserInfo.citadel.id}}`
                     },
                     "phone": `${inputsCollection.phoneNumer.value}`,
                     "userType": "CUSTOMER",
-                    "username": `${inputsCollection.username.value}@${inputsCollection.customer.value.toLowerCase()}.com`
+                    "username": `${inputsCollection.username.value}@${currentUserInfo.contractor.name.toLowerCase()}.com`
                 })
                 reg(raw)
             })
