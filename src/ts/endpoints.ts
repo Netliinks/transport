@@ -126,7 +126,7 @@ export const getEntityData = async (entities: string, entity: string): Endpoint 
     return getData(URL)
 }
 
-export const getFilterEntityData = async (entities: string, raw: any) => {
+export const getFilterEntityData = async (entities: string, raw: any): Endpoint => {
     const req = {
         url: `${NetliinksUrl}${entities}/search?fetchPlan=full&sort=-createdDate`,
         method: 'POST'
@@ -223,6 +223,25 @@ export const setUserRole = async (raw: string): Endpoint => {
         .then(response => response.json())
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
+}
+
+export const sendMail = async (raw: string): Endpoint => {
+    const req = {
+        url: 'https://backend.netliinks.com:443/rest/services/UserServiceBean/sendByEmailInfo',
+        method: 'POST'
+    }
+
+    const requestOptions: {} = {
+        method: req.method,
+        headers: headers,
+        body: raw,
+        redirect: 'follow'
+    };
+
+    fetch(req.url, requestOptions)
+        .then(response => response.json())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error))
 }
 
 export const getFile = async (fileUrl: string): Endpoint => {
