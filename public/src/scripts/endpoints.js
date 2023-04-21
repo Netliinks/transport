@@ -194,6 +194,22 @@ export const setUserRole = async (raw) => {
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
 };
+export const sendMail = async (raw) => {
+    const req = {
+        url: 'https://backend.netliinks.com:443/rest/services/UserServiceBean/sendByEmailInfo',
+        method: 'POST'
+    };
+    const requestOptions = {
+        method: req.method,
+        headers: headers,
+        body: raw,
+        redirect: 'follow'
+    };
+    fetch(req.url, requestOptions)
+        .then(response => response.json())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
+};
 export const getFile = async (fileUrl) => {
     const url = 'https://backend.netliinks.com:443/rest/files?fileRef=';
     const requestOptions = {
