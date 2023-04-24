@@ -248,3 +248,22 @@ export const getVerifyEmail = async (email: string) => {
     }
     return value;
 }
+
+
+export const verifyUserType = (userType: string) =>{
+    if(userType == 'CUSTOMER'){
+      return 'Cliente'
+    }else if(userType == 'GUARD'){
+      return 'Guardia'
+    }else if(userType == 'EMPLOYEE'){
+      return 'Empleado'
+    }else if(userType == 'CONTRACTOR'){
+      return 'Contratista'
+    }else{
+      return userType
+    }
+}
+
+export const generateCsv = (ar: any, title: string) => {
+
+}
