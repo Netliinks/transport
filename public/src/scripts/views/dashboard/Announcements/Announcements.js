@@ -11,7 +11,9 @@ export class Announcements {
     async render() {
         this._announcementCardContainer.innerHTML = '';
         this._announcementCardControlsContainers.innerHTML = '';
-        const announcementsList = await getEntitiesData('Announcement');
+        const customerId = localStorage.getItem('customer_id');
+        const announcements = await getEntitiesData('Announcement');
+        const announcementsList = announcements.filter((data) => `${data.customer?.id}` === `${customerId}`);
         let _userinfo = await getUserInfo();
         console.log(_userinfo);
         let prop;
@@ -83,12 +85,16 @@ export class Announcements {
             const _month = _date.getMonth() + 1;
             const _year = _date.getFullYear();
             const date = `${_year}-${('0' + _month).slice(-2)}-${('0' + _day).slice(-2)}`;
+            const customerId = localStorage.getItem('customer_id');
             // RAW
             const announcementRaw = JSON.stringify({
                 "title": `${_announcementTitle.value}`,
                 "content": `${_announcementContent.value}`,
                 "user": {
                     "id": `${_userInfo.attributes.id}`
+                },
+                "customer": {
+                    "id": `${customerId}`
                 },
                 "creationTime": `${currentTime}`,
                 "creationDate": `${date}`

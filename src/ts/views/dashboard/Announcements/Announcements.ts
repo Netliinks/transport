@@ -13,7 +13,9 @@ export class Announcements {
     public async render(): Promise<any> {
         this._announcementCardContainer.innerHTML = ''
         this._announcementCardControlsContainers.innerHTML = ''
-        const announcementsList: any = await getEntitiesData('Announcement')
+        const customerId = localStorage.getItem('customer_id');
+        const announcements: any = await getEntitiesData('Announcement')
+        const announcementsList = announcements.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
         let _userinfo: any = await getUserInfo()
         console.log(_userinfo)
         let prop: any
@@ -99,13 +101,16 @@ export class Announcements {
             const _month: number = _date.getMonth() + 1
             const _year: number = _date.getFullYear()
             const date: string = `${_year}-${('0' + _month).slice(-2)}-${('0' + _day).slice(-2)}`
-
+            const customerId = localStorage.getItem('customer_id');
             // RAW
             const announcementRaw: string = JSON.stringify({
                 "title": `${_announcementTitle.value}`,
                 "content": `${_announcementContent.value}`,
                 "user": {
                     "id": `${_userInfo.attributes.id}`
+                },
+                "customer": {
+                    "id": `${customerId}`
                 },
                 "creationTime": `${currentTime}`,
                 "creationDate": `${date}`
