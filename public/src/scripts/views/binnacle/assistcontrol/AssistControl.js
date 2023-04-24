@@ -15,7 +15,7 @@ const pageName = 'Control de asistencias';
 const customerId = localStorage.getItem('customer_id');
 const GetAssistControl = async () => {
     const assistControlRaw = await getEntitiesData('Marcation');
-    const assistControl = assistControlRaw.filter((data) => `${data.customer.id}` === `${customerId}`);
+    const assistControl = assistControlRaw.filter((data) => `${data.customer?.id}` === `${customerId}`);
     return assistControl;
 };
 export class AssistControl {

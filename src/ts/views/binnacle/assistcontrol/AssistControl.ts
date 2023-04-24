@@ -17,7 +17,7 @@ const pageName = 'Control de asistencias'
 const customerId = localStorage.getItem('customer_id');
 const GetAssistControl = async (): Promise<void> => {
     const assistControlRaw = await getEntitiesData('Marcation')
-    const assistControl = assistControlRaw.filter((data: any) => `${data.customer.id}` === `${customerId}`);
+    const assistControl = assistControlRaw.filter((data: any) => `${data.customer?.id}` === `${customerId}`);
     return assistControl
 }
 
