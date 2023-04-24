@@ -9,9 +9,10 @@ import { tableLayoutTemplate } from "./Template.js"
 
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
-
+const customerId = localStorage.getItem('customer_id');
 const getDepartments = async (): Promise<void> => {
-    const department: any = await getEntitiesData('Department')
+    const departmentRaw: any = await getEntitiesData('Department')
+    const department = departmentRaw.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
     return department
 
 }
@@ -125,12 +126,13 @@ export class Departments {
               <label for="entity-name">Nombre</label>
             </div>
 
+            <!--
             <div class="material_input_select">
               <label for="entity-customer">Cliente</label>
               <input type="text" id="entity-customer" class="input_select" readonly placeholder="cargando...">
               <div id="input-options" class="input_options">
               </div>
-            </div>
+            </div> -->
           </div>
           <!-- END EDITOR BODY -->
 
@@ -142,7 +144,7 @@ export class Departments {
 
             // @ts-ignore
             inputObserver()
-            inputSelect('Customer', 'entity-customer')
+            //inputSelect('Customer', 'entity-customer')
             this.close()
 
 
@@ -156,7 +158,7 @@ export class Departments {
                 const raw = JSON.stringify({
                     "name": `${inputsCollection.name.value}`,
                     "customer": {
-                        "id": `${inputsCollection.customer.dataset.optionid}`
+                        "id": `${customerId}`
                     }
                 })
 

@@ -1,13 +1,15 @@
 // @filename: Departments.ts
 import { deleteEntity, getEntitiesData, registerEntity } from "../../endpoints.js";
-import { inputObserver, inputSelect, CloseDialog } from "../../tools.js";
+import { inputObserver, CloseDialog } from "../../tools.js";
 import { Config } from "../../Configs.js";
 import { tableLayout } from "./Layout.js";
 import { tableLayoutTemplate } from "./Template.js";
 const tableRows = Config.tableRows;
 const currentPage = Config.currentPage;
+const customerId = localStorage.getItem('customer_id');
 const getDepartments = async () => {
-    const department = await getEntitiesData('Department');
+    const departmentRaw = await getEntitiesData('Department');
+    const department = departmentRaw.filter((data) => `${data.customer?.id}` === `${customerId}`);
     return department;
 };
 export class Departments {
@@ -101,12 +103,13 @@ export class Departments {
               <label for="entity-name">Nombre</label>
             </div>
 
+            <!--
             <div class="material_input_select">
               <label for="entity-customer">Cliente</label>
               <input type="text" id="entity-customer" class="input_select" readonly placeholder="cargando...">
               <div id="input-options" class="input_options">
               </div>
-            </div>
+            </div> -->
           </div>
           <!-- END EDITOR BODY -->
 
@@ -117,7 +120,7 @@ export class Departments {
       `;
             // @ts-ignore
             inputObserver();
-            inputSelect('Customer', 'entity-customer');
+            //inputSelect('Customer', 'entity-customer')
             this.close();
             const registerButton = document.getElementById('register-entity');
             registerButton.addEventListener('click', () => {
@@ -128,7 +131,7 @@ export class Departments {
                 const raw = JSON.stringify({
                     "name": `${inputsCollection.name.value}`,
                     "customer": {
-                        "id": `${inputsCollection.customer.dataset.optionid}`
+                        "id": `${customerId}`
                     }
                 });
                 registerEntity(raw, 'Department');
