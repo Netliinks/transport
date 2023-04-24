@@ -5,6 +5,7 @@
 //
 
 import { getEntityData, getUserInfo } from "../endpoints.js"
+//import { Dashboard } from "../views/dashboard/dashboard.js"
 import { SignIn } from "../login.js"
 import { InterfaceElement } from "../types.js"
 import { Sidebar } from "./sidebar.js"
@@ -23,6 +24,7 @@ export class RenderApplicationUI {
 
         this.renderTopbar()
         new Sidebar().render()
+        //new Dashboard().render()
     }
 
     private async renderTopbar(): Promise<void> {
