@@ -1,15 +1,20 @@
 // @filename: Contractors.ts
-import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword, setUserRole, updateEntity } from "../../../endpoints.js";
-import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog } from "../../../tools.js";
+import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo } from "../../../endpoints.js";
+import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail } from "../../../tools.js";
 import { Config } from "../../../Configs.js";
 import { tableLayout } from "./Layout.js";
 import { tableLayoutTemplate } from "./Templates.js";
 const tableRows = Config.tableRows;
 const currentPage = Config.currentPage;
+const customerId = localStorage.getItem('customer_id');
+let currentUserInfo;
 const getUsers = async () => {
+    const currentUser = await getUserInfo();
+    currentUserInfo = await getEntityData('User', `${currentUser.attributes.id}`);
     const users = await getEntitiesData('User');
     const FSuper = users.filter((data) => data.isSuper === false);
-    const data = FSuper.filter((data) => `${data.userType}`.includes('CONTRACTOR'));
+    const FCustomer = FSuper.filter((data) => `${data.customer?.id}` === `${customerId}`);
+    const data = FCustomer.filter((data) => `${data.userType}`.includes('CONTRACTOR'));
     return data;
 };
 export class Contractors {
@@ -253,6 +258,13 @@ export class Contractors {
               <label for="entity-username"><i class="input_locked fa-solid fa-lock"></i> Nombre de usuario</label>
             </div>
 
+            <div class="material_input">
+                <input type="email"
+                    id="entity-email"
+                    autocomplete="none">
+                <label for="entity-email">Email</label>
+            </div>
+
             <div class="material_input_select">
               <label for="entity-state">Estado</label>
               <input type="text" id="entity-state" class="input_select" readonly placeholder="cargando..." autocomplete="none">
@@ -260,6 +272,7 @@ export class Contractors {
               </div>
             </div>
 
+            <!--
             <div class="material_input_select" style="display: none">
               <label for="entity-business">Empresa</label>
               <input type="text" id="entity-business" class="input_select" readonly placeholder="cargando..." autocomplete="none">
@@ -287,7 +300,7 @@ export class Contractors {
               <div id="input-options" class="input_options">
               </div>
             </div>
-
+            -->
             <div class="form_group">
                 <div class="form_input">
                     <label class="form_label" for="start-time">Entrada:</label>
@@ -316,15 +329,15 @@ export class Contractors {
       `;
             // @ts-ignore
             inputObserver();
-            inputSelect('Citadel', 'entity-citadel');
-            inputSelect('Customer', 'entity-customer');
+            //inputSelect('Citadel', 'entity-citadel')
+            //inputSelect('Customer', 'entity-customer')
             inputSelect('State', 'entity-state');
-            inputSelect('Department', 'entity-department');
-            inputSelect('Business', 'entity-business');
+            //inputSelect('Department', 'entity-department')
+            //inputSelect('Business', 'entity-business')
             this.close();
             this.generateContractorName();
             const registerButton = document.getElementById('register-entity');
-            registerButton.addEventListener('click', () => {
+            registerButton.addEventListener('click', async () => {
                 let _values;
                 _values = {
                     firstName: document.getElementById('entity-firstname'),
@@ -333,19 +346,20 @@ export class Contractors {
                     dni: document.getElementById('entity-dni'),
                     phoneNumer: document.getElementById('entity-phone'),
                     state: document.getElementById('entity-state'),
-                    customer: document.getElementById('entity-customer'),
+                    //customer: document.getElementById('entity-customer'),
                     username: document.getElementById('entity-username'),
-                    citadel: document.getElementById('entity-citadel'),
+                    //citadel: document.getElementById('entity-citadel'),
                     temporalPass: document.getElementById('tempPass'),
                     ingressHour: document.getElementById('start-time'),
                     turnChange: document.getElementById('end-time'),
-                    departments: document.getElementById('entity-department')
+                    //departments: document.getElementById('entity-department'),
+                    email: document.getElementById('entity-email'),
                 };
                 const contractorRaw = JSON.stringify({
                     "lastName": `${_values.lastName.value}`,
                     "secondLastName": `${_values.secondLastName.value}`,
                     "isSuper": false,
-                    "email": "",
+                    "email": `${_values.email.value}`,
                     "temp": `${_values.temporalPass.value}`,
                     "isWebUser": false,
                     "active": true,
@@ -356,23 +370,32 @@ export class Contractors {
                         "id": `${_values.state.dataset.optionid}`
                     },
                     "contractor": {
-                        "id": "06b476c4-d151-d7dc-cf0e-2a1e19295a00",
+                        "id": `${currentUserInfo.contractor.id}`
                     },
                     "customer": {
-                        "id": `${_values.customer.dataset.optionid}`
+                        "id": `${customerId}`
                     },
                     "citadel": {
-                        "id": `${_values.citadel.dataset.optionid}`
+                        "id": `${currentUserInfo.citadel.id}`
                     },
                     "department": {
-                        "id": `${_values.departments.dataset.optionid}`
+                        "id": `${currentUserInfo.deparment.id}`
+                    },
+                    "business": {
+                        "id": `${currentUserInfo.business.id}`
                     },
                     "phone": `${_values.phoneNumer.value}`,
                     "dni": `${_values.dni.value}`,
                     "userType": "CONTRACTOR",
-                    "username": `${_values.username.value}@${_values.customer.value.toLowerCase()}.com`,
+                    "username": `${_values.username.value}@${currentUserInfo.customer.name.toLowerCase()}.com`,
                 });
-                reg(contractorRaw);
+                const existEmail = await getVerifyEmail(_values.email.value);
+                if (existEmail == true) {
+                    alert("¡Correo electrónico ya existe!");
+                }
+                else {
+                    reg(contractorRaw);
+                }
             });
         };
         const reg = async (raw) => {
@@ -435,10 +458,10 @@ export class Contractors {
                 readFile(_fileHandler.files[0]);
             });
             async function readFile(file) {
-                const customer = await getEntitiesData('Customer');
-                const citadel = await getEntitiesData('Citadel');
-                const department = await getEntitiesData('Department');
-                const contractor = await getEntitiesData('Contractor');
+                /*const customer = await getEntitiesData('Customer')
+                const citadel = await getEntitiesData('Citadel')
+                const department = await getEntitiesData('Department')
+                const contractor = await getEntitiesData('Contractor')*/
                 const fileReader = new FileReader();
                 fileReader.readAsText(file);
                 fileReader.addEventListener('load', (e) => {
@@ -449,36 +472,39 @@ export class Contractors {
                     for (let i = 1; i < resultSplit.length; i++) {
                         let contractorData = resultSplit[i].split(';');
                         rawFile = JSON.stringify({
-                            "lastName": `${contractorData[1].replace(/\n/g, '')}`,
-                            "secondLastName": `${contractorData[2].replace(/\n/g, '')}`,
+                            "lastName": `${contractorData[1]?.replace(/\n/g, '')}`,
+                            "secondLastName": `${contractorData[2]?.replace(/\n/g, '')}`,
                             "isSuper": false,
                             "email": "",
-                            "temp": `${contractorData[5].replace(/\n/g, '')}`,
+                            "temp": `${contractorData[5]?.replace(/\n/g, '')}`,
                             "isWebUser": false,
                             "isActive": true,
                             "newUser": true,
-                            "firstName": `${contractorData[0].replace(/\n/g, '')}`,
-                            "ingressHour": `${contractorData[6].replace(/\n/g, '')}`,
-                            "turnChange": `${contractorData[7].replace(/\n/g, '')}`,
+                            "firstName": `${contractorData[0]?.replace(/\n/g, '')}`,
+                            "ingressHour": `${contractorData[6]?.replace(/\n/g, '')}`,
+                            "turnChange": `${contractorData[7]?.replace(/\n/g, '')}`,
                             "state": {
                                 "id": "60885987-1b61-4247-94c7-dff348347f93"
                             },
                             "contractor": {
-                                "id": `${contractor[0].id}`,
+                                "id": `${currentUserInfo.contractor?.id}`,
                             },
                             "customer": {
-                                "id": `${customer[0].id}`
+                                "id": `${customerId}`
                             },
                             "citadel": {
-                                "id": `${citadel[0].id}`
+                                "id": `${currentUserInfo.citadel?.id}`
                             },
                             "department": {
-                                "id": `${department[0].id}`
+                                "id": `${currentUserInfo.deparment?.id}`
                             },
-                            "phone": `${contractorData[3].replace(/\n/g, '')}`,
-                            "dni": `${contractorData[4].replace(/\n/g, '')}`,
+                            "business": {
+                                "id": `${currentUserInfo.business.id}`
+                            },
+                            "phone": `${contractorData[3]?.replace(/\n/g, '')}`,
+                            "dni": `${contractorData[4]?.replace(/\n/g, '')}`,
                             "userType": "CONTRACTOR",
-                            "username": `${contractorData[0].toLowerCase().replace(/\n/g, '')}.${contractorData[1].toLowerCase().replace(/\n/g, '')}@${customer[0].name.toLowerCase()}.com`,
+                            "username": `${contractorData[0]?.toLowerCase().replace(/\n/g, '')}.${contractorData[1]?.toLowerCase().replace(/\n/g, '')}@${currentUserInfo.customer.name.toLowerCase()}.com`,
                             "createVisit": false,
                         });
                         stageUsers.push(rawFile);
@@ -548,8 +574,13 @@ export class Contractors {
                         id="entity-dni"
                         class="input_filled"
                         maxlength="10"
-                        value="${data.dni}">
+                        value="${data.dni}" disabled>
                     <label for="entity-dni">Cédula</label>
+                    </div>
+
+                    <div class="material_input">
+                    <input type="email" id="entity-email" class="input_filled" value="${data.email}" disabled>
+                    <label for="entity-email">Email</label>
                     </div>
 
                     <div class="material_input">
@@ -572,7 +603,7 @@ export class Contractors {
                     <div id="input-options" class="input_options">
                     </div>
                     </div>
-
+                    <!--
                     <div class="material_input_select" style="display: none">
                     <label for="entity-business">Empresa</label>
                     <input type="text" id="entity-business" class="input_select" readonly placeholder="cargando...">
@@ -600,7 +631,7 @@ export class Contractors {
                     <div id="input-options" class="input_options">
                     </div>
                     </div>
-
+                    -->
                     <div class="form_group">
                         <div class="form_input">
                             <label class="form_label" for="start-time">Entrada:</label>
@@ -612,12 +643,12 @@ export class Contractors {
                             <input type="time" class="input_time input_time-end" id="end-time" name="end-time" value="${data.turnChange}">
                         </div>
                     </div>
-
+                    <!--
                     <br>
                     <div class="material_input">
                     <input type="password" id="tempPass" >
                     <label for="tempPass">Contraseña:</label>
-                    </div>
+                    </div> -->
 
                 </div>
                 <!-- END EDITOR BODY -->
@@ -628,11 +659,11 @@ export class Contractors {
                 </div>
             `;
             inputObserver();
-            inputSelect('Business', 'entity-citadel');
-            inputSelect('Customer', 'entity-customer');
+            //inputSelect('Business', 'entity-citadel')
+            //inputSelect('Customer', 'entity-customer')
             inputSelect('State', 'entity-state', data.state.name);
-            inputSelect('Business', 'entity-business');
-            inputSelect('Contractor', 'entity-contractor');
+            //inputSelect('Business', 'entity-business')
+            //inputSelect('Contractor', 'entity-contractor')
             this.close();
             updatecontractor(entityID);
         };
@@ -640,32 +671,32 @@ export class Contractors {
             let updateButton;
             updateButton = document.getElementById('update-changes');
             const _values = {
-                firstName: document.getElementById('entity-firstname'),
-                lastName: document.getElementById('entity-lastname'),
-                secondLastName: document.getElementById('entity-secondlastname'),
+                //firstName: document.getElementById('entity-firstname'),
+                //lastName: document.getElementById('entity-lastname'),
+                //secondLastName: document.getElementById('entity-secondlastname'),
                 phone: document.getElementById('entity-phone'),
-                dni: document.getElementById('entity-dni'),
+                //dni: document.getElementById('entity-dni'),
                 status: document.getElementById('entity-state'),
                 ingressHour: document.getElementById('start-time'),
                 turnChange: document.getElementById('end-time'),
-                contractor: document.getElementById('entity-contractor'),
+                //contractor: document.getElementById('entity-contractor'),
             };
             updateButton.addEventListener('click', () => {
                 let contractorRaw = JSON.stringify({
-                    "lastName": `${_values.lastName.value}`,
-                    "secondLastName": `${_values.secondLastName.value}`,
+                    //"lastName": `${_values.lastName.value}`,
+                    //"secondLastName": `${_values.secondLastName.value}`,
                     "active": true,
-                    "firstName": `${_values.firstName.value}`,
+                    //"firstName": `${_values.firstName.value}`,
                     "state": {
                         "id": `${_values.status.dataset.optionid}`
                     },
                     "ingressHour": `${_values.ingressHour.value}`,
                     "turnChange": `${_values.turnChange.value}`,
                     "phone": `${_values.phone.value}`,
-                    "dni": `${_values.dni.value}`,
-                    "contractor": {
+                    //"dni": `${_values.dni.value}`,
+                    /*"contractor": {
                         "id": `${_values.contractor.optionid}`
-                    }
+                    }*/
                 });
                 update(contractorRaw);
             });
@@ -767,7 +798,8 @@ export class Contractors {
 export async function setUserPassword() {
     const users = await getEntitiesData('User');
     const filterBySuperUsers = users.filter((data) => data.isSuper === false);
-    const filterByUserType = filterBySuperUsers.filter((data) => `${data.userType}`.includes('CONTRACTOR'));
+    const FCustomer = filterBySuperUsers.filter((data) => `${data.customer?.id}` === `${customerId}`);
+    const filterByUserType = FCustomer.filter((data) => `${data.userType}`.includes('CONTRACTOR'));
     const data = filterByUserType;
     data.forEach((newUser) => {
         let raw = JSON.stringify({
@@ -781,7 +813,8 @@ export async function setUserPassword() {
 export async function setRole() {
     const users = await getEntitiesData('User');
     const filterByNewUsers = users.filter((data) => data.newUser == true);
-    const filterByUserType = filterByNewUsers.filter((data) => `${data.userType}`.includes('CONTRACTOR'));
+    const FCustomer = filterByNewUsers.filter((data) => `${data.customer?.id}` === `${customerId}`);
+    const filterByUserType = FCustomer.filter((data) => `${data.userType}`.includes('CONTRACTOR'));
     const data = filterByUserType;
     data.forEach((newUser) => {
         let raw = JSON.stringify({

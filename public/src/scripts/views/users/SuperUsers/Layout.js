@@ -17,7 +17,7 @@ export const tableLayout = `
 
         <button
           class="datatable_button import_user"
-          id="import-entities">
+          id="import-entities" style="display: none">
           Importar
         </button>
       </div>

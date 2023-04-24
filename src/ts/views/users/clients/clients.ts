@@ -20,7 +20,7 @@ const getUsers = async (): Promise<void> => {
 
     const users: Data = await getEntitiesData('User')
     const FSuper: Data = users.filter((data: any) => data.isSuper === false)
-    const FCustomer: Data = FSuper.filter((data: any) => `${data.customer.id}` === `${customerId}`)
+    const FCustomer: Data = FSuper.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
     const data: Data = FCustomer.filter((data: any) => `${data.userType}`.includes('CUSTOMER'))
     return data
 }
@@ -176,6 +176,20 @@ export class Clients {
                     </div>
 
                     <div class="material_input">
+                    <input type="email"
+                        id="entity-email"
+                        autocomplete="none">
+                    <label for="entity-email">Email</label>
+                    </div>
+
+                    <div class="material_input">
+                    <input type="text"
+                        id="entity-phone"
+                        maxlength="10" autocomplete="none">
+                    <label for="entity-phone"><i class="fa-solid fa-phone"></i> Teléfono</label>
+                    </div>
+
+                    <div class="material_input">
                     <input type="text" id="entity-username" class="input_filled" placeholder="john.doe@ejemplo.com" readonly>
                     <label for="entity-username"><i class="input_locked fa-solid fa-lock"></i> Nombre de usuario</label>
                     </div>
@@ -187,6 +201,7 @@ export class Clients {
                     </div>
                     </div>
 
+                    <!--
                     <div class="material_input_select" style="display: none">
                         <label for="entity-business"><i class="fa-solid fa-building"></i> Empresa</label>
                         <input type="text" id="entity-business" class="input_select" readonly placeholder="cargando..." autocomplete="none">
@@ -214,6 +229,7 @@ export class Clients {
                     <div id="input-options" class="input_options">
                     </div>
                     </div>
+                    -->
 
                     <br>
                     <div class="material_input">
@@ -231,33 +247,36 @@ export class Clients {
             `
 
             inputObserver()
-            inputSelect('Citadel', 'entity-citadel')
-            inputSelect('Customer', 'entity-customer')
+            //inputSelect('Citadel', 'entity-citadel')
+            //inputSelect('Customer', 'entity-customer')
             inputSelect('State', 'entity-state')
-            inputSelect('Department', 'entity-department')
-            inputSelect('Business', 'entity-business')
+            //inputSelect('Department', 'entity-department')
+            //inputSelect('Business', 'entity-business')
             this.close()
             this.generateUserName()
 
             const registerButton: InterfaceElement = document.getElementById('register-entity')
-            registerButton.addEventListener('click', (): void => {
+            registerButton.addEventListener('click', async() => {
                 const inputsCollection: any = {
                     firstName: document.getElementById('entity-firstname'),
                     lastName: document.getElementById('entity-lastname'),
                     secondLastName: document.getElementById('entity-secondlastname'),
                     phoneNumer: document.getElementById('entity-phone'),
                     state: document.getElementById('entity-state'),
-                    customer: document.getElementById('entity-customer'),
+                    //customer: document.getElementById('entity-customer'),
                     username: document.getElementById('entity-username'),
-                    citadel: document.getElementById('entity-citadel'),
-                    temporalPass: document.getElementById('tempPass')
+                    //citadel: document.getElementById('entity-citadel'),
+                    temporalPass: document.getElementById('tempPass'),
+                    dni: document.getElementById('entity-dni'),
+                    email: document.getElementById('entity-email'),
                 }
 
                 const raw = JSON.stringify({
                     "lastName": `${inputsCollection.lastName.value}`,
                     "secondLastName": `${inputsCollection.secondLastName.value}`,
                     "isSuper": false,
-                    "email": "",
+                    "dni": `${inputsCollection.dni.value}`,
+                    "email": `${inputsCollection.email.value}`,
                     "temp": `${inputsCollection.temporalPass.value}`,
                     "isWebUser": false,
                     "active": true,
@@ -268,6 +287,12 @@ export class Clients {
                     "contractor": {
                         "id": `${currentUserInfo.contractor.id}`,
                     },
+                    "business": {
+                        "id": `${currentUserInfo.business.id}`
+                    },
+                    "department": {
+                        "id": `${currentUserInfo.department.id}`
+                    },
                     "customer": {
                         "id": `${customerId}`
                     },
@@ -276,9 +301,14 @@ export class Clients {
                     },
                     "phone": `${inputsCollection.phoneNumer.value}`,
                     "userType": "CUSTOMER",
-                    "username": `${inputsCollection.username.value}@${currentUserInfo.contractor.name.toLowerCase()}.com`
+                    "username": `${inputsCollection.username.value}@${currentUserInfo.customer.name.toLowerCase()}.com`
                 })
-                reg(raw)
+                const existEmail = await getVerifyEmail(inputsCollection.email.value)
+                if(existEmail == true){
+                    alert("¡Correo electrónico ya existe!")
+                }else{
+                    reg(raw)
+                }
             })
 
         }
@@ -336,10 +366,128 @@ export class Clients {
     }
 
     public import() {
-        const importButton: InterfaceElement = document.getElementById('import-entities')
-        importButton.addEventListener('click', (): void => {
+        const importClients: InterfaceElement = document.getElementById('import-entities');
+        importClients.addEventListener('click', () => {
+            this.entityDialogContainer.innerHTML = '';
+            this.entityDialogContainer.style.display = 'flex';
+            this.entityDialogContainer.innerHTML = `
+            <div class="entity_editor" id="entity-editor">
+              <div class="entity_editor_header">
+                <div class="user_info">
+                  <div class="avatar"><i class="fa-regular fa-up-from-line"></i></div>
+                  <h1 class="entity_editor_title">Importar <br><small>Clientes</small></h1>
+                </div>
 
-        })
+                <button class="btn btn_close_editor" id="close"><i class="fa-solid fa-x"></i></button>
+              </div>
+
+              <!-- EDITOR BODY -->
+              <div class="entity_editor_body padding_t_8_important">
+                <div class="sidebar_section">
+                    <div class="file_template">
+                        <i class="fa-solid fa-file-csv"></i>
+                        <div class="description">
+                            <p class="filename">Plantilla de Clientes</p>
+                            <a
+                            href="./public/src/templates/NetvisitorsClients.csv"
+                            download="./public/src/templates/NetvisitorsClients.csv"
+                            rel="noopener"
+                            target="_self" class="filelink">Descargar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar_section" style="display: none">
+                    <label class="drop_zone" id="drop-zone" draggable="true">
+                        Seleccione o arrastre <br>su archivo aquí
+                    </label>
+                </div>
+
+                <div class="sidebar_section">
+                    <input type="file" id="file-handler">
+                </div>
+              </div>
+              <!-- END EDITOR BODY -->
+
+              <div class="entity_editor_footer">
+                <button class="btn btn_primary btn_widder" id="button-import">Importar</button>
+              </div>
+            </div>
+          `;
+            const _fileHandler: InterfaceElement = document.getElementById('file-handler');
+            _fileHandler.addEventListener('change', () => {
+                readFile(_fileHandler.files[0]);
+            });
+            async function readFile(file: any) {
+                //const customer = await getEntitiesData('Customer');
+                //const citadel = await getEntitiesData('Citadel');
+                //const deparment = await getEntitiesData('Department');
+                //const contractor = await getEntitiesData('Contractor');
+                const fileReader = new FileReader();
+                fileReader.readAsText(file);
+                fileReader.addEventListener('load', (e: any) => {
+                    let result = e.srcElement.result;
+                    let resultSplit = result.split('\r');
+                    let rawFile;
+                    let elem: any = [];
+                    for (let i = 1; i < resultSplit.length; i++) {
+                        let userData = resultSplit[i].split(';');
+                        rawFile = JSON.stringify({
+                            "lastName": `${userData[1]?.replace(/\n/g, '')}`,
+                            "secondLastName": `${userData[2]?.replace(/\n/g, '')}`,
+                            "isSuper": false,
+                            "email": "",
+                            "temp": `${userData[5]?.replace(/\n/g, '')}`,
+                            "isWebUser": false,
+                            "isActive": true,
+                            "newUser": true,
+                            "firstName": `${userData[0]?.replace(/\n/g, '')}`,
+                            "state": {
+                                "id": "60885987-1b61-4247-94c7-dff348347f93"
+                            },
+                            "contractor": {
+                                "id": `${currentUserInfo.contractor.id}`
+                            //    "id": `${contractor[0].id}`
+                            },
+                            "customer": {
+                                "id": `${customerId}`
+                            },
+                            "citadel": {
+                                "id": `${currentUserInfo.citadel.id}`
+                            },
+                            "department": {
+                                "id": `${currentUserInfo.department.id}`
+                            },
+                            "business": {
+                                "id": `${currentUserInfo.business.id}`
+                            },
+                            "phone": `${userData[3]?.replace(/\n/g, '')}`,
+                            "dni": `${userData[4]?.replace(/\n/g, '')}`,
+                            "userType": "CUSTOMER",
+                            "username": `${userData[0]?.toLowerCase().replace(/\n/g, '')}.${userData[1]?.toLowerCase().replace(/\n/g, '')}@${currentUserInfo.customer.name.toLowerCase()}.com`,
+                            "createVisit": false
+                        });
+                        elem.push(rawFile);
+                    }
+                    const importToBackend: InterfaceElement = document.getElementById('button-import');
+                    importToBackend.addEventListener('click', () => {
+                        elem.forEach((el: any) => {
+                            registerEntity(el, 'User')
+                                .then((res) => {
+                                setTimeout(async () => {
+                                    let data = await getUsers();
+                                    const tableBody = document.getElementById('datatable-body');
+                                    const container = document.getElementById('entity-editor-container');
+                                    new CloseDialog().x(container);
+                                    new Clients().load(tableBody, currentPage, data);
+                                }, 1000);
+                            });
+                        });
+                    });
+                });
+            }
+            this.close();
+        });
     }
 
     private edit(container: InterfaceElement, data: Data) {
@@ -398,6 +546,16 @@ export class Clients {
                     <label for="entity-username">Nombre de usuario</label>
                     </div>
 
+                    <div class="material_input">
+                    <input type="text" maxlength="10" id="entity-dni" class="input_filled" value="${data.dni}" readonly>
+                    <label for="entity-dni">Cédula</label>
+                    </div>
+
+                    <div class="material_input">
+                    <input type="email" id="entity-email" class="input_filled" value="${data.email}" disabled>
+                    <label for="entity-email">Email</label>
+                    </div>
+
                     <div class="material_input_select">
                     <label for="entity-state">Estado</label>
                     <input type="text" id="entity-state" class="input_select" readonly placeholder="cargando...">
@@ -405,6 +563,7 @@ export class Clients {
                     </div>
                     </div>
 
+                    <!--
                     <div class="material_input_select" style="display: none">
                     <label for="entity-business">Empresa</label>
                     <input type="text" id="entity-business" class="input_select" readonly placeholder="cargando...">
@@ -438,6 +597,7 @@ export class Clients {
                     <input type="password" id="tempPass" >
                     <label for="tempPass">Contraseña</label>
                     </div>
+                    -->
 
                 </div>
                 <!-- END EDITOR BODY -->
@@ -449,11 +609,11 @@ export class Clients {
             `
 
             inputObserver()
-            inputSelect('Business', 'entity-citadel')
-            inputSelect('Customer', 'entity-customer')
+            //inputSelect('Business', 'entity-citadel')
+            //inputSelect('Customer', 'entity-customer')
             inputSelect('State', 'entity-state', data.state.name)
-            inputSelect('Department', 'entity-department')
-            inputSelect('Business', 'entity-business')
+            //inputSelect('Department', 'entity-department')
+            //inputSelect('Business', 'entity-business')
             this.close()
             UUpdate(entityID)
         }
@@ -464,42 +624,46 @@ export class Clients {
 
             const $value = {
                 // @ts-ignore
-                firstName: document.getElementById('entity-firstname'),
+                //firstName: document.getElementById('entity-firstname'),
                 // @ts-ignore
-                lastName: document.getElementById('entity-lastname'),
+                //lastName: document.getElementById('entity-lastname'),
                 // @ts-ignore
-                secondLastName: document.getElementById('entity-secondlastname'),
+                //secondLastName: document.getElementById('entity-secondlastname'),
                 // @ts-ignore
                 phone: document.getElementById('entity-phone'),
                 // @ts-ignore
+                //email: document.getElementById('entity-email'),
+                // @ts-ignore
                 status: document.getElementById('entity-state'),
                 // @ts-ignore
-                business: document.getElementById('entity-business'),
+                //business: document.getElementById('entity-business'),
                 // @ts-ignore
-                client: document.getElementById('entity-customer'),
+                //client: document.getElementById('entity-customer'),
                 // @ts-ignore
-                department: document.getElementById('entity-department'),
+                //department: document.getElementById('entity-department'),
                 // @ts-ignore
-                customer: document.getElementById('entity-customer')
+                //customer: document.getElementById('entity-customer')
             }
 
             updateButton.addEventListener('click', () => {
                 let raw = JSON.stringify({
                     // @ts-ignore
-                    "lastName": `${$value.lastName?.value}`,
+                    //"lastName": `${$value.lastName?.value}`,
                     // @ts-ignore
-                    "secondLastName": `${$value.secondLastName?.value}`,
+                    //"secondLastName": `${$value.secondLastName?.value}`,
                     "active": true,
                     // @ts-ignore
-                    "firstName": `${$value.firstName?.value}`,
+                    //"firstName": `${$value.firstName?.value}`,
                     "state": {
                         "id": `${$value.status?.dataset.optionid}`
                     },
-                    "customer": {
-                        "id": `${$value.customer?.dataset.optionid}`
-                    },
+                    //"customer": {
+                    //    "id": `${$value.customer?.dataset.optionid}`
+                    //},
                     // @ts-ignore
-                    "phone": `${$value.phone?.value}`
+                    "phone": `${$value.phone?.value}`,
+                    // @ts-ignore
+                    //"email": `${$value.email?.value}`,
                 })
 
                 update(raw)
@@ -788,7 +952,8 @@ export class Clients {
 export const setUserPassword = async (): Promise<any> => {
     const users: any = await getEntitiesData('User')
     const filterBySuperUsers: any = users.filter((data: any) => data.isSuper === false)
-    const filterByUserType: any = filterBySuperUsers.filter((data: any) => `${data.userType}`.includes('CUSTOMER'))
+    const FCustomer: any = filterBySuperUsers.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    const filterByUserType: any = FCustomer.filter((data: any) => `${data.userType}`.includes('CUSTOMER'))
     const data: any = filterByUserType
 
     data.forEach((newUser: any) => {
@@ -805,7 +970,8 @@ export const setUserPassword = async (): Promise<any> => {
 export async function setRole(): Promise<void> {
     const users: any = await getEntitiesData('User')
     const filterByNewUsers: any = users.filter((data: any) => data.newUser === true)
-    const filterByUserType: any = filterByNewUsers.filter((data: any) => `${data.userType}`.includes('CUSTOMER'))
+    const FCustomer: any = filterByNewUsers.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    const filterByUserType: any = FCustomer.filter((data: any) => `${data.userType}`.includes('CUSTOMER'))
     const data: any = filterByUserType
 
     data.forEach((newUser: any) => {

@@ -1,8 +1,8 @@
 // @filename: SuperUsers.ts
 
-import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword } from "../../../endpoints.js"
+import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, sendMail } from "../../../endpoints.js"
 import { NUsers } from "../../../namespaces.js"
-import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog } from "../../../tools.js"
+import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail } from "../../../tools.js"
 import { InterfaceElement } from "../../../types.js"
 import { Config } from "../../../Configs.js"
 import { tableLayout } from "./Layout.js"
@@ -11,13 +11,19 @@ import { tableLayoutTemplate } from "./Templates.js"
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
 const SUser = true
-
+let currentUserInfo: any; 
+const customerId = localStorage.getItem('customer_id');
 
 const getUsers = async (superUser: boolean): Promise<void> => {
+    const currentUser = await getUserInfo();
+    const user = await getEntityData('User', `${currentUser.attributes.id}`);
+    currentUserInfo = user;
+
     const users: any = await getEntitiesData('User')
     const FSuper: any = users.filter((data: any) => data.isSuper === superUser)
-    // const SuperUsers: any = FSuper.filter((data: any) => `${data.userType}`.includes('CUSTOMER'))
-    return FSuper
+    const FCustomer = FSuper.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    const SuperUsers: any = FCustomer.filter((data: any) => `${data.userType}`.includes('CUSTOMER'))
+    return SuperUsers
 }
 
 export class SuperUsers {
@@ -44,6 +50,8 @@ export class SuperUsers {
     }
 
     public load(table: InterfaceElement, currentPage: number, data: any) {
+        setUserPassword(SUser);
+        setRole(SUser);
         table.innerHTML = ''
         currentPage--
         let start: number = tableRows * currentPage
@@ -242,6 +250,13 @@ export class SuperUsers {
                     </div>
 
                     <div class="material_input">
+                    <input type="email"
+                        id="entity-email"
+                        autocomplete="none">
+                    <label for="entity-email">Email</label>
+                    </div>
+
+                    <div class="material_input">
                     <input type="text" id="entity-username" class="input_filled" placeholder="john.doe@ejemplo.com" readonly>
                     <label for="entity-username"><i class="input_locked fa-solid fa-lock"></i> Nombre de usuario</label>
                     </div>
@@ -252,7 +267,7 @@ export class SuperUsers {
                     <div id="input-options" class="input_options">
                     </div>
                     </div>
-
+                    <!--
                     <div class="material_input_select" style="display: none">
                         <label for="entity-business"><i class="fa-solid fa-building"></i> Empresa</label>
                         <input type="text" id="entity-business" class="input_select" readonly placeholder="cargando..." autocomplete="none">
@@ -280,7 +295,7 @@ export class SuperUsers {
                     <div id="input-options" class="input_options">
                     </div>
                     </div>
-
+                    -->
                     <br>
                     <div class="material_input">
                     <input type="password" id="tempPass" autocomplete="false">
@@ -297,33 +312,39 @@ export class SuperUsers {
             `
 
             inputObserver()
-            inputSelect('Citadel', 'entity-citadel')
-            inputSelect('Customer', 'entity-customer')
+            //inputSelect('Citadel', 'entity-citadel')
+            //inputSelect('Customer', 'entity-customer')
             inputSelect('State', 'entity-state')
-            inputSelect('Department', 'entity-department')
-            inputSelect('Business', 'entity-business')
+            //inputSelect('Department', 'entity-department')
+            //inputSelect('Business', 'entity-business')
             this.close()
             this.generateUserName()
 
             const registerButton: InterfaceElement = document.getElementById('register-entity')
-            registerButton.addEventListener('click', (): void => {
+            registerButton.addEventListener('click', async() => {
                 const inputsCollection: any = {
                     firstName: document.getElementById('entity-firstname'),
                     lastName: document.getElementById('entity-lastname'),
                     secondLastName: document.getElementById('entity-secondlastname'),
                     phoneNumer: document.getElementById('entity-phone'),
                     state: document.getElementById('entity-state'),
-                    customer: document.getElementById('entity-customer'),
+                    //customer: document.getElementById('entity-customer'),
                     username: document.getElementById('entity-username'),
-                    citadel: document.getElementById('entity-citadel'),
-                    temporalPass: document.getElementById('tempPass')
+                    //citadel: document.getElementById('entity-citadel'),
+                    temporalPass: document.getElementById('tempPass'),
+                    dni: document.getElementById('entity-dni'),
+                    email: document.getElementById('entity-email'),
                 }
-
+                const randomKey = { key: Math.floor(Math.random() * 999999) };
                 const raw = JSON.stringify({
                     "lastName": `${inputsCollection.lastName.value}`,
                     "secondLastName": `${inputsCollection.secondLastName.value}`,
-                    "isSuper": false,
-                    "email": "",
+                    "isSuper": true,
+                    "newUser": true,
+                    "hashSuper": randomKey.key,
+                    "verifiedSuper": false,
+                    "dni": `${inputsCollection.dni.value}`,
+                    "email": `${inputsCollection.email.value}`,
                     "temp": `${inputsCollection.temporalPass.value}`,
                     "isWebUser": false,
                     "active": true,
@@ -332,26 +353,44 @@ export class SuperUsers {
                         "id": `${inputsCollection.state.dataset.optionid}`
                     },
                     "contractor": {
-                        "id": "06b476c4-d151-d7dc-cf0e-2a1e19295a00",
+                        "id": `${currentUserInfo.contractor.id}`,
                     },
                     "customer": {
-                        "id": `${inputsCollection.customer.dataset.optionid}`
+                        "id": `${customerId}`,
                     },
                     "citadel": {
-                        "id": `${inputsCollection.citadel.dataset.optionid}`
+                        "id": `${currentUserInfo.citadel.id}`,
+                    },
+                    "business":{
+                        "id": `${currentUserInfo.business.id}`
+                    },
+                    "department":{
+                      "id": `${currentUserInfo.department.id}`
                     },
                     "phone": `${inputsCollection.phoneNumer.value}`,
                     "userType": "CUSTOMER",
-                    "username": `${inputsCollection.username.value}@${inputsCollection.customer.value.toLowerCase()}.com`
+                    "username": `${inputsCollection.username.value}@${currentUserInfo.customer.name.toLowerCase()}.com`
                 })
-                reg(raw)
+                let mailRaw = JSON.stringify({
+                    "adress": inputsCollection.email.value,
+                    "subject": "Netliinks - Clave de validación.",
+                    "body": `Estimado ${inputsCollection.firstName.value}, el código de confirmación para ingresar a la plataforma de Netvisitors es: \n
+                                                               ${randomKey.key}\nNo responder a este correo.\nSaludos.\n\n\nNetliinks S.A.`
+                })
+                const existEmail = await getVerifyEmail(inputsCollection.email.value)
+                if(existEmail == true){
+                    alert("¡Correo electrónico ya existe!")
+                }else{
+                    reg(raw, mailRaw)
+                }   
             })
 
         }
 
-        const reg = async (raw: any) => {
+        const reg = async (raw: any, mailRaw: any) => {
             registerEntity(raw, 'User')
                 .then((res) => {
+                    sendMail(mailRaw)
                     setTimeout(async () => {
                         let data = await getUsers(true)
                         const tableBody: InterfaceElement = document.getElementById('datatable-body')
@@ -438,17 +477,17 @@ export class SuperUsers {
           <!-- EDITOR BODY -->
           <div class="entity_editor_body">
             <div class="material_input">
-              <input type="text" id="entity-firstname" class="input_filled" value="${data.firstName}">
+              <input type="text" id="entity-firstname" class="input_filled" value="${data.firstName}" readonly>
               <label for="entity-firstname">Nombre</label>
             </div>
 
             <div class="material_input">
-              <input type="text" id="entity-lastname" class="input_filled" value="${data.lastName}">
+              <input type="text" id="entity-lastname" class="input_filled" value="${data.lastName}" readonly>
               <label for="entity-lastname">Apellido</label>
             </div>
 
             <div class="material_input">
-              <input type="text" id="entity-secondlastname" class="input_filled" value="${data.secondLastName}">
+              <input type="text" id="entity-secondlastname" class="input_filled" value="${data.secondLastName}" readonly>
               <label for="entity-secondlastname">2do Apellido</label>
             </div>
 
@@ -466,13 +505,23 @@ export class SuperUsers {
               <label for="entity-username">Nombre de usuario</label>
             </div>
 
+            <div class="material_input">
+              <input type="text" maxlength="10" id="entity-dni" class="input_filled" value="${data.dni}" readonly>
+              <label for="entity-dni">Cédula</label>
+            </div>
+
+            <div class="material_input">
+              <input type="email" id="entity-email" class="input_filled" value="${data.email}" disabled>
+              <label for="entity-email">Email</label>
+            </div>
+
             <div class="material_input_select">
               <label for="entity-state">Estado</label>
               <input type="text" id="entity-state" class="input_select" readonly placeholder="cargando...">
               <div id="input-options" class="input_options">
               </div>
             </div>
-
+            <!--
             <div class="material_input_select">
               <label for="entity-business">Empresa</label>
               <input type="text" id="entity-business" class="input_select" readonly placeholder="cargando...">
@@ -506,7 +555,7 @@ export class SuperUsers {
               <input type="password" id="tempPass" >
               <label for="tempPass">Clave temporal</label>
             </div>
-
+            -->
           </div>
           <!-- END EDITOR BODY -->
 
@@ -518,22 +567,88 @@ export class SuperUsers {
 
 
             inputObserver()
-            inputSelect('Business', 'entity-citadel')
-            inputSelect('Customer', 'entity-customer')
+            //inputSelect('Business', 'entity-citadel')
+            //inputSelect('Customer', 'entity-customer')
             inputSelect('State', 'entity-state', data.state.name)
-            inputSelect('Department', 'entity-department')
-            inputSelect('Business', 'entity-business')
+            //inputSelect('Department', 'entity-department')
+            //inputSelect('Business', 'entity-business')
             this.close()
             UUpdate(entityID)
         }
 
-        const UUpdate = async (entityId: any): Promise<void> => {
-            const updateButton: InterfaceElement =
-                document.getElementById('update-changes')
-
-            updateButton.addEventListener('click', () => {
-            })
-        }
+        const UUpdate = async (entityId: any) => {
+            const updateButton: InterfaceElement = document.getElementById('update-changes');
+            const $value = {
+              // @ts-ignore
+              //firstName: document.getElementById('entity-firstname'),
+              // @ts-ignore
+              //lastName: document.getElementById('entity-lastname'),
+              // @ts-ignore
+              //secondLastName: document.getElementById('entity-secondlastname'),
+              // @ts-ignore
+              phone: document.getElementById('entity-phone'),
+              // @ts-ignore
+              //email: document.getElementById('entity-email'),
+              // @ts-ignore
+              status: document.getElementById('entity-state'),
+              // @ts-ignore
+              //business: document.getElementById('entity-business'),
+              // @ts-ignore
+              //citadel: document.getElementById('entity-citadel'),
+              // @ts-ignore
+              //department: document.getElementById('entity-department'),
+              // @ts-ignore
+              //customer: document.getElementById('entity-customer'),
+              //// @ts-ignore
+              //userType: document.getElementById('entity-type')
+          };
+            updateButton.addEventListener('click', async() => {
+              let raw = JSON.stringify({
+                  // @ts-ignore
+                  //"lastName": `${$value.lastName?.value}`,
+                  // @ts-ignore
+                  //"secondLastName": `${$value.secondLastName?.value}`,
+                  "active": true,
+                  // @ts-ignore
+                  //"firstName": `${$value.firstName?.value}`,
+                  "state": {
+                      "id": `${$value.status?.dataset.optionid}`
+                  },
+                  //"customer": {
+                  //    "id": `${$value.customer?.dataset.optionid}`
+                  //},
+                  // @ts-ignore
+                  "phone": `${$value.phone?.value}`,
+                  // @ts-ignore
+                  //"email": `${$value.email?.value}`,
+                  // @ts-ignore
+                  //"userType": `${$value.userType?.dataset.optionid}`,
+              });
+              /*const existEmail = await getVerifyEmail($value.email?.value);
+              if(existEmail == true){
+                  alert("¡Correo electrónico ya existe!");
+              }else{
+                  update(raw);
+              } */
+              update(raw);
+            });
+            const update = (raw: any) => {
+              updateEntity('User', entityId, raw)
+                  .then((res) => {
+                  setTimeout(async () => {
+                      let tableBody;
+                      let container;
+                      let data;
+                      data = await getUsers(SUser);
+                      new CloseDialog()
+                          .x(container =
+                          document.getElementById('entity-editor-container'));
+                      this.load(tableBody
+                          = document.getElementById('datatable-body'), currentPage, data);
+                  }, 100);
+              });
+          };
+        };
     }
 
     public remove() {
@@ -648,3 +763,45 @@ export const setNewPassword: any = async (): Promise<void> => {
     })
 
 }
+export const setUserPassword = async (SUser: any) => {
+    const users = await getEntitiesData('User');
+    const filterBySuperUsers = users.filter((data: any) => data.isSuper === SUser);
+    const FCustomer: any = filterBySuperUsers.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    const filterByUserType: any = FCustomer.filter((data: any) => `${data.userType}`.includes('CUSTOMER'))
+    const data = filterByUserType;
+    data.forEach((newUser: any) => {
+        let raw = JSON.stringify({
+            "id": `${newUser.id}`,
+            "newPassword": `${newUser.temp}`
+        });
+        if (newUser.newUser === true && newUser.temp !== undefined)
+            setPassword(raw);
+    });
+  };
+  export async function setRole(SUser: any) {
+    const users = await getEntitiesData('User');
+    const filterByNewUsers = users.filter((data: any) => data.newUser === SUser);
+    const FCustomer: any = filterByNewUsers.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    const filterByUserType: any = FCustomer.filter((data: any) => `${data.userType}`.includes('CUSTOMER'))
+    const data = filterByUserType;
+    data.forEach((newUser: any) => {
+        let roleCode;
+        if(newUser.userType === 'CUSTOMER'){
+          roleCode = 'app_web_clientes'
+        }
+        let raw = JSON.stringify({
+            "id": `${newUser.id}`,
+            "roleCode": `${roleCode}`
+        });
+        let updateNewUser = JSON.stringify({
+            "newUser": false
+        });
+        if (newUser.newUser === true) {
+            setUserRole(raw);
+            setTimeout(() => {
+                updateEntity('User', newUser.id, updateNewUser);
+            }, 1000);
+        }
+    });
+  }
+  
