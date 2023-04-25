@@ -170,9 +170,9 @@ export class Clients {
 
                     <div class="material_input">
                     <input type="text"
-                        id="entity-phone"
+                        id="entity-dni"
                         maxlength="10" autocomplete="none">
-                    <label for="entity-phone"><i class="fa-solid fa-phone"></i> Teléfono</label>
+                    <label for="entity-dni"><i class="fa-solid fa-id-card"></i> DNI</label>
                     </div>
 
                     <div class="material_input">
