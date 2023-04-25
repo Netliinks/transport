@@ -160,10 +160,10 @@ export class AssistControl {
             _values.startGuardID.value = markingData.ingressIssued.username
             _values.startGuardName.value = markingData.ingressIssued.firstName + ' ' + markingData.ingressIssued.lastName
             // End marking
-            _values.endDate.value = markingData.egressDate
-            _values.endTime.value = markingData.egressTime
-            _values.endGuardID.value = markingData.egressIssued.username
-            _values.endGuardName.value = markingData.egressIssued.firstName + ' ' + markingData.egressIssued.lastName
+            _values.endDate.value = markingData?.egressDate ?? ''
+            _values.endTime.value = markingData?.egressTime ?? ''
+            _values.endGuardID.value = markingData.egressIssued?.username ?? ''
+            _values.endGuardName.value = markingData.egressIssued?.firstName ?? '' + ' ' + markingData.egressIssued?.lastName ?? ''
 
             drawTagsIntoTables()
 
