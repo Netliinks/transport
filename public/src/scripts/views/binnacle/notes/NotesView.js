@@ -68,13 +68,12 @@ export class Notes {
                     <td>${note.content}</td>
                     <td id="table-date">${noteCreationDate}</td>
                     <td>
-                        <button class="button" id="entity-details" data-entityId="${note.id}">
+                        <button class="button" id="entity-details" data-entityId="${note.id}" onclick="${this.previewNote(note.id)}">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
                     </td>
                 `;
                     tableBody.appendChild(row);
-                    this.previewNote(note.id);
                     // TODO: Corret this fixer
                     // fixDate()
                 }
@@ -108,7 +107,8 @@ export class Notes {
             });
             const previewBox = async (noteId) => {
                 const note = await getEntityData('Note', noteId);
-                renderRightSidebar(UIRightSidebar);
+                const image = await getFile(note?.attachment ?? '');
+                await renderRightSidebar(UIRightSidebar);
                 const sidebarContainer = document.getElementById('entity-editor-container');
                 const closeSidebar = document.getElementById('close');
                 closeSidebar.addEventListener('click', () => {
@@ -124,7 +124,6 @@ export class Notes {
                     date: document.getElementById('creation-date'),
                     time: document.getElementById('creation-time')
                 };
-                const image = await getFile(note.attachment);
                 const noteCreationDateAndTime = note.creationDate.split('T');
                 const noteCreationTime = noteCreationDateAndTime[1];
                 const noteCreationDate = noteCreationDateAndTime[0];
@@ -136,9 +135,10 @@ export class Notes {
                 _details.time.value = noteCreationTime;
                 if (note.attachment !== undefined) {
                     _details.picture.innerHTML = `
-                    <img id="note-picture" width="100%" class="note_picture margin_b_8" src="${image}">
+                    <img id="note-picture" height="100" width="100" class="note_picture margin_b_8" src="${image}">
                 `;
                 }
+                this.closeRightSidebar();
             };
         };
         this.export = () => {

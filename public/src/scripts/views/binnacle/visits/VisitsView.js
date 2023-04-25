@@ -67,7 +67,7 @@ export class Visits {
                     <td>${visit.dni}</td>
                     <td id="table-date">${visit.createdDate}</td>
                     <td id="table-time" style="white-space: nowrap">${visit.creationTime}</td>
-                    <td>${visit.user.userType}</td>
+                    <td>${verifyUserType(visit.user.userType)}</td>
                     <td class="tag"><span>${visit.visitState.name}</span></td>
                     <td id="table-time">${visit.citadel.description}</td>
 

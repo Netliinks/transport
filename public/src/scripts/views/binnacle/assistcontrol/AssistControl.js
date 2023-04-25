@@ -66,7 +66,7 @@ export class AssistControl {
                     <td style="white-space: nowrap">${assistControl.user.firstName} ${assistControl.user.lastName} ${assistControl.user.secondLastName}</td>
                     <td>${assistControl.dni}</td>
                     <td id="table-date">${assistControl.ingressTime}</td>
-                    <td id="table-date">${assistControl.egressTime}</td>
+                    <td id="table-date">${assistControl?.egressTime ?? ''}</td>
                     <td class="tag"><span>${assistControl.marcationState.name}</span></td>
 
                     <td>

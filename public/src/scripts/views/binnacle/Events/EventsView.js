@@ -127,7 +127,7 @@ export class Events {
                 _details.author.value = `${event.user.firstName} ${event.user.lastName}`;
                 _details.authorId.value = event.createdBy;
                 _details.date.value = eventCreationDate;
-                _details.time.value = event.creationTime;
+                _details.time.value = eventCreationTime;
                 this.closeRightSidebar();
             };
         };
