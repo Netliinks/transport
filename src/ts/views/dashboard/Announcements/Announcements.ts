@@ -1,6 +1,6 @@
 // @filename: announcements
 
-import { deleteEntity, getEntitiesData, getUserInfo, registerEntity } from "../../../endpoints.js";
+import { deleteEntity, getEntitiesData, getUserInfo, registerEntity, getEntityData } from "../../../endpoints.js";
 import { CloseDialog, inputObserver, userInfo } from "../../../tools.js";
 import { InterfaceElement } from "../../../types.js";
 import { announcementCreatorController } from "./AnnouncementsCreatorControllers.js";
@@ -87,6 +87,7 @@ export class Announcements {
 
         _buttonPostAnnouncement.addEventListener('click', async (): Promise<void> => {
             let _userInfo: any = await userInfo
+            let currentUserInfo = await getEntityData('User', `${_userInfo.attributes.id}`)
             const _date = new Date()
             // TIME
             const _hours: number = _date.getHours()
@@ -108,6 +109,9 @@ export class Announcements {
                 "content": `${_announcementContent.value}`,
                 "user": {
                     "id": `${_userInfo.attributes.id}`
+                },
+                "business": {
+                    "id": `${currentUserInfo.business.id}`
                 },
                 "customer": {
                     "id": `${customerId}`
