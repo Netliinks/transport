@@ -110,6 +110,52 @@ export const UIRightSidebar = `
       maxlength="10" autocomplete="none">
     <label for="entity-phone">Teléfono</label>
   </div>
+
+  <!-- Start marking -->
+    <h3>Ingreso</h3>
+    <br>
+    <div class="input_detail">
+        <label for="ingress-date"><i class="fa-solid fa-calendar"></i></label>
+        <input type="date" id="ingress-date" class="input_filled" readonly>
+    </div>
+    <br>
+    <div class="input_detail">
+        <label for="ingress-time"><i class="fa-solid fa-clock"></i></label>
+        <input type="time" id="ingress-time" class="input_filled" readonly>
+    </div>
+    <br>
+    <div class="input_detail">
+        <label for="ingress-guard-id"><i class="fa-solid fa-user-police"></i></label>
+        <input type="text" id="ingress-guard-id" class="input_filled" readonly>
+    </div>
+    <br>
+    <div class="input_detail">
+        <label for="ingress-guard-name"><i class="fa-solid fa-user-police"></i></label>
+        <input type="text" id="ingress-guard-name" class="input_filled" readonly>
+    </div>
+    <br>
+    <!-- End marking -->
+    <h3>Salida</h3>
+    <br>
+    <div class="input_detail">
+        <label for="egress-date"><i class="fa-solid fa-calendar"></i></label>
+        <input type="date" id="egress-date" class="input_filled" readonly>
+    </div>
+    <br>
+    <div class="input_detail">
+        <label for="egress-time"><i class="fa-solid fa-clock"></i></label>
+        <input type="time" id="egress-time" class="input_filled" readonly>
+    </div>
+    <br>
+    <div class="input_detail">
+        <label for="egress-guard-id"><i class="fa-solid fa-user-police"></i></label>
+        <input type="text" id="egress-guard-id" class="input_filled" readonly>
+    </div>
+    <br>
+    <div class="input_detail">
+        <label for="egress-guard-name"><i class="fa-solid fa-user-police"></i></label>
+        <input type="text" id="egress-guard-name" class="input_filled" readonly>
+    </div>
 </div>
 <!-- END EDITOR BODY -->
 </div>

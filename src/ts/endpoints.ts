@@ -110,7 +110,7 @@ export const getData = async (url: RequestInfo): Endpoint => {
  * entity (all bussines data for example).
  */
 export const getEntitiesData = async (entities: string): Endpoint => {
-    const URL: string = `${NetliinksUrl}${entities}?fetchPlan=full&orderBy=createdDate`
+    const URL: string = `${NetliinksUrl}${entities}?fetchPlan=full&sort=-creationDate`
     return await getData(URL)
 }
 

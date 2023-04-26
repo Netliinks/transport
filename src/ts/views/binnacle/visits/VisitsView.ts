@@ -133,24 +133,42 @@ export class Visits {
             visitName.value = `${entityData.firstName} ${entityData.firstLastName}`
 
             const visitReason: InterfaceElement = document.getElementById('visit-reason')
-            visitReason.value = entityData.reason
+            visitReason.value = entityData?.reason
 
             const visitAutorizedBy: InterfaceElement = document.getElementById('visit-authorizedby')
-            visitAutorizedBy.value = entityData.authorizer
+            visitAutorizedBy.value = entityData?.authorizer
 
             const visitStatus: InterfaceElement = document.getElementById('visit-status')
             visitStatus.innerText = entityData.visitState.name
 
             const visitCitadel: InterfaceElement = document.getElementById('visit-citadel')
-            visitCitadel.value = entityData.citadel.description
+            visitCitadel.value = entityData.citadel?.description
 
             const visitCitadelID: InterfaceElement = document.getElementById('visit-citadelid')
-            visitCitadelID.value = entityData.citadel.name
+            visitCitadelID.value = entityData.citadel?.name
 
             const visitDepartment: InterfaceElement = document.getElementById('visit-department')
-            visitDepartment.value = entityData.department.name
+            visitDepartment.value = entityData.department?.name
 
-            console.log(entityData.citadel.name)
+            // Start marking
+            const ingressDate: InterfaceElement = document.getElementById('ingress-date')
+            ingressDate.value = entityData?.ingressDate ?? ''
+            const ingressTime: InterfaceElement = document.getElementById('ingress-time')
+            ingressTime.value = entityData?.ingressTime ?? ''
+            const ingressGuardId: InterfaceElement = document.getElementById('ingress-guard-id')
+            ingressGuardId.value = entityData?.ingressIssuedId?.username ?? ''
+            const ingressGuardName: InterfaceElement = document.getElementById('ingress-guard-name')
+            ingressGuardName.value = `${entityData?.ingressIssuedId?.firstName ?? ''} ${entityData?.ingressIssuedId?.lastName ?? ''}`
+            // End marking
+            const egressDate: InterfaceElement = document.getElementById('egress-date')
+            egressDate.value = entityData?.egressDate ?? ''
+            const egressTime: InterfaceElement = document.getElementById('egress-time')
+            egressTime.value = entityData?.egressTime ?? ''
+            const egressGuardId: InterfaceElement = document.getElementById('egress-guard-id')
+            egressGuardId.value = entityData?.egressIssuedId?.username ?? ''
+            const egressGuardName: InterfaceElement = document.getElementById('egress-guard-name')
+            egressGuardName.value = `${entityData?.egressIssuedId?.firstName ?? ''} ${entityData?.egressIssuedId?.lastName ?? ''}`
+            //console.log(entityData.citadel.name)
 
             this.closeRightSidebar()
             drawTagsIntoTables()

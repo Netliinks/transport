@@ -78,7 +78,7 @@ export class Notes {
                     <td>${note.content}</td>
                     <td id="table-date">${noteCreationDate}</td>
                     <td>
-                        <button class="button" id="entity-details" data-entityId="${note.id}" onclick="${this.previewNote(note.id)}">
+                        <button class="button" id="entity-details" data-entityId="${note.id}">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
                     </td>
@@ -89,7 +89,7 @@ export class Notes {
                 // fixDate()
             }
         }
-
+        this.previewNote()
         //renderTimeStamp()
     }
 
@@ -116,19 +116,24 @@ export class Notes {
         })
     }
 
-    private previewNote = async (noteID: string): Promise<void> => {
+    private previewNote = async (): Promise<void> => {
+        let i = 0
+        i += 1
         const openPreview: InterfaceElement = document.querySelectorAll('#entity-details')
+        console.log(i)
         openPreview.forEach((preview: InterfaceElement) => {
             let currentNoteId = preview.dataset.entityid
+            i += 1
+            console.log("New "+i)
             preview.addEventListener('click', (): void => {
+                console.log("SNew "+i)
                 previewBox(currentNoteId)
             })
         })
 
         const previewBox = async (noteId: string): Promise<void> => {
             const note = await getEntityData('Note', noteId)
-            const image = await getFile(note?.attachment ?? '')
-            await renderRightSidebar(UIRightSidebar)
+            renderRightSidebar(UIRightSidebar)
             const sidebarContainer: InterfaceElement = document.getElementById('entity-editor-container')
             const closeSidebar: InterfaceElement = document.getElementById('close')
             closeSidebar.addEventListener('click', (): void => {
@@ -145,8 +150,6 @@ export class Notes {
                 time: document.getElementById('creation-time')
             }
 
-            
-
             const noteCreationDateAndTime = note.creationDate.split('T')
             const noteCreationTime = noteCreationDateAndTime[1]
             const noteCreationDate = noteCreationDateAndTime[0]
@@ -159,12 +162,11 @@ export class Notes {
             _details.time.value = noteCreationTime
 
             if (note.attachment !== undefined) {
-                
+                const image = await getFile(note.attachment)
                 _details.picture.innerHTML = `
                     <img id="note-picture" height="100" width="100" class="note_picture margin_b_8" src="${image}">
                 `
             }
-            this.closeRightSidebar()
         }
     }
 
