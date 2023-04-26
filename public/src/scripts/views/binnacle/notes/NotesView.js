@@ -136,7 +136,7 @@ export class Notes {
                 if (note.attachment !== undefined) {
                     const image = await getFile(note.attachment);
                     _details.picture.innerHTML = `
-                    <img id="note-picture" height="100" width="100" class="note_picture margin_b_8" src="${image}">
+                    <img id="note-picture" width="100%" class="note_picture margin_b_8" src="${image}">
                 `;
                 }
             };
