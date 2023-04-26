@@ -95,7 +95,7 @@ export const getData = async (url) => {
  * entity (all bussines data for example).
  */
 export const getEntitiesData = async (entities) => {
-    const URL = `${NetliinksUrl}${entities}?fetchPlan=full&sort=-creationDate`;
+    const URL = `${NetliinksUrl}${entities}?fetchPlan=full&sort=-createdDate`;
     return await getData(URL);
 };
 /**
@@ -106,7 +106,7 @@ export const getEntitiesData = async (entities) => {
  * @returns all data of specified entity.
  */
 export const getEntityData = async (entities, entity) => {
-    const URL = `${NetliinksUrl}${entities}/${entity}?fetchPlan=full&sort=-creationDate`;
+    const URL = `${NetliinksUrl}${entities}/${entity}?fetchPlan=full&sort=-createdDate`;
     return getData(URL);
 };
 export const getFilterEntityData = async (entities, raw) => {
