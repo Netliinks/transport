@@ -71,10 +71,10 @@ export class Events {
                     </td>
                 `;
                     tableBody.appendChild(row);
-                    this.previewEvent(event.id);
                     // TODO: Corret this fixer
                     // fixDate()
                 }
+                this.previewEvent();
             }
         };
         this.searchNotes = async (tableBody, events) => {
@@ -94,7 +94,7 @@ export class Events {
                 // Rendering icons
             });
         };
-        this.previewEvent = async (noteID) => {
+        this.previewEvent = async () => {
             const openPreview = document.querySelectorAll('#entity-details');
             openPreview.forEach((preview) => {
                 let currentEventId = preview.dataset.entityid;

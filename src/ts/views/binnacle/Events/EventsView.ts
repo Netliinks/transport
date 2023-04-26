@@ -83,10 +83,11 @@ export class Events {
                     </td>
                 `
                 tableBody.appendChild(row)
-                this.previewEvent(event.id)
+                
                 // TODO: Corret this fixer
                 // fixDate()
             }
+            this.previewEvent()
         }
     }
 
@@ -114,7 +115,7 @@ export class Events {
         })
     }
 
-    private previewEvent = async (noteID: string): Promise<void> => {
+    private previewEvent = async (): Promise<void> => {
         const openPreview: InterfaceElement = document.querySelectorAll('#entity-details')
         openPreview.forEach((preview: InterfaceElement) => {
             let currentEventId = preview.dataset.entityid
