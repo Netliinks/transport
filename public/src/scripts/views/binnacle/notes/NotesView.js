@@ -99,16 +99,10 @@ export class Notes {
             });
         };
         this.previewNote = async () => {
-            let i = 0;
-            i += 1;
             const openPreview = document.querySelectorAll('#entity-details');
-            console.log(i);
             openPreview.forEach((preview) => {
                 let currentNoteId = preview.dataset.entityid;
-                i += 1;
-                console.log("New " + i);
                 preview.addEventListener('click', () => {
-                    console.log("SNew " + i);
                     previewBox(currentNoteId);
                 });
             });

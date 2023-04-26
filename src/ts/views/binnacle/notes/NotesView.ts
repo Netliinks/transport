@@ -117,16 +117,10 @@ export class Notes {
     }
 
     private previewNote = async (): Promise<void> => {
-        let i = 0
-        i += 1
         const openPreview: InterfaceElement = document.querySelectorAll('#entity-details')
-        console.log(i)
         openPreview.forEach((preview: InterfaceElement) => {
             let currentNoteId = preview.dataset.entityid
-            i += 1
-            console.log("New "+i)
             preview.addEventListener('click', (): void => {
-                console.log("SNew "+i)
                 previewBox(currentNoteId)
             })
         })
