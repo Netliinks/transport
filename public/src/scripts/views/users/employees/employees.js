@@ -592,12 +592,12 @@ export class Employees {
                         id="entity-dni"
                         class="input_filled"
                         maxlength="10"
-                        value="${data.dni}" readonly>
+                        value="${data?.dni ?? ''}" readonly>
                     <label for="entity-dni">Cédula</label>
                     </div>
 
                     <div class="material_input">
-                    <input type="email" id="entity-email" class="input_filled" value="${data.email}" disabled>
+                    <input type="email" id="entity-email" class="input_filled" value="${data?.email ?? ''}" disabled>
                     <label for="entity-email">Email</label>
                     </div>
 
@@ -606,7 +606,7 @@ export class Employees {
                         id="entity-phone"
                         class="input_filled"
                         maxlength="10"
-                        value="${data.phone}">
+                        value="${data?.phone ?? ''}">
                     <label for="entity-phone">Teléfono</label>
                     </div>
 

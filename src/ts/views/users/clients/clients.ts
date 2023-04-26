@@ -537,7 +537,7 @@ export class Clients {
                         id="entity-phone"
                         class="input_filled"
                         maxlength="10"
-                        value="${data.phone}">
+                        value="${data?.phone ?? ''}">
                     <label for="entity-phone">Teléfono</label>
                     </div>
 
@@ -547,12 +547,12 @@ export class Clients {
                     </div>
 
                     <div class="material_input">
-                    <input type="text" maxlength="10" id="entity-dni" class="input_filled" value="${data.dni}" readonly>
+                    <input type="text" maxlength="10" id="entity-dni" class="input_filled" value="${data?.dni ?? ''}" readonly>
                     <label for="entity-dni">Cédula</label>
                     </div>
 
                     <div class="material_input">
-                    <input type="email" id="entity-email" class="input_filled" value="${data.email}" disabled>
+                    <input type="email" id="entity-email" class="input_filled" value="${data?.email ?? ''}" disabled>
                     <label for="entity-email">Email</label>
                     </div>
 
