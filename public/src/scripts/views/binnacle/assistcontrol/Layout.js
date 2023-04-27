@@ -83,6 +83,7 @@ export const UIRightSidebar = `
         <input type="text" id="marking-type" class="input_filled" readonly>
     </div>
     <br>
+    <!--
     <div class="input_detail">
         <label for="marking-department"><i class="fa-solid fa-building"></i></label>
         <input type="text" id="marking-department" class="input_filled" readonly>
@@ -93,6 +94,7 @@ export const UIRightSidebar = `
         <input type="text" id="marking-contractor" class="input_filled" readonly>
     </div>
     <br>
+    -->
     <!-- Start marking -->
     <h3>Ingreso</h3>
     <br>

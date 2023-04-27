@@ -5,7 +5,7 @@
 //
 import { Config } from "../../../Configs.js";
 import { getEntityData, getEntitiesData } from "../../../endpoints.js";
-import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver, generateCsv } from "../../../tools.js";
+import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver, generateCsv, verifyUserType } from "../../../tools.js";
 import { UIContentLayout, UIRightSidebar } from "./Layout.js";
 import { UITableSkeletonTemplate } from "./Template.js";
 // Local configs
@@ -64,7 +64,7 @@ export class AssistControl {
                     let row = document.createElement('TR');
                     row.innerHTML += `
                     <td style="white-space: nowrap">${assistControl.user.firstName} ${assistControl.user.lastName} ${assistControl.user.secondLastName}</td>
-                    <td>${assistControl.dni}</td>
+                    <td>${assistControl?.dni ?? ''}</td>
                     <td id="table-date">${assistControl.ingressTime}</td>
                     <td id="table-date">${assistControl?.egressTime ?? ''}</td>
                     <td class="tag"><span>${assistControl.marcationState.name}</span></td>
@@ -112,8 +112,8 @@ export class AssistControl {
                     name: document.getElementById('marking-name'),
                     dni: document.getElementById('marking-dni'),
                     type: document.getElementById('marking-type'),
-                    department: document.getElementById('marking-department'),
-                    contractor: document.getElementById('marking-contractor'),
+                    //department: document.getElementById('marking-department'),
+                    //contractor: document.getElementById('marking-contractor'),
                     // Start marking
                     startDate: document.getElementById('marking-start-date'),
                     startTime: document.getElementById('marking-start-time'),
@@ -127,20 +127,20 @@ export class AssistControl {
                 };
                 _values.status.innerText = markingData.marcationState.name;
                 _values.name.value = markingData.user.firstName + ' ' + markingData.user.lastName;
-                _values.dni.value = markingData.user.dni;
-                _values.type.value = markingData.user.userType;
-                _values.department.value = markingData.user.department;
-                _values.contractor.value = markingData.user.contractor;
+                _values.dni.value = markingData.user?.dni ?? '';
+                _values.type.value = verifyUserType(markingData.user.userType);
+                //_values.department.value = markingData.user?.department ?? ''
+                //_values.contractor.value = markingData.user?.contractor ?? ''
                 // Start marking
                 _values.startDate.value = markingData.ingressDate;
                 _values.startTime.value = markingData.ingressTime;
-                _values.startGuardID.value = markingData.ingressIssued.username;
-                _values.startGuardName.value = markingData.ingressIssued.firstName + ' ' + markingData.ingressIssued.lastName;
+                _values.startGuardID.value = markingData.ingressIssued?.username ?? '';
+                _values.startGuardName.value = `${markingData.ingressIssued?.firstName ?? ''} ${markingData.ingressIssued?.lastName ?? ''}`;
                 // End marking
                 _values.endDate.value = markingData?.egressDate ?? '';
                 _values.endTime.value = markingData?.egressTime ?? '';
                 _values.endGuardID.value = markingData.egressIssued?.username ?? '';
-                _values.endGuardName.value = markingData.egressIssued?.firstName ?? '' + ' ' + markingData.egressIssued?.lastName ?? '';
+                _values.endGuardName.value = `${markingData.egressIssued?.firstName ?? ''}  ${markingData.egressIssued?.lastName ?? ''}`;
                 drawTagsIntoTables();
                 this.closeRightSidebar();
                 drawTagsIntoTables();

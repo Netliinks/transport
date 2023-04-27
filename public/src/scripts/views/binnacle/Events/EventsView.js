@@ -119,15 +119,15 @@ export class Events {
                     date: document.getElementById('creation-date'),
                     time: document.getElementById('creation-time')
                 };
-                const eventCreationDateAndTime = event.creationDate.split('T');
-                const eventCreationTime = eventCreationDateAndTime[1];
-                const eventCreationDate = eventCreationDateAndTime[0];
+                /*const eventCreationDateAndTime = event.creationDate.split('T')
+                const eventCreationTime = eventCreationDateAndTime[1]
+                const eventCreationDate = eventCreationDateAndTime[0]*/
                 _details.title.innerText = event.title;
                 _details.content.innerText = event.description;
                 _details.author.value = `${event.user.firstName} ${event.user.lastName}`;
                 _details.authorId.value = event.createdBy;
-                _details.date.value = eventCreationDate;
-                _details.time.value = eventCreationTime;
+                _details.date.value = event.creationDate;
+                _details.time.value = event.creationTime;
                 this.closeRightSidebar();
             };
         };
