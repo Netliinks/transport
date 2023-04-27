@@ -41,7 +41,7 @@ export const announcementCreatorController = `
             </div>
 
             <!-- BOOKMARK: PICTURE IMPORT -->
-            <input type="file" class="input_file margin_t_8 margin_b_16" accept="image/png, image/jpeg">
+            <input type="file" class="input_file margin_t_8 margin_b_16" accept="image/png, image/jpeg" id="announcement-picture">
 
             <!-- ANNOUNCEMENT CONTENT -->
             <div class="form_input">

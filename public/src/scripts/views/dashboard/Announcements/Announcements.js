@@ -1,5 +1,5 @@
 // @filename: announcements
-import { deleteEntity, getEntitiesData, getUserInfo, registerEntity, getEntityData } from "../../../endpoints.js";
+import { deleteEntity, getEntitiesData, getUserInfo, registerEntity, getEntityData, setFile } from "../../../endpoints.js";
 import { CloseDialog, inputObserver, userInfo } from "../../../tools.js";
 import { announcementCreatorController } from "./AnnouncementsCreatorControllers.js";
 export class Announcements {
@@ -66,9 +66,22 @@ export class Announcements {
         inputObserver();
     }
     async post() {
+        const formData = new FormData();
         const _buttonPostAnnouncement = document.getElementById('post-announcement');
         const _announcementTitle = document.getElementById('announcement-title');
         const _announcementContent = document.getElementById('announcement-content');
+        const _announcementPicture = document.getElementById('announcement-picture');
+        let image;
+        _announcementPicture.onchange = async (event) => {
+            /*let rawImage: File = _announcementPicture.files[0]
+            console.log(rawImage)
+            let nameImage = rawImage.name
+            console.log(nameImage)
+            //let pathImage = (window.URL || window.webkitURL).createObjectURL(rawImage);
+            image = await setFile(rawImage);
+            let body = JSON.stringify(image);
+            console.log(body)*/
+        };
         _buttonPostAnnouncement.addEventListener('click', async () => {
             let _userInfo = await userInfo;
             let currentUserInfo = await getEntityData('User', `${_userInfo.attributes.id}`);
@@ -87,6 +100,14 @@ export class Announcements {
             const _year = _date.getFullYear();
             const date = `${_year}-${('0' + _month).slice(-2)}-${('0' + _day).slice(-2)}`;
             const customerId = localStorage.getItem('customer_id');
+            let rawImage = _announcementPicture.files[0];
+            formData.append("file", _announcementPicture);
+            image = await setFile(formData, rawImage.name);
+            let body = JSON.stringify(image);
+            let parse = JSON.parse(body);
+            console.log(body);
+            console.log(parse);
+            //let obtainUrl = await getFile(parse.fileRef)
             // RAW
             const announcementRaw = JSON.stringify({
                 "title": `${_announcementTitle.value}`,
@@ -101,8 +122,10 @@ export class Announcements {
                     "id": `${customerId}`
                 },
                 "creationTime": `${currentTime}`,
-                "creationDate": `${date}`
+                "creationDate": `${date}`,
+                "attachment": `${parse.fileRef}`,
             });
+            //console.log(image)
             if (_announcementTitle.value === '') {
                 alert('El campo "título" no puede estar vacío');
             }

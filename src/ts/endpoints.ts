@@ -262,3 +262,23 @@ export const getFile = async (fileUrl: string): Endpoint => {
 
     return file
 }
+
+export const setFile = async (file: any, name: string): Endpoint => {
+    const url: string = `https://backend.netliinks.com:443/rest/files?name=${name}`
+
+    const requestOptions: {} = {
+        method: 'POST',
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Cookie": "JSESSIONID=CDD208A868EAABD1F523BB6F3C8946AF",
+            "Content-Disposition": 'multipart/form-data; boundary=WebAppBoundary',
+            'Content-Type': 'image/jpeg',
+        },
+        body: file
+    };
+
+    const res = await fetch(url, requestOptions)
+        .then(response => response.json())
+        .catch(err => console.log('error', err));
+    return res
+}
