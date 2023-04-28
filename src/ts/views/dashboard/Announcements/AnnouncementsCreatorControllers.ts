@@ -62,23 +62,23 @@ export const announcementCreatorController = `
             <div class="form_group">
                 <div class="v_inputs">
                     <div class="form_input">
-                        <label class="form_label" for="visualizationDate">Desde: </label>
-                        <input type="date" class="input_clear input_widder input_centertext" id="visualizationDate">
+                        <label class="form_label" for="announcement-visualizationDate">Desde: </label>
+                        <input type="date" class="input_clear input_widder input_centertext" id="announcement-visualizationDate">
                     </div>
 
                     <div class="form_input">
-                        <input type="time" class="input_clear input_widder input_centertext margin_t_16" id="visualizationTime">
+                        <input type="time" class="input_clear input_widder input_centertext margin_t_16" id="announcement-visualizationTime">
                     </div>
                 </div>
 
                 <div class="v_inputs">
                     <div class="form_input">
-                        <label class="form_label" for="expirationDate">Hasta: </label>
-                        <input type="date" class="input_clear input_widder input_centertext" id="expirationDate">
+                        <label class="form_label" for="announcement-expirationDate">Hasta: </label>
+                        <input type="date" class="input_clear input_widder input_centertext" id="announcement-expirationDate">
                     </div>
 
                     <div class="form_input">
-                        <input type="time" class="input_clear input_widder input_centertext margin_t_16" id="expirationTime">
+                        <input type="time" class="input_clear input_widder input_centertext margin_t_16" id="announcement-expirationTime">
                     </div>
                 </div>
             </div>
