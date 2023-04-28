@@ -225,20 +225,20 @@ export const getFile = async (fileUrl) => {
     });
     return file;
 };
-export const setFile = async (file, name) => {
-    const url = `https://backend.netliinks.com:443/rest/files?name=${name}`;
+export const setFile = async (file) => {
+    const url = `https://backend.netliinks.com:443/rest/files?name=${file.name}`;
     const requestOptions = {
         method: 'POST',
         headers: {
             "Authorization": `Bearer ${token}`,
             "Cookie": "JSESSIONID=CDD208A868EAABD1F523BB6F3C8946AF",
-            "Content-Disposition": 'multipart/form-data; boundary=WebAppBoundary',
+            "Content-Disposition": 'form-data; name="file"; filename="cat.jpg"',
             'Content-Type': 'image/jpeg',
         },
         body: file
     };
     const res = await fetch(url, requestOptions)
         .then(response => response.json())
-        .catch(err => console.log('error', err));
+        .catch(err => alert(`Error subiendo archivo ${err}`));
     return res;
 };

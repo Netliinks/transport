@@ -66,21 +66,15 @@ export class Announcements {
         inputObserver();
     }
     async post() {
-        const formData = new FormData();
         const _buttonPostAnnouncement = document.getElementById('post-announcement');
         const _announcementTitle = document.getElementById('announcement-title');
         const _announcementContent = document.getElementById('announcement-content');
         const _announcementPicture = document.getElementById('announcement-picture');
-        let image;
+        const _announcementInitDate = document.getElementById('visualizationDate');
+        const _announcementInitTime = document.getElementById('visualizationTime');
+        const _announcementEndDate = document.getElementById('expirationDate');
+        const _announcementEndTime = document.getElementById('expirationTime');
         _announcementPicture.onchange = async (event) => {
-            /*let rawImage: File = _announcementPicture.files[0]
-            console.log(rawImage)
-            let nameImage = rawImage.name
-            console.log(nameImage)
-            //let pathImage = (window.URL || window.webkitURL).createObjectURL(rawImage);
-            image = await setFile(rawImage);
-            let body = JSON.stringify(image);
-            console.log(body)*/
         };
         _buttonPostAnnouncement.addEventListener('click', async () => {
             let _userInfo = await userInfo;
@@ -100,14 +94,18 @@ export class Announcements {
             const _year = _date.getFullYear();
             const date = `${_year}-${('0' + _month).slice(-2)}-${('0' + _day).slice(-2)}`;
             const customerId = localStorage.getItem('customer_id');
-            let rawImage = _announcementPicture.files[0];
-            formData.append("file", _announcementPicture);
-            image = await setFile(formData, rawImage.name);
-            let body = JSON.stringify(image);
-            let parse = JSON.parse(body);
-            console.log(body);
-            console.log(parse);
-            //let obtainUrl = await getFile(parse.fileRef)
+            let attachment;
+            if (_announcementPicture.files.length !== 0) {
+                let rawImage = _announcementPicture.files[0];
+                let image = await setFile(rawImage);
+                let body = JSON.stringify(image);
+                let parse = JSON.parse(body);
+                attachment = parse.fileRef;
+            }
+            console.log(_announcementInitTime.value);
+            console.log(_announcementInitDate.value);
+            console.log(_announcementEndTime.value);
+            console.log(_announcementEndDate.value);
             // RAW
             const announcementRaw = JSON.stringify({
                 "title": `${_announcementTitle.value}`,
@@ -123,7 +121,11 @@ export class Announcements {
                 },
                 "creationTime": `${currentTime}`,
                 "creationDate": `${date}`,
-                "attachment": `${parse.fileRef}`,
+                "visualizationTime": `${_announcementInitTime.value}`,
+                "visualizationDate": `${_announcementInitDate.value}`,
+                "expirationTime": `${_announcementEndTime.value}`,
+                "expirationDate": `${_announcementEndDate.value}`,
+                "attachment": `${attachment}`,
             });
             //console.log(image)
             if (_announcementTitle.value === '') {

@@ -81,22 +81,17 @@ export class Announcements {
     }
 
     private async post(): Promise<void> {
-        const formData = new FormData();
         const _buttonPostAnnouncement: InterfaceElement = document.getElementById('post-announcement')
         const _announcementTitle: InterfaceElement = document.getElementById('announcement-title')
         const _announcementContent: InterfaceElement = document.getElementById('announcement-content')
         const _announcementPicture: InterfaceElement = document.getElementById('announcement-picture')
-        let image: any;
+        const _announcementInitDate: InterfaceElement = document.getElementById('visualizationDate')
+        const _announcementInitTime: InterfaceElement = document.getElementById('visualizationTime')
+        const _announcementEndDate: InterfaceElement = document.getElementById('expirationDate')
+        const _announcementEndTime: InterfaceElement = document.getElementById('expirationTime')
             
         _announcementPicture.onchange = async(event: any) => {
-            /*let rawImage: File = _announcementPicture.files[0]
-            console.log(rawImage)
-            let nameImage = rawImage.name
-            console.log(nameImage)
-            //let pathImage = (window.URL || window.webkitURL).createObjectURL(rawImage);
-            image = await setFile(rawImage);
-            let body = JSON.stringify(image);
-            console.log(body)*/
+            
           }
         _buttonPostAnnouncement.addEventListener('click', async (): Promise<void> => {
             let _userInfo: any = await userInfo
@@ -116,14 +111,19 @@ export class Announcements {
             const _year: number = _date.getFullYear()
             const date: string = `${_year}-${('0' + _month).slice(-2)}-${('0' + _day).slice(-2)}`
             const customerId = localStorage.getItem('customer_id')
-            let rawImage: File = _announcementPicture.files[0]
-            formData.append("file", _announcementPicture);
-            image = await setFile(formData, rawImage.name)
-            let body = JSON.stringify(image);
-            let parse = JSON.parse(body)
-            console.log(body)
-            console.log(parse)
-            //let obtainUrl = await getFile(parse.fileRef)
+            let attachment
+            if (_announcementPicture.files.length !== 0) {
+                let rawImage: File = _announcementPicture.files[0]
+                let image = await setFile(rawImage)
+                let body = JSON.stringify(image)
+                let parse = JSON.parse(body)
+                attachment = parse.fileRef
+             }
+            console.log(_announcementInitTime.value)
+            console.log(_announcementInitDate.value)
+
+            console.log(_announcementEndTime.value)
+            console.log(_announcementEndDate.value)
             // RAW
             const announcementRaw: string = JSON.stringify({
                 "title": `${_announcementTitle.value}`,
@@ -139,7 +139,11 @@ export class Announcements {
                 },
                 "creationTime": `${currentTime}`,
                 "creationDate": `${date}`,
-                "attachment": `${parse.fileRef}`,
+                "visualizationTime": `${_announcementInitTime.value}`,
+                "visualizationDate": `${_announcementInitDate.value}`,
+                "expirationTime": `${_announcementEndTime.value}`,
+                "expirationDate": `${_announcementEndDate.value}`,
+                "attachment": `${attachment}`,
             })
 
             

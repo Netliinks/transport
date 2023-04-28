@@ -49,9 +49,11 @@ export const announcementCreatorController = `
                 <textarea id="announcement-content" name="announcement-content" row="30" class="input_textarea"></textarea>
             </div>
 
+            <!--
             <div class="form_input">
                 <button class="btn btn_widder btn_placeholder_type">Agregar botón <i class="margin_l_8 fa-solid fa-plus"></i></button>
             </div>
+            -->
 
             <div class="sidebar_section">
                 <h5 class="section_title text_center">Duración</h5>
@@ -60,23 +62,23 @@ export const announcementCreatorController = `
             <div class="form_group">
                 <div class="v_inputs">
                     <div class="form_input">
-                        <label class="form_label" for="from-in-date">Desde: </label>
-                        <input type="date" class="input_clear input_widder input_centertext">
+                        <label class="form_label" for="visualizationDate">Desde: </label>
+                        <input type="date" class="input_clear input_widder input_centertext" id="visualizationDate">
                     </div>
 
                     <div class="form_input">
-                        <input type="time" class="input_clear input_widder input_centertext margin_t_16">
+                        <input type="time" class="input_clear input_widder input_centertext margin_t_16" id="visualizationTime">
                     </div>
                 </div>
 
                 <div class="v_inputs">
                     <div class="form_input">
-                        <label class="form_label" for="from-in-date">Hasta: </label>
-                        <input type="date" class="input_clear input_widder input_centertext">
+                        <label class="form_label" for="expirationDate">Hasta: </label>
+                        <input type="date" class="input_clear input_widder input_centertext" id="expirationDate">
                     </div>
 
                     <div class="form_input">
-                        <input type="time" class="input_clear input_widder input_centertext margin_t_16">
+                        <input type="time" class="input_clear input_widder input_centertext margin_t_16" id="expirationTime">
                     </div>
                 </div>
             </div>
