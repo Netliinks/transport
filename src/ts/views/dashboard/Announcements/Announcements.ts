@@ -121,11 +121,6 @@ export class Announcements {
                 let parse = JSON.parse(body)
                 attachment = parse.fileRef
              }
-            console.log(_announcementInitTime.value)
-            console.log(_announcementInitDate.value)
-
-            console.log(_announcementEndTime.value)
-            console.log(_announcementEndDate.value)
             // RAW
             const announcementRaw: string = JSON.stringify({
                 "title": `${_announcementTitle.value}`,
