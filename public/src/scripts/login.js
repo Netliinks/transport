@@ -5,6 +5,7 @@
 //
 import { getUserInfo, _userAgent, getEntityData, updateEntity, getFilterEntityData } from "./endpoints.js";
 import { RenderApplicationUI } from "./layout/interface.js";
+import { registryPlataform } from "./tools.js";
 const loginContainer = document.getElementById('login-container');
 const app = document.getElementById('app');
 const connectionHeader = {
@@ -66,6 +67,7 @@ export class SignIn {
                             scope: res.scope,
                             tokenType: res.token_type
                         };
+                        await registryPlataform(user[0]?.id);
                         localStorage.removeItem('email');
                         localStorage.removeItem('password');
                         localStorage.removeItem('access_token');

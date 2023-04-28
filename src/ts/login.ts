@@ -7,6 +7,7 @@
 import { getUserInfo, _userAgent, getEntityData, getEntitiesData, updateEntity, getFilterEntityData } from "./endpoints.js"
 import { RenderApplicationUI } from "./layout/interface.js"
 import { InterfaceElement, Request } from "./types.js"
+import { registryPlataform } from "./tools.js"
 
 const loginContainer: InterfaceElement = document.getElementById('login-container')
 const app: InterfaceElement = document.getElementById('app')
@@ -73,7 +74,8 @@ export class SignIn {
                             refreshToken: res.refresh_token,
                             scope: res.scope,
                             tokenType: res.token_type
-                        };
+                        };   
+                        await registryPlataform(user[0]?.id)
                         localStorage.removeItem('email')
                         localStorage.removeItem('password')
                         localStorage.removeItem('access_token')

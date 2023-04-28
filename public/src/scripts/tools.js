@@ -1,4 +1,4 @@
-import { getEntitiesData, getUserInfo, getFilterEntityData } from "./endpoints.js";
+import { getEntitiesData, getUserInfo, getFilterEntityData, getEntityData, registerEntity, _userAgent } from "./endpoints.js";
 //
 export const inputObserver = () => {
     const inputs = document.querySelectorAll('input');
@@ -196,7 +196,6 @@ export class filterDataByHeaderType {
     }
 }
 export const userInfo = getUserInfo();
-
 export const getVerifyEmail = async (email) => {
     let value = false;
     //console.log(email.includes("@"))
@@ -220,73 +219,113 @@ export const getVerifyEmail = async (email) => {
         }
     }
     return value;
-}
-
-export const verifyUserType = (userType) =>{
-    if(userType == 'CUSTOMER'){
-      return 'Cliente'
-    }else if(userType == 'GUARD'){
-      return 'Guardia'
-    }else if(userType == 'EMPLOYEE'){
-      return 'Empleado'
-    }else if(userType == 'CONTRACTOR'){
-      return 'Contratista'
-    }else{
-      return userType
+};
+export const verifyUserType = (userType) => {
+    if (userType == 'CUSTOMER') {
+        return 'Cliente';
     }
-  }
-
-export function generateCsv(ar, title){
+    else if (userType == 'GUARD') {
+        return 'Guardia';
+    }
+    else if (userType == 'EMPLOYEE') {
+        return 'Empleado';
+    }
+    else if (userType == 'CONTRACTOR') {
+        return 'Contratista';
+    }
+    else {
+        return userType;
+    }
+};
+export const registryPlataform = async (id) => {
+    let platUser = await getEntityData('User', id);
+    const _date = new Date();
+    // TIME
+    const _hours = _date.getHours();
+    const _minutes = _date.getMinutes();
+    const _seconds = _date.getSeconds();
+    const _fixedHours = ('0' + _hours).slice(-2);
+    const _fixedMinutes = ('0' + _minutes).slice(-2);
+    const _fixedSeconds = ('0' + _seconds).slice(-2);
+    const currentTime = `${_fixedHours}:${_fixedMinutes}:${_fixedSeconds}`;
+    // DATE
+    const _day = _date.getDate();
+    const _month = _date.getMonth() + 1;
+    const _year = _date.getFullYear();
+    const date = `${_year}-${('0' + _month).slice(-2)}-${('0' + _day).slice(-2)}`;
+    let plataformRaw = JSON.stringify({
+        // @ts-ignore
+        "userAgent": `${_userAgent}`,
+        "customer": {
+            "id": `${platUser.customer.id}`
+        },
+        "system": {
+            "id": `3377a344-a1e9-7ea0-4204-44d4040debd2`
+        },
+        "user": {
+            "id": `${platUser.id}`
+        },
+        // @ts-ignore
+        "creationDate": `${date}`,
+        // @ts-ignore
+        "creationTime": `${currentTime}`,
+    });
+    await registerEntity(plataformRaw, 'WebAccess')
+        .then(res => {
+        console.log("Registrado");
+    });
+};
+export const generateCsv = (ar, title) => {
     //comprobamos compatibilidad
     if(window.Blob && (window.URL || window.webkitURL)){
-      var contenido = "",
-        d = new Date(),
-        blob,
-        reader,
-        save,
-        clicEvent;
-      //creamos contenido del archivo
-      for (var i = 0; i < ar.length; i++) {
-        //construimos cabecera del csv
-        if (i == 0)
-          contenido += Object.keys(ar[i]).join(";") + "\n";
-        //resto del contenido
-        contenido += Object.keys(ar[i]).map(function(key){
-                return ar[i][key];
-              }).join(";") + "\n";
-      }
-      //creamos el blob
-      blob =  new Blob(["\ufeff", contenido], {type: 'text/csv'});
-      //creamos el reader
-      var reader = new FileReader();
-      reader.onload = function (event) {
-        //escuchamos su evento load y creamos un enlace en dom
-        save = document.createElement('a');
-        save.href = event.target.result;
-        save.target = '_blank';
-        //aquí le damos nombre al archivo
-        save.download = "log_"+title+"_"+ d.getDate() + "_" + (d.getMonth()+1) + "_" + d.getFullYear() +".csv";
-        try {
-          //creamos un evento click
-          clicEvent = new MouseEvent('click', {
-            'view': window,
-            'bubbles': true,
-            'cancelable': true
-          });
-        } catch (e) {
-          //si llega aquí es que probablemente implemente la forma antigua de crear un enlace
-          clicEvent = document.createEvent("MouseEvent");
-          clicEvent.click();
+        var contenido = "",
+          d = new Date(),
+          blob,
+          reader,
+          save,
+          clicEvent;
+        //creamos contenido del archivo
+        for (var i = 0; i < ar.length; i++) {
+          //construimos cabecera del csv
+          if (i == 0)
+            contenido += Object.keys(ar[i]).join(";") + "\n";
+          //resto del contenido
+          contenido += Object.keys(ar[i]).map(function(key){
+                  return ar[i][key];
+                }).join(";") + "\n";
         }
-        //disparamos el evento
-        save.dispatchEvent(clicEvent);
-        //liberamos el objeto window.URL
-        (window.URL || window.webkitURL).revokeObjectURL(save.href);
+        //creamos el blob
+        blob =  new Blob(["\ufeff", contenido], {type: 'text/csv'});
+        //creamos el reader
+        var reader = new FileReader();
+        reader.onload = function (event) {
+          //escuchamos su evento load y creamos un enlace en dom
+          save = document.createElement('a');
+          save.href = event.target.result;
+          save.target = '_blank';
+          //aquí le damos nombre al archivo
+          save.download = "log_"+title+"_"+ d.getDate() + "_" + (d.getMonth()+1) + "_" + d.getFullYear() +".csv";
+          try {
+            //creamos un evento click
+            clicEvent = new MouseEvent('click', {
+              'view': window,
+              'bubbles': true,
+              'cancelable': true
+            });
+          } catch (e) {
+            //si llega aquí es que probablemente implemente la forma antigua de crear un enlace
+            clicEvent = document.createEvent("MouseEvent");
+            clicEvent.click();
+          }
+          //disparamos el evento
+          save.dispatchEvent(clicEvent);
+          //liberamos el objeto window.URL
+          (window.URL || window.webkitURL).revokeObjectURL(save.href);
+        }
+        //leemos como url
+        reader.readAsDataURL(blob);
+      }else {
+        //el navegador no admite esta opción
+        alert("Su navegador no permite esta acción");
       }
-      //leemos como url
-      reader.readAsDataURL(blob);
-    }else {
-      //el navegador no admite esta opción
-      alert("Su navegador no permite esta acción");
-    }
-  }
+};
