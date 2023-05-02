@@ -926,12 +926,13 @@ export async function setUserPassword(): Promise<any> {
             "newPassword": `${newUser.temp}`
         })
 
-        if (newUser.newUser === true && (newUser.temp !== undefined || newUser.temp !== ''))
+        if (newUser.newUser === true && (newUser.temp !== undefined || newUser.temp !== '')){
             setPassword(raw)
             const pass = JSON.stringify({
                 "temp": ``,
             })
             updateEntity('User', newUser.id, pass)
+        }
     })
 }
 

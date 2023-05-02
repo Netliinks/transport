@@ -809,12 +809,13 @@ export const setUserPassword = async (SUser: any) => {
             "id": `${newUser.id}`,
             "newPassword": `${newUser.temp}`
         });
-        if (newUser.newUser === true && (newUser.temp !== undefined || newUser.temp !== ''))
+        if (newUser.newUser === true && (newUser.temp !== undefined || newUser.temp !== '')){
             setPassword(raw);
             const pass = JSON.stringify({
                 "temp": ``,
             })
             updateEntity('User', newUser.id, pass)
+        }
     });
   };
   export async function setRole(SUser: any) {
