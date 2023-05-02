@@ -9,6 +9,7 @@ import { Dashboard } from "../views/dashboard/dashboard.js"
 import { SignIn } from "../login.js"
 import { InterfaceElement } from "../types.js"
 import { Sidebar } from "./sidebar.js"
+import { ChangePassword } from "./changePassword/changePassword.js"
 
 export class RenderApplicationUI {
     private loginContainer: InterfaceElement = document.getElementById('login-container')
@@ -51,8 +52,8 @@ export class RenderApplicationUI {
                  </button>
                </div>
                <div class="user_settings" id="user-settings">
-                 <button class="btn btn_transparent btn_widder">Preferencias</button>
-                 <button class="btn btn_transparent btn_widder">Cambiar Contraseña</button>
+                 <!--<button class="btn btn_transparent btn_widder">Preferencias</button>-->
+                 <button class="btn btn_transparent btn_widder" id="change-password">Cambiar Contraseña</button>
                  <br>
                  <button class="btn btn_primary btn_widder" id="logout-button">Cerrar sesión</button>
                </div>
@@ -66,10 +67,16 @@ export class RenderApplicationUI {
         options.addEventListener('click', () => {
             const settingOptions: InterfaceElement = document.getElementById('user-settings')
 
+            const changePassword:InterfaceElement = document.getElementById('change-password');
 
             const logoutButton: InterfaceElement = document.getElementById('logout-button')
 
             settingOptions.classList.toggle("user_settings_visible")
+
+            changePassword.addEventListener("click", () => {
+                new ChangePassword().render();
+                //new CloseDialog().x(settingOptions);
+            });
 
             logoutButton.addEventListener("click", (): void => {
                 new SignIn().signOut()

@@ -186,6 +186,7 @@ export class SuperUsers {
                     }
                     else {
                         console.log('Las contraseñas no coinciden')
+                        alert('Las contraseñas no coinciden')
                     }
                 })
 

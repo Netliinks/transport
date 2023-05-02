@@ -186,6 +186,7 @@ export class Employees implements NUsers.IEmployees {
                     }
                     else {
                         console.log('Las contraseñas no coinciden')
+                        alert('Las contraseñas no coinciden')
                     }
                 })
 
