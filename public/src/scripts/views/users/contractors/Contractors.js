@@ -1,5 +1,5 @@
 // @filename: Contractors.ts
-import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo } from "../../../endpoints.js";
+import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, getFilterEntityData } from "../../../endpoints.js";
 import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail } from "../../../tools.js";
 import { Config } from "../../../Configs.js";
 import { tableLayout } from "./Layout.js";
@@ -380,7 +380,7 @@ export class Contractors {
                         "id": `${currentUserInfo.citadel.id}`
                     },
                     "department": {
-                        "id": `${currentUserInfo.deparment.id}`
+                        "id": `${currentUserInfo.department.id}`
                     },
                     "business": {
                         "id": `${currentUserInfo.business.id}`
@@ -393,6 +393,24 @@ export class Contractors {
                 const existEmail = await getVerifyEmail(_values.email.value);
                 if (existEmail == true) {
                     alert("¡Correo electrónico ya existe!");
+                }
+                else if (_values.firstName.value === '' || _values.firstName.value === undefined) {
+                    alert("¡Nombre vacío!");
+                }
+                else if (_values.lastName.value === '' || _values.lastName.value === undefined) {
+                    alert("¡Primer apellido vacío!");
+                }
+                else if (_values.secondLastName.value === '' || _values.secondLastName.value === undefined) {
+                    alert("¡Segundo apellido vacío!");
+                }
+                else if (_values.email.value === '' || _values.email.value === undefined) {
+                    alert("¡Correo vacío!");
+                }
+                else if (_values.dni.value === '' || _values.dni.value === undefined) {
+                    alert("DNI vacío!");
+                }
+                else if (_values.temporalPass.value === '' || _values.temporalPass.value === undefined) {
+                    alert("Clave vacío!");
                 }
                 else {
                     reg(contractorRaw);
@@ -797,26 +815,74 @@ export class Contractors {
     }
 }
 export async function setUserPassword() {
-    const users = await getEntitiesData('User');
-    const filterBySuperUsers = users.filter((data) => data.isSuper === false);
-    const FCustomer = filterBySuperUsers.filter((data) => `${data.customer?.id}` === `${customerId}`);
-    const filterByUserType = FCustomer.filter((data) => `${data.userType}`.includes('CONTRACTOR'));
-    const data = filterByUserType;
+    /*const users: any = await getEntitiesData('User')
+    const filterBySuperUsers: any = users.filter((data: any) => data.isSuper === false)
+    const FCustomer: any = filterBySuperUsers.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    const filterByUserType: any = FCustomer.filter((data: any) => `${data.userType}`.includes('CONTRACTOR'))
+    const data: any = filterByUserType*/
+    let raw = JSON.stringify({
+        "filter": {
+            "conditions": [
+                {
+                    "property": "isSuper",
+                    "operator": "=",
+                    "value": `${false}`
+                },
+                {
+                    "property": "customer.id",
+                    "operator": "=",
+                    "value": `${customerId}`
+                },
+                {
+                    "property": "userType",
+                    "operator": "=",
+                    "value": `CONTRACTOR`
+                }
+            ]
+        }
+    });
+    let data = await getFilterEntityData("User", raw);
     data.forEach((newUser) => {
         let raw = JSON.stringify({
             "id": `${newUser.id}`,
             "newPassword": `${newUser.temp}`
         });
-        if (newUser.newUser === true && newUser.temp !== undefined)
+        if (newUser.newUser === true && (newUser.temp !== undefined || newUser.temp !== ''))
             setPassword(raw);
+        const pass = JSON.stringify({
+            "temp": ``,
+        });
+        updateEntity('User', newUser.id, pass);
     });
 }
 export async function setRole() {
-    const users = await getEntitiesData('User');
-    const filterByNewUsers = users.filter((data) => data.newUser == true);
-    const FCustomer = filterByNewUsers.filter((data) => `${data.customer?.id}` === `${customerId}`);
-    const filterByUserType = FCustomer.filter((data) => `${data.userType}`.includes('CONTRACTOR'));
-    const data = filterByUserType;
+    /*const users: any = await getEntitiesData('User')
+    const filterByNewUsers: any = users.filter((data: any) => data.newUser == true)
+    const FCustomer: any = filterByNewUsers.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    const filterByUserType: any = FCustomer.filter((data: any) => `${data.userType}`.includes('CONTRACTOR'))
+    const data: any = filterByUserType*/
+    let raw = JSON.stringify({
+        "filter": {
+            "conditions": [
+                {
+                    "property": "newUser",
+                    "operator": "=",
+                    "value": `${true}`
+                },
+                {
+                    "property": "customer.id",
+                    "operator": "=",
+                    "value": `${customerId}`
+                },
+                {
+                    "property": "userType",
+                    "operator": "=",
+                    "value": `CONTRACTOR`
+                }
+            ]
+        }
+    });
+    let data = await getFilterEntityData("User", raw);
     data.forEach((newUser) => {
         let raw = JSON.stringify({
             "id": `${newUser.id}`,
