@@ -47,7 +47,7 @@ export const UIRightSidebar = `
     <div class="entity_editor_header">
       <div class="user_info">
         <div class="avatar"><i class="fa-regular fa-magnifying-glass"></i></div>
-        <h1 class="entity_editor_title">Detalles de <br><small>la nota</small></h1>
+        <h1 class="entity_editor_title">Detalles del <br><small>reporte</small></h1>
       </div>
 
       <button class="btn btn_close_editor" id="close"><i class="fa-solid fa-x"></i></button>
@@ -91,7 +91,7 @@ export const UIExportSidebar = `
 <div class="entity_editor_header">
   <div class="user_info">
     <div class="avatar"><i class="fa-regular fa-magnifying-glass"></i></div>
-    <h1 class="entity_editor_title">Exportar <br><small> notas</small></h1>
+    <h1 class="entity_editor_title">Exportar <br><small> reportes</small></h1>
   </div>
 
   <button class="btn btn_close_editor" id="close"><i class="fa-solid fa-x"></i></button>

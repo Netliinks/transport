@@ -559,7 +559,7 @@ export class Contractors {
                                 "id": `${currentUserInfo.citadel?.id}`
                             },
                             "department": {
-                                "id": `${currentUserInfo.deparment?.id}`
+                                "id": `${currentUserInfo.department?.id}`
                             },
                             "business": {
                                 "id": `${currentUserInfo.business.id}`

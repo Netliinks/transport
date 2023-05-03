@@ -97,7 +97,7 @@ export class Dashboard {
           </div>
         <!-- End news card -->
           <div class="notes">
-            <h1>Últimas notas</h1>
+            <h1>Últimas Reportes</h1>
               <table class="table">
                 <thead>
                   <tr>

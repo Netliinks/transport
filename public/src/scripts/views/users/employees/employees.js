@@ -494,10 +494,10 @@ export class Employees {
                 readFile(_fileHandler.files[0]);
             });
             async function readFile(file) {
-                const customer = await getEntitiesData('Customer');
-                const citadel = await getEntitiesData('Citadel');
-                const deparment = await getEntitiesData('Department');
-                const contractor = await getEntitiesData('Contractor');
+                /*const customer = await getEntitiesData('Customer')
+                const citadel = await getEntitiesData('Citadel')
+                const deparment = await getEntitiesData('Department')
+                const contractor = await getEntitiesData('Contractor')*/
                 const fileReader = new FileReader();
                 fileReader.readAsText(file);
                 fileReader.addEventListener('load', (e) => {
@@ -532,7 +532,7 @@ export class Employees {
                                 "id": `${currentUserInfo.citadel?.id}`
                             },
                             "department": {
-                                "id": `${currentUserInfo.deparment?.id}`
+                                "id": `${currentUserInfo.department?.id}`
                             },
                             "business": {
                                 "id": `${currentUserInfo.business.id}`
@@ -777,7 +777,7 @@ export class Employees {
             <div class="dialog dialog_danger">
               <div class="dialog_container">
                 <div class="dialog_header">
-                  <h2>¿Deseas eliminar este cliente?</h2>
+                  <h2>¿Deseas eliminar este empleado?</h2>
                 </div>
 
                 <div class="dialog_message">

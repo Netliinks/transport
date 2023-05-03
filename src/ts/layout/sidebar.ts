@@ -68,7 +68,7 @@ export class Sidebar {
               <div class="sidebar_subitems">
                 <div class="sidebar_subitem" id="render-notes">
                   <span class="sidebar_subitem_label">
-                    <i class="fa-regular fa-notes"></i> <div class="label">Notas</div>
+                    <i class="fa-regular fa-notes"></i> <div class="label">Reportes</div>
                   </span>
                 </div>
 
