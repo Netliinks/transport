@@ -847,13 +847,8 @@ export async function setUserPassword() {
             "id": `${newUser.id}`,
             "newPassword": `${newUser.temp}`
         });
-        if (newUser.newUser === true && (newUser.temp !== undefined || newUser.temp !== '')) {
+        if (newUser.newUser === true && (newUser.temp !== undefined || newUser.temp !== ''))
             setPassword(raw);
-            const pass = JSON.stringify({
-                "temp": ``,
-            });
-            updateEntity('User', newUser.id, pass);
-        }
     });
 }
 export async function setRole() {
@@ -865,6 +860,11 @@ export async function setRole() {
     let raw = JSON.stringify({
         "filter": {
             "conditions": [
+                {
+                    "property": "isSuper",
+                    "operator": "=",
+                    "value": `${false}`
+                },
                 {
                     "property": "newUser",
                     "operator": "=",
@@ -890,13 +890,15 @@ export async function setRole() {
             "roleCode": 'app_clientes'
         });
         let updateNewUser = JSON.stringify({
-            "newUser": false
+            "newUser": false,
+            "temp": ''
         });
         if (newUser.newUser == true) {
-            setUserRole(raw);
-            setTimeout(() => {
-                updateEntity('User', newUser.id, updateNewUser);
-            }, 1000);
+            setUserRole(raw).then((res) => {
+                setTimeout(() => {
+                    updateEntity('User', newUser.id, updateNewUser);
+                }, 1000);
+            });
         }
     });
 }
