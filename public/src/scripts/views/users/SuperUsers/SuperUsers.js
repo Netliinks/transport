@@ -407,7 +407,7 @@ export class SuperUsers {
                 .then((res) => {
                 sendMail(mailRaw);
                 setTimeout(async () => {
-                    let data = await getUsers(true);
+                    let data = await getUsers(SUser);
                     const tableBody = document.getElementById('datatable-body');
                     const container = document.getElementById('entity-editor-container');
                     new CloseDialog().x(container);
@@ -605,15 +605,11 @@ export class SuperUsers {
                 updateEntity('User', entityId, raw)
                     .then((res) => {
                     setTimeout(async () => {
-                        let tableBody;
-                        let container;
-                        let data;
-                        data = await getUsers(SUser);
-                        new CloseDialog()
-                            .x(container =
-                            document.getElementById('entity-editor-container'));
-                        this.load(tableBody
-                            = document.getElementById('datatable-body'), currentPage, data);
+                        const tableBody = document.getElementById('datatable-body');
+                        const container = document.getElementById('entity-editor-container');
+                        let data = await getUsers(SUser);
+                        new CloseDialog().x(container);
+                        this.load(tableBody, currentPage, data);
                     }, 100);
                 });
             };
@@ -701,12 +697,15 @@ export class SuperUsers {
         }, false);
     }
 }
-export const setNewPassword = async () => {
-    const users = await getEntitiesData('User');
-    const FNewUsers = users.filter((data) => data.isSuper === false);
-    FNewUsers.forEach((newUser) => {
-    });
-};
+/*export const setNewPassword: any = async (): Promise<void> => {
+    const users: any = await getEntitiesData('User')
+    const FNewUsers: any = users.filter((data: any) => data.isSuper === false)
+
+    FNewUsers.forEach((newUser: any) => {
+
+    })
+
+}*/
 export const setUserPassword = async (SUser) => {
     /*const users = await getEntitiesData('User');
     const filterBySuperUsers = users.filter((data: any) => data.isSuper === SUser);

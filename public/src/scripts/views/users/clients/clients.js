@@ -822,7 +822,7 @@ export class Clients {
                                                                         ${randomKey.key}\nNo responder a este correo.\nSaludos.\n\n\nNetliinks S.A.`
                         });
                         updateRaw = JSON.stringify({
-                            "username": inputMail.value,
+                            "email": inputMail.value,
                             "isSuper": true,
                             "hashSuper": randomKey.key,
                             "verifiedSuper": false

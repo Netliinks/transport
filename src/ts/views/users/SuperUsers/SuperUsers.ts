@@ -405,10 +405,9 @@ export class SuperUsers {
                 .then((res) => {
                     sendMail(mailRaw)
                     setTimeout(async () => {
-                        let data = await getUsers(true)
+                        let data = await getUsers(SUser)
                         const tableBody: InterfaceElement = document.getElementById('datatable-body')
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
-
                         new CloseDialog().x(container)
                         this.load(tableBody, currentPage, data)
                     }, 1000)
@@ -649,15 +648,11 @@ export class SuperUsers {
               updateEntity('User', entityId, raw)
                   .then((res) => {
                   setTimeout(async () => {
-                      let tableBody;
-                      let container;
-                      let data;
-                      data = await getUsers(SUser);
-                      new CloseDialog()
-                          .x(container =
-                          document.getElementById('entity-editor-container'));
-                      this.load(tableBody
-                          = document.getElementById('datatable-body'), currentPage, data);
+                      const tableBody = document.getElementById('datatable-body');
+                      const container = document.getElementById('entity-editor-container');
+                      let data = await getUsers(SUser);
+                      new CloseDialog().x(container);
+                      this.load(tableBody, currentPage, data);
                   }, 100);
               });
           };
@@ -767,7 +762,7 @@ export class SuperUsers {
 }
 
 
-export const setNewPassword: any = async (): Promise<void> => {
+/*export const setNewPassword: any = async (): Promise<void> => {
     const users: any = await getEntitiesData('User')
     const FNewUsers: any = users.filter((data: any) => data.isSuper === false)
 
@@ -775,8 +770,8 @@ export const setNewPassword: any = async (): Promise<void> => {
 
     })
 
-}
-export const setUserPassword = async (SUser: any) => {
+}*/
+export const setUserPassword = async (SUser: boolean) => {
     /*const users = await getEntitiesData('User');
     const filterBySuperUsers = users.filter((data: any) => data.isSuper === SUser);
     const FCustomer: any = filterBySuperUsers.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
@@ -813,7 +808,7 @@ export const setUserPassword = async (SUser: any) => {
             setPassword(raw);
     });
   };
-  export async function setRole(SUser: any) {
+  export async function setRole(SUser: boolean) {
     /*const users = await getEntitiesData('User');
     const filterByNewUsers = users.filter((data: any) => data.newUser === SUser);
     const FCustomer: any = filterByNewUsers.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
