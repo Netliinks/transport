@@ -10,18 +10,21 @@ import { UITableSkeletonTemplate } from "./Template.js"
 // Local configs
 const tableRows = Config.tableRows
 let currentPage = Config.currentPage
-const pageName = 'Eventos'
-const customerId = localStorage.getItem('customer_id');
+const pageName = 'Bitácora'
+const customerId = localStorage.getItem('customer_id')
 const getEvents = async (): Promise<void> => {
     const eventsRaw = await getEntitiesData('Notification')
-    const events = eventsRaw.filter((data: any) => `${data.customer?.id}` === `${customerId}`);
-    const removeVisitsFromList: any = events.filter((data: any) => data.notificationType.name !== "Visita")
-    const removeVehicularFromList: any = removeVisitsFromList.filter((data: any) => data.notificationType.name !== 'Vehicular')
-    const removeNoteFromList = removeVehicularFromList.filter((data: any) => data.notificationType.name !== 'Nota')
-    return removeNoteFromList
+    const events = eventsRaw.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    const removeOtroFromList = events.filter((data: any) => data.notificationType.name !== "Otro")
+    const removeFuegoFromList = removeOtroFromList.filter((data: any) => data.notificationType.name !== '🔥 Fuego')
+    const removeCaidoFromList = removeFuegoFromList.filter((data: any) => data.notificationType.name !== '🚨 Hombre Caído')
+    const removeIntrusionFromList = removeCaidoFromList.filter((data: any) => data.notificationType.name !== '🚪 Intrusión')
+    const removeRoboFromList = removeIntrusionFromList.filter((data: any) => data.notificationType.name !== '🏚 Robo')
+    const removePanicoFromList = removeRoboFromList.filter((data: any) => data.notificationType.name !== 'Botón Pánico')
+    return removePanicoFromList
 }
 
-export class Events {
+export class Binnacle {
     private dialogContainer: InterfaceElement = document.getElementById('app-dialogs')
     private siebarDialogContainer: InterfaceElement = document.getElementById('entity-editor-container')
     private appContainer: InterfaceElement = document.getElementById('datatable-container')
@@ -232,7 +235,7 @@ export class Events {
                         }
                         
                     }
-                    generateCsv(rows, "Eventos");
+                    generateCsv(rows, "Bitácora");
                 
                 
             });
@@ -267,7 +270,7 @@ export class Events {
 
             button.addEventListener('click', (): void => {
                 currentPage = page
-                new Events().load(tableBody, page, items)
+                new Binnacle().load(tableBody, page, items)
             })
 
             return button

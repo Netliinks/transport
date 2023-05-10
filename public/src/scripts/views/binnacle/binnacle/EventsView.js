@@ -14,8 +14,7 @@ const getEvents = async () => {
     const events = eventsRaw.filter((data) => `${data.customer?.id}` === `${customerId}`);
     const removeVisitsFromList = events.filter((data) => data.notificationType.name !== "Visita");
     const removeVehicularFromList = removeVisitsFromList.filter((data) => data.notificationType.name !== 'Vehicular');
-    const removeNoteFromList = removeVehicularFromList.filter((data) => data.notificationType.name !== 'Nota');
-    return removeNoteFromList;
+    return removeVehicularFromList;
 };
 export class Events {
     constructor() {
