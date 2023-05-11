@@ -74,6 +74,15 @@ export const UIRightSidebar = `
 <div class="entity_editor_body">
   <div class="tag"><i class="label active_label"><i class="fa-solid fa-circle-dot"></i> Estado:</i> <span class="tag_gray" id="visit-status"></span></div>
   <br><br>
+
+  <div id="visit-picture-placeholder" class="galeria">
+    <div id = "image1">
+    <div id = "camera1">
+    <div id = "camera2">
+    <div id = "camera3">
+    <div id = "camera4">
+  </div>
+
   <div class="material_input">
     <input type="text" id="visit-name" autocomplete="none" class="input_filled">
     <label for="visit-name"><i class="fa-solid fa-user"></i> Nombre</label>
