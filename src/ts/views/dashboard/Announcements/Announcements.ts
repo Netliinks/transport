@@ -93,7 +93,21 @@ export class Announcements {
         const _announcementEndTime: InterfaceElement = document.getElementById('announcement-expirationTime')
             
         _announcementPicture.onchange = async(event: any) => {
-            
+            /*let rawImage: File = _announcementPicture.files[0]
+            let size = rawImage.size
+            let sizekiloBytes = size / 1024
+            let sizeMegaBytes = sizekiloBytes / 1024
+            let _userInfo: any = await userInfo
+            let currentUserInfo = await getEntityData('User', `${_userInfo.attributes.id}`)
+            if(sizeMegaBytes > currentUserInfo.imageSize){
+                alert(`Archivo excedido de ${currentUserInfo.business.imageSize} mb (${Number(sizeMegaBytes.toFixed(2))} mb).`);
+            }else{
+                console.log(size)
+                console.log(sizekiloBytes)
+                console.log(sizeMegaBytes)
+                console.log(currentUserInfo.business.imageSize)
+                console.log(Number(sizeMegaBytes.toFixed(2)))
+            }*/
           }
         _buttonPostAnnouncement.addEventListener('click', async (): Promise<void> => {
             let _userInfo: any = await userInfo
