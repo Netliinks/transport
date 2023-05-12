@@ -142,6 +142,10 @@ export const UIRightSidebar = `
         <input type="text" id="marking-end-guard-name" class="input_filled" readonly>
     </div>
     <br>
+    <h3>Galería</h3>
+
+    <div id="galeria">
+    </div>
 </div>
 </div>
 `

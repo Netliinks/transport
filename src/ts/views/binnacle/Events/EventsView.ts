@@ -1,7 +1,7 @@
 // @filename: EvetnsView.ts
 
 import { Config } from "../../../Configs.js"
-import { getEntityData, getEntitiesData, getUserInfo } from "../../../endpoints.js"
+import { getEntityData, getEntitiesData, getUserInfo, getFile } from "../../../endpoints.js"
 import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver, generateCsv  } from "../../../tools.js"
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
 import { UIContentLayout, UIRightSidebar } from "./Layout.js"
@@ -136,6 +136,7 @@ export class Events {
             })
             // Event details
             const _details: InterfaceElementCollection = {
+                picture: document.getElementById('event-picture-placeholder'),
                 title: document.getElementById('event-title'),
                 content: document.getElementById('event-content'),
                 author: document.getElementById('event-author'),
@@ -154,7 +155,12 @@ export class Events {
             _details.authorId.value = event.createdBy
             _details.date.value = event.creationDate
             _details.time.value = event.creationTime
-
+            if (event.attachment !== undefined) {
+                const image = await getFile(event.attachment)
+                _details.picture.innerHTML = `
+                    <img id="note-picture" width="100%" class="note_picture margin_b_8" src="${image}">
+                `
+            }
             this.closeRightSidebar()
         }
     }

@@ -109,11 +109,7 @@ export class Visits {
                 let entityData = await getEntityData('Visit', entity);
                 //console.log(entityData)
                 renderRightSidebar(UIRightSidebar);
-                const picture = document.getElementById('image1');
-                const picture1 = document.getElementById('camera1');
-                const picture2 = document.getElementById('camera2');
-                const picture3 = document.getElementById('camera3');
-                const picture4 = document.getElementById('camera4');
+                const controlImages = document.getElementById('galeria');
                 const visitName = document.getElementById('visit-name');
                 visitName.value = `${entityData.firstName} ${entityData.firstLastName}`;
                 const visitReason = document.getElementById('visit-reason');
@@ -148,46 +144,60 @@ export class Visits {
                 egressGuardName.value = `${entityData?.egressIssuedId?.firstName ?? ''} ${entityData?.egressIssuedId?.lastName ?? ''}`;
                 //console.log(entityData.citadel.name)
                 if (entityData?.image !== undefined || entityData?.camera1 !== undefined || entityData?.camera2 !== undefined || entityData?.camera3 !== undefined || entityData?.camera4 !== undefined) {
-                    let image;
-                    let camera1;
-                    let camera2;
-                    let camera3;
-                    let camera4;
+                    let images = [];
                     if (entityData?.image !== undefined) {
-                        image = await getFile(entityData.image);
-                        picture.picture.innerHTML = `
-                        <input type="radio" name="navegacion" id="_1" checked>
-                        <img src="${image} width="260" height="300"/>
-                    `;
+                        let details = {
+                            "image": `${await getFile(entityData.image)}`,
+                            "description": "Adjunto",
+                            "icon": "mobile"
+                        };
+                        images.push(details);
                     }
                     if (entityData?.camera1 !== undefined) {
-                        camera1 = await getFile(entityData.camera1);
-                        picture1.picture.innerHTML = `
-                        <input type="radio" name="navegacion" id="_2">
-                        <img src="${camera1} width="260" height="300"/>
-                    `;
+                        let details = {
+                            "image": `${await getFile(entityData.camera1)}`,
+                            "description": "Cámara 1",
+                            "icon": "camera"
+                        };
+                        images.push(details);
                     }
                     if (entityData?.camera2 !== undefined) {
-                        camera2 = await getFile(entityData.camera2);
-                        picture1.picture.innerHTML = `
-                        <input type="radio" name="navegacion" id="_3">
-                        <img src="${camera2} width="260" height="300"/>
-                    `;
+                        let details = {
+                            "image": `${await getFile(entityData.camera2)}`,
+                            "description": "Cámara 2",
+                            "icon": "camera"
+                        };
+                        images.push(details);
                     }
                     if (entityData?.camera3 !== undefined) {
-                        camera3 = await getFile(entityData.camera3);
-                        picture1.picture.innerHTML = `
-                        <input type="radio" name="navegacion" id="_4">
-                        <img src="${camera3} width="260" height="300"/>
-                    `;
+                        let details = {
+                            "image": `${await getFile(entityData.camera3)}`,
+                            "description": "Cámara 3",
+                            "icon": "camera"
+                        };
+                        images.push(details);
                     }
                     if (entityData?.camera4 !== undefined) {
-                        camera4 = await getFile(entityData.camera4);
-                        picture1.picture.innerHTML = `
-                        <input type="radio" name="navegacion" id="_5">
-                        <img src="${camera4} width="260" height="300"/>
+                        let details = {
+                            "image": `${await getFile(entityData.camera4)}`,
+                            "description": "Cámara 4",
+                            "icon": "camera"
+                        };
+                        images.push(details);
+                    }
+                    for (let i = 0; i < images.length; i++) {
+                        controlImages.innerHTML += `
+                        <label><i class="fa-solid fa-${images[i].icon}"></i> ${images[i].description}</label>
+                        <img width="100%" class="note_picture margin_b_8" src="${images[i].image}">
                     `;
                     }
+                }
+                else {
+                    controlImages.innerHTML += `
+                <div class="input_detail">
+                    <label><i class="fa-solid fa-info-circle"></i> No hay imágenes</label>
+                </div>
+                `;
                 }
                 this.closeRightSidebar();
                 drawTagsIntoTables();

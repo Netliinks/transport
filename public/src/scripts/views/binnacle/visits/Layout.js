@@ -75,14 +75,6 @@ export const UIRightSidebar = `
   <div class="tag"><i class="label active_label"><i class="fa-solid fa-circle-dot"></i> Estado:</i> <span class="tag_gray" id="visit-status"></span></div>
   <br><br>
 
-  <div id="visit-picture-placeholder" class="galeria">
-    <div id = "image1">
-    <div id = "camera1">
-    <div id = "camera2">
-    <div id = "camera3">
-    <div id = "camera4">
-  </div>
-
   <div class="material_input">
     <input type="text" id="visit-name" autocomplete="none" class="input_filled">
     <label for="visit-name"><i class="fa-solid fa-user"></i> Nombre</label>
@@ -164,6 +156,11 @@ export const UIRightSidebar = `
     <div class="input_detail">
         <label for="egress-guard-name"><i class="fa-solid fa-user-police"></i></label>
         <input type="text" id="egress-guard-name" class="input_filled" readonly>
+    </div>
+    <br>
+    <h3>Galería</h3>
+
+    <div id="galeria">
     </div>
 </div>
 <!-- END EDITOR BODY -->
