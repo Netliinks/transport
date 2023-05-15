@@ -76,26 +76,21 @@ export class Announcements {
         const _announcementInitTime = document.getElementById('announcement-visualizationTime');
         const _announcementEndDate = document.getElementById('announcement-expirationDate');
         const _announcementEndTime = document.getElementById('announcement-expirationTime');
+        let _userInfo = await userInfo;
+        let currentUserInfo = await getEntityData('User', `${_userInfo.attributes.id}`);
         _announcementPicture.onchange = async (event) => {
-            /*let rawImage: File = _announcementPicture.files[0]
-            let size = rawImage.size
-            let sizekiloBytes = size / 1024
-            let sizeMegaBytes = sizekiloBytes / 1024
-            let _userInfo: any = await userInfo
-            let currentUserInfo = await getEntityData('User', `${_userInfo.attributes.id}`)
-            if(sizeMegaBytes > currentUserInfo.imageSize){
+            let rawImage = _announcementPicture.files[0];
+            let size = rawImage.size;
+            let sizekiloBytes = size / 1024;
+            let sizeMegaBytes = sizekiloBytes / 1024;
+            if (sizeMegaBytes > currentUserInfo.business.imageSize) {
                 alert(`Archivo excedido de ${currentUserInfo.business.imageSize} mb (${Number(sizeMegaBytes.toFixed(2))} mb).`);
-            }else{
-                console.log(size)
-                console.log(sizekiloBytes)
-                console.log(sizeMegaBytes)
-                console.log(currentUserInfo.business.imageSize)
-                console.log(Number(sizeMegaBytes.toFixed(2)))
-            }*/
+                _announcementPicture.value = '';
+            }
         };
         _buttonPostAnnouncement.addEventListener('click', async () => {
-            let _userInfo = await userInfo;
-            let currentUserInfo = await getEntityData('User', `${_userInfo.attributes.id}`);
+            //let _userInfo: any = await userInfo
+            //let currentUserInfo = await getEntityData('User', `${_userInfo.attributes.id}`)
             const _date = new Date();
             // TIME
             const _hours = _date.getHours();
