@@ -24,171 +24,120 @@ export const renderYearlyChart = async () => {
                     "property": "creationYear",
                     "operator": "=",
                     "value": `${_year}`
-                },
-                {
-                    "property": "lastUpdateYear",
-                    "operator": "=",
-                    "value": `${_year}`
                 }
             ]
         }
     });
     let statistics = await getFilterEntityData("Statistics_", raw);
-    let arryVisitsGuards = [];
-    let arryVisitsClients = [];
     let arryVisits = [];
     let arryMarcations = [];
+    let contadorVisitas = {
+        Ene: 0,
+        Feb: 0,
+        Mar: 0,
+        Abr: 0,
+        May: 0,
+        Jun: 0,
+        Jul: 0,
+        Ago: 0,
+        Sep: 0,
+        Oct: 0,
+        Nov: 0,
+        Dic: 0
+    };
+    let contadorMarcaciones = {
+        Ene: 0,
+        Feb: 0,
+        Mar: 0,
+        Abr: 0,
+        May: 0,
+        Jun: 0,
+        Jul: 0,
+        Ago: 0,
+        Sep: 0,
+        Oct: 0,
+        Nov: 0,
+        Dic: 0
+    };
     for (let i = 0; i < statistics.length; i++) {
         let data = statistics[i];
         switch (data.creationMonth) {
             case 1:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[0] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[0] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[0] = data.totalResult ?? 0;
-                }
-                arryVisits[0] = (arryVisitsGuards[0] ? arryVisitsGuards[0] : 0) + (arryVisitsClients[0] ? arryVisitsClients[0] : 0);
+                contadorMarcaciones.Ene += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.Ene += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             case 2:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[1] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[1] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[1] = data.totalResult ?? 0;
-                }
-                arryVisits[1] = (arryVisitsGuards[1] ? arryVisitsGuards[1] : 0) + (arryVisitsClients[1] ? arryVisitsClients[1] : 0);
+                contadorMarcaciones.Feb += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.Feb += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             case 3:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[2] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[2] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[2] = data.totalResult ?? 0;
-                }
-                arryVisits[2] = (arryVisitsGuards[2] ? arryVisitsGuards[2] : 0) + (arryVisitsClients[2] ? arryVisitsClients[2] : 0);
+                contadorMarcaciones.Mar += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.Mar += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             case 4:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[3] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[3] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[3] = data.totalResult ?? 0;
-                }
-                arryVisits[3] = (arryVisitsGuards[3] ? arryVisitsGuards[3] : 0) + (arryVisitsClients[3] ? arryVisitsClients[3] : 0);
+                contadorMarcaciones.Abr += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.Abr += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             case 5:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[4] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[4] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[4] = data.totalResult ?? 0;
-                }
-                arryVisits[4] = (arryVisitsGuards[4] ? arryVisitsGuards[4] : 0) + (arryVisitsClients[4] ? arryVisitsClients[4] : 0);
+                contadorMarcaciones.May += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.May += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             case 6:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[5] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[5] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[5] = data.totalResult ?? 0;
-                }
-                arryVisits[5] = (arryVisitsGuards[5] ? arryVisitsGuards[5] : 0) + (arryVisitsClients[5] ? arryVisitsClients[5] : 0);
+                contadorMarcaciones.Jun += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.Jun += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             case 7:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[6] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[6] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[6] = data.totalResult ?? 0;
-                }
-                arryVisits[6] = (arryVisitsGuards[6] ? arryVisitsGuards[6] : 0) + (arryVisitsClients[6] ? arryVisitsClients[6] : 0);
+                contadorMarcaciones.Jul += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.Jul += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             case 8:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[7] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[7] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[7] = data.totalResult ?? 0;
-                }
-                arryVisits[7] = (arryVisitsGuards[7] ? arryVisitsGuards[7] : 0) + (arryVisitsClients[7] ? arryVisitsClients[7] : 0);
+                contadorMarcaciones.Ago += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.Ago += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             case 9:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[8] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[8] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[8] = data.totalResult ?? 0;
-                }
-                arryVisits[8] = (arryVisitsGuards[8] ? arryVisitsGuards[8] : 0) + (arryVisitsClients[8] ? arryVisitsClients[8] : 0);
+                contadorMarcaciones.Sep += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.Sep += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             case 10:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[9] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[9] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[9] = data.totalResult ?? 0;
-                }
-                arryVisits[9] = (arryVisitsGuards[9] ? arryVisitsGuards[9] : 0) + (arryVisitsClients[9] ? arryVisitsClients[9] : 0);
+                contadorMarcaciones.Oct += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.Oct += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             case 11:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[10] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[10] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[10] = data.totalResult ?? 0;
-                }
-                arryVisits[10] = (arryVisitsGuards[10] ? arryVisitsGuards[10] : 0) + (arryVisitsClients[10] ? arryVisitsClients[10] : 0);
+                contadorMarcaciones.Nov += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.Nov += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             case 12:
-                if (data.type == 'MarcConfir') {
-                    arryMarcations[11] = data.totalResult ? data.totalResult : 0;
-                }
-                if (data.type == 'VisitGuardConfir') {
-                    arryVisitsGuards[11] = data.totalResult ?? 0;
-                }
-                if (data.type == 'VisitClientConfir') {
-                    arryVisitsClients[11] = data.totalResult ?? 0;
-                }
-                arryVisits[11] = (arryVisitsGuards[11] ? arryVisitsGuards[11] : 0) + (arryVisitsClients[11] ? arryVisitsClients[11] : 0);
+                contadorMarcaciones.Dic += data.totalIngressMarcation ? data.totalIngressMarcation : 0;
+                contadorVisitas.Dic += ((data.totalIngressVisitGuard ? data.totalIngressVisitGuard : 0) + (data.totalIngressVisitClient ? data.totalIngressVisitClient : 0));
                 break;
             default:
                 break;
         }
     }
+    arryVisits.push(contadorVisitas.Ene);
+    arryVisits.push(contadorVisitas.Feb);
+    arryVisits.push(contadorVisitas.Mar);
+    arryVisits.push(contadorVisitas.Abr);
+    arryVisits.push(contadorVisitas.May);
+    arryVisits.push(contadorVisitas.Jun);
+    arryVisits.push(contadorVisitas.Jul);
+    arryVisits.push(contadorVisitas.Ago);
+    arryVisits.push(contadorVisitas.Sep);
+    arryVisits.push(contadorVisitas.Oct);
+    arryVisits.push(contadorVisitas.Nov);
+    arryVisits.push(contadorVisitas.Dic);
+    arryMarcations.push(contadorMarcaciones.Ene);
+    arryMarcations.push(contadorMarcaciones.Feb);
+    arryMarcations.push(contadorMarcaciones.Mar);
+    arryMarcations.push(contadorMarcaciones.Abr);
+    arryMarcations.push(contadorMarcaciones.May);
+    arryMarcations.push(contadorMarcaciones.Jun);
+    arryMarcations.push(contadorMarcaciones.Jul);
+    arryMarcations.push(contadorMarcaciones.Ago);
+    arryMarcations.push(contadorMarcaciones.Sep);
+    arryMarcations.push(contadorMarcaciones.Oct);
+    arryMarcations.push(contadorMarcaciones.Nov);
+    arryMarcations.push(contadorMarcaciones.Dic);
     // @ts-ignore
     new Chart(chart, {
         type: 'bar',
@@ -228,7 +177,7 @@ export const renderYearlyChart = async () => {
                 },
                 title: {
                     display: true,
-                    text: 'Registros de 2023'
+                    text: `Registros de ${_year}`
                 }
             },
             scales: {
