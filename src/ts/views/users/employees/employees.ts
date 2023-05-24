@@ -393,7 +393,7 @@ export class Employees implements NUsers.IEmployees {
                     "phone": `${_values.phoneNumer.value}`,
                     "dni": `${_values.dni.value}`,
                     "userType": "EMPLOYEE",
-                    "username": `${_values.username.value}@${currentUserInfo.customer.name.toLowerCase()}.com`,
+                    "username": `${_values.username.value}@${currentUserInfo.customer.name.toLowerCase().replace(/\s+/g, '')}.com`,
                     "createVisit": `${_values.allowVisits.checked ? true : false}`
                 })
 
@@ -584,7 +584,7 @@ export class Employees implements NUsers.IEmployees {
                             "phone": `${userData[3]?.replace(/\n/g, '')}`,
                             "dni": `${userData[4]?.replace(/\n/g, '')}`,
                             "userType": "EMPLOYEE",
-                            "username": `${userData[0]?.toLowerCase().replace(/\n/g, '')}.${userData[1]?.toLowerCase().replace(/\n/g, '')}@${currentUserInfo.customer.name.toLowerCase()}.com`,
+                            "username": `${userData[0]?.toLowerCase().replace(/\n/g, '')}.${userData[1]?.toLowerCase().replace(/\n/g, '')}@${currentUserInfo.customer.name.toLowerCase().replace(/\s+/g, '')}.com`,
                             "createVisit": false
                         })
 
