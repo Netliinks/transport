@@ -275,6 +275,7 @@ export class Clients {
                     "lastName": `${inputsCollection.lastName.value}`,
                     "secondLastName": `${inputsCollection.secondLastName.value}`,
                     "isSuper": false,
+                    "newUser": true,
                     "dni": `${inputsCollection.dni.value}`,
                     "email": `${inputsCollection.email.value}`,
                     "temp": `${inputsCollection.temporalPass.value}`,
@@ -287,17 +288,17 @@ export class Clients {
                     "contractor": {
                         "id": `${currentUserInfo.contractor.id}`,
                     },
-                    "business": {
-                        "id": `${currentUserInfo.business.id}`
-                    },
-                    "department": {
-                        "id": `${currentUserInfo.department.id}`
-                    },
                     "customer": {
                         "id": `${customerId}`
                     },
                     "citadel": {
-                        "id": `${currentUserInfo.citadel.id}}`
+                        "id": `${currentUserInfo.citadel.id}`
+                    },
+                    "business":{
+                        "id": `${currentUserInfo.business.id}`
+                    },
+                    "department":{
+                      "id": `${currentUserInfo.department.id}`
                     },
                     "phone": `${inputsCollection.phoneNumer.value}`,
                     "userType": "CUSTOMER",
@@ -435,15 +436,15 @@ export class Clients {
                 //const citadel = await getEntitiesData('Citadel');
                 //const deparment = await getEntitiesData('Department');
                 //const contractor = await getEntitiesData('Contractor');
-                const fileReader = new FileReader();
-                fileReader.readAsText(file);
+                const fileReader = new FileReader()
+                fileReader.readAsText(file)
                 fileReader.addEventListener('load', (e: any) => {
-                    let result = e.srcElement.result;
-                    let resultSplit = result.split('\r');
-                    let rawFile;
-                    let elem: any = [];
-                    for (let i = 1; i < resultSplit.length; i++) {
-                        let userData = resultSplit[i].split(';');
+                    let result = e.srcElement.result
+                    let resultSplit = result.split('\r')
+                    let rawFile: string
+                    let elem: any = []
+                    for (let i = 1; i < resultSplit.length-1; i++) {
+                        let userData = resultSplit[i].split(';')
                         rawFile = JSON.stringify({
                             "lastName": `${userData[1]?.replace(/\n/g, '')}`,
                             "secondLastName": `${userData[2]?.replace(/\n/g, '')}`,
@@ -479,7 +480,7 @@ export class Clients {
                             "username": `${userData[0]?.toLowerCase().replace(/\n/g, '')}.${userData[1]?.toLowerCase().replace(/\n/g, '')}@${currentUserInfo.customer.name.toLowerCase().replace(/\s+/g, '')}.com`,
                             "createVisit": false
                         });
-                        elem.push(rawFile);
+                        elem.push(rawFile)
                     }
                     const importToBackend: InterfaceElement = document.getElementById('button-import');
                     importToBackend.addEventListener('click', () => {
@@ -487,12 +488,12 @@ export class Clients {
                             registerEntity(el, 'User')
                                 .then((res) => {
                                 setTimeout(async () => {
-                                    let data = await getUsers();
-                                    const tableBody = document.getElementById('datatable-body');
-                                    const container = document.getElementById('entity-editor-container');
-                                    new CloseDialog().x(container);
-                                    new Clients().load(tableBody, currentPage, data);
-                                }, 1000);
+                                    let data = await getUsers()
+                                    const tableBody = document.getElementById('datatable-body')
+                                    const container = document.getElementById('entity-editor-container')
+                                    new CloseDialog().x(container)
+                                    new Clients().load(tableBody, currentPage, data)
+                                }, 1000)
                             });
                         });
                     });

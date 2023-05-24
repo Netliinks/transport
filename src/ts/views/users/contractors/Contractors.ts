@@ -356,6 +356,7 @@ export class Contractors {
                     "lastName": `${_values.lastName.value}`,
                     "secondLastName": `${_values.secondLastName.value}`,
                     "isSuper": false,
+                    "newUser": true,
                     "email": `${_values.email.value}`,
                     "temp": `${_values.temporalPass.value}`,
                     "isWebUser": false,
@@ -482,7 +483,7 @@ export class Contractors {
                                     <i class="fa-regular fa-up-from-line"></i>
                                 </div>
 
-                                <h1 class="entity_editor_title">Importar <br> <small>Empleados</small></h1>
+                                <h1 class="entity_editor_title">Importar <br> <small>Contratistas</small></h1>
                             </div>
 
                             <button class="btn btn_close_editor" id="close"><i class="fa-solid fa-x"></i></button>

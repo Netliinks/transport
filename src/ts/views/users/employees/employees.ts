@@ -365,6 +365,7 @@ export class Employees implements NUsers.IEmployees {
                     "lastName": `${_values.lastName.value}`,
                     "secondLastName": `${_values.secondLastName.value}`,
                     "isSuper": false,
+                    "newUser": true,
                     "email": `${_values.email.value}`,
                     "temp": `${_values.temporalPass.value}`,
                     "isWebUser": false,

@@ -277,6 +277,7 @@ export class Clients {
                     "lastName": `${inputsCollection.lastName.value}`,
                     "secondLastName": `${inputsCollection.secondLastName.value}`,
                     "isSuper": false,
+                    "newUser": true,
                     "dni": `${inputsCollection.dni.value}`,
                     "email": `${inputsCollection.email.value}`,
                     "temp": `${inputsCollection.temporalPass.value}`,
@@ -289,17 +290,17 @@ export class Clients {
                     "contractor": {
                         "id": `${currentUserInfo.contractor.id}`,
                     },
+                    "customer": {
+                        "id": `${customerId}`
+                    },
+                    "citadel": {
+                        "id": `${currentUserInfo.citadel.id}`
+                    },
                     "business": {
                         "id": `${currentUserInfo.business.id}`
                     },
                     "department": {
                         "id": `${currentUserInfo.department.id}`
-                    },
-                    "customer": {
-                        "id": `${customerId}`
-                    },
-                    "citadel": {
-                        "id": `${currentUserInfo.citadel.id}}`
                     },
                     "phone": `${inputsCollection.phoneNumer.value}`,
                     "userType": "CUSTOMER",
@@ -410,7 +411,7 @@ export class Clients {
                     let resultSplit = result.split('\r');
                     let rawFile;
                     let elem = [];
-                    for (let i = 1; i < resultSplit.length; i++) {
+                    for (let i = 1; i < resultSplit.length - 1; i++) {
                         let userData = resultSplit[i].split(';');
                         rawFile = JSON.stringify({
                             "lastName": `${userData[1]?.replace(/\n/g, '')}`,
