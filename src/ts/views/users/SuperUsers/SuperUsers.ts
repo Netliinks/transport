@@ -697,12 +697,19 @@ export class SuperUsers {
 
                 deleteButton.onclick = () => {
                     deleteEntity('User', entityId)
-                    new CloseDialog().x(dialogContent)
-                    this.render()
+                    .then((res) => {
+                        setTimeout(async () => {
+                            let data = await getUsers(SUser);
+                            const tableBody = document.getElementById('datatable-body');
+                            new CloseDialog().x(dialogContent);
+                            new SuperUsers().load(tableBody, currentPage, data);
+                        }, 1000)
+                    })
                 }
 
                 cancelButton.onclick = () => {
                     new CloseDialog().x(dialogContent)
+                    this.render()
                 }
             })
         })

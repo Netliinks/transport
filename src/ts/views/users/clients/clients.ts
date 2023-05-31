@@ -817,12 +817,19 @@ export class Clients {
 
                 deleteButton.onclick = () => {
                     deleteEntity('User', entityId)
-                    new CloseDialog().x(dialogContent)
-                    this.render()
+                    .then((res) => {
+                        setTimeout(async () => {
+                            let data = await getUsers();
+                            const tableBody = document.getElementById('datatable-body');
+                            new CloseDialog().x(dialogContent);
+                            new Clients().load(tableBody, currentPage, data);
+                        }, 1000);
+                    })
                 }
 
                 cancelButton.onclick = () => {
                     new CloseDialog().x(dialogContent)
+                    this.render()
                 }
             })
         })

@@ -398,10 +398,11 @@ export class Employees implements NUsers.IEmployees {
                     "createVisit": `${_values.allowVisits.checked ? true : false}`
                 })
 
-                const existEmail = await getVerifyEmail(_values.email.value);
-                if(existEmail == true){
+                //const existEmail = await getVerifyEmail(_values.email.value);
+                /*if(existEmail == true){
                     alert("¡Correo electrónico ya existe!");
-                }else if(_values.firstName.value === '' || _values.firstName.value === undefined){
+                }else */
+                if(_values.firstName.value === '' || _values.firstName.value === undefined){
                     alert("¡Nombre vacío!")
                 }else if(_values.lastName.value === '' || _values.lastName.value === undefined){
                     alert("¡Primer apellido vacío!")
@@ -864,8 +865,14 @@ export class Employees implements NUsers.IEmployees {
 
                 deleteButton.onclick = () => {
                     deleteEntity('User', entityId)
-                    new CloseDialog().x(dialogContent)
-                    this.render()
+                    .then((res) => {
+                        setTimeout(async () => {
+                            let data = await getUsers();
+                            const tableBody = document.getElementById('datatable-body');
+                            new CloseDialog().x(dialogContent);
+                            new Employees().load(tableBody, currentPage, data);
+                        }, 1000)
+                    })
                 }
 
                 cancelButton.onclick = () => {
