@@ -2,11 +2,12 @@
 
 import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, sendMail, getFilterEntityData } from "../../../endpoints.js"
 import { NUsers } from "../../../namespaces.js"
-import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail } from "../../../tools.js"
+import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, generateCsv } from "../../../tools.js"
 import { InterfaceElement } from "../../../types.js"
 import { Config } from "../../../Configs.js"
 import { tableLayout } from "./Layout.js"
 import { tableLayoutTemplate } from "./Templates.js"
+import { verifyUserType } from "../../../tools.js"
 
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
@@ -94,6 +95,7 @@ export class SuperUsers {
 
         this.register()
         this.import()
+        this.export(SUser)
         this.edit(this.entityDialogContainer, data)
         this.remove()
         this.convertToSuper()
@@ -715,6 +717,29 @@ export class SuperUsers {
         })
 
     }
+
+    private export = (SUser: any): void => {
+        const exportUsers: InterfaceElement = document.getElementById('export-entities');
+        exportUsers.addEventListener('click', async() => {
+            let rows = []
+            const users: any = await getUsers(SUser)
+            for(let i=0; i < users.length; i++){
+                let user = users[i]
+                // @ts-ignore
+                    let obj = {
+                        "Nombre": `${user.firstName.split("\n").join("(salto)")}`,
+                        "Apellido 1": `${user.lastName.split("\n").join("(salto)")}`,
+                        "Apellido 2": `${user.secondLastName.split("\n").join("(salto)")}`,
+                        "Usuario": `${user.username}`,
+                        "Email": `${user?.email ?? ''}`,
+                        "Teléfono": `${user?.phone ?? ''}`,
+                        "Tipo": `${verifyUserType(user?.userType)}`
+                        }
+                        rows.push(obj)
+            }
+            generateCsv(rows, "Super")
+        });
+    };
 
     private pagination(items: [], limitRows: number, currentPage: number) {
         const tableBody: InterfaceElement = document.getElementById('datatable-body')

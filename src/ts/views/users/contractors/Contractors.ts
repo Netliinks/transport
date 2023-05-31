@@ -1,7 +1,7 @@
 // @filename: Contractors.ts
 
 import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, getFilterEntityData } from "../../../endpoints.js"
-import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail } from "../../../tools.js"
+import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, generateCsv } from "../../../tools.js"
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
 import { Config } from "../../../Configs.js"
 import { tableLayout } from "./Layout.js"
@@ -90,6 +90,7 @@ export class Contractors {
 
         this.register()
         this.import()
+        this.export()
         this.edit(this.entityDialogContainer, data)
         this.remove()
         this.changeUserPassword()
@@ -569,7 +570,7 @@ export class Contractors {
                             "phone": `${contractorData[3]?.replace(/\n/g, '')}`,
                             "dni": `${contractorData[4]?.replace(/\n/g, '')}`,
                             "userType": "CONTRACTOR",
-                            "username": `${contractorData[0]?.toLowerCase().replace(/\n/g, '')}.${contractorData[1]?.toLowerCase().replace(/\n/g, '')}@${currentUserInfo.customer.name.toLowerCase().replace(/\s+/g, '')}.com`,
+                            "username": `${contractorData[0]?.toLowerCase().replace(/\n/g, '')}.${contractorData[1]?.toLowerCase().replace(/\n/g, '')}${contractorData[2]?.toLowerCase().replace(/\n/g, '')[0]}@${currentUserInfo.customer.name.toLowerCase().replace(/\s+/g, '')}.com`,
                             "createVisit": false,
                         })
 
@@ -855,6 +856,30 @@ export class Contractors {
         })
 
     }
+
+    private export = (): void => {
+        const exportUsers: InterfaceElement = document.getElementById('export-entities');
+        exportUsers.addEventListener('click', async() => {
+            let rows = []
+            const users: any = await getUsers()
+            for(let i=0; i < users.length; i++){
+                let user = users[i]
+                // @ts-ignore
+                    let obj = {
+                        "Nombre": `${user.firstName.split("\n").join("(salto)")}`,
+                        "Apellido 1": `${user.lastName.split("\n").join("(salto)")}`,
+                        "Apellido 2": `${user.secondLastName.split("\n").join("(salto)")}`,
+                        "Usuario": `${user.username}`,
+                        "Email": `${user?.email ?? ''}`,
+                        "Teléfono": `${user?.phone ?? ''}`,
+                        "ingressHour": `${user?.ingressHour ?? ''}`,
+                        "turnChange": `${user?.turnChange ?? ''}`
+                        }
+                        rows.push(obj)
+            }
+            generateCsv(rows, "Contratistas")
+        });
+    };
 
     private pagination(items: [], limitRows: number, currentPage: number) {
         const tableBody: InterfaceElement = document.getElementById('datatable-body')
