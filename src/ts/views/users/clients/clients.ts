@@ -941,6 +941,7 @@ export class Clients {
                         "Apellido 1": `${user.lastName.split("\n").join("(salto)")}`,
                         "Apellido 2": `${user.secondLastName.split("\n").join("(salto)")}`,
                         "Usuario": `${user.username}`,
+                        "DNI": `${user?.dni}`,
                         "Email": `${user?.email ?? ''}`,
                         "Teléfono": `${user?.phone ?? ''}`
                         }
