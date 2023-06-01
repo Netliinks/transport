@@ -104,40 +104,44 @@ export class Events {
                 });
             });
             const previewBox = async (noteId) => {
-                const event = await getEntityData('Notification', noteId);
-                renderRightSidebar(UIRightSidebar);
-                const sidebarContainer = document.getElementById('entity-editor-container');
-                const closeSidebar = document.getElementById('close');
-                closeSidebar.addEventListener('click', () => {
-                    new CloseDialog().x(sidebarContainer);
-                });
-                // Event details
-                const _details = {
-                    picture: document.getElementById('event-picture-placeholder'),
-                    title: document.getElementById('event-title'),
-                    content: document.getElementById('event-content'),
-                    author: document.getElementById('event-author'),
-                    authorId: document.getElementById('event-author-id'),
-                    date: document.getElementById('creation-date'),
-                    time: document.getElementById('creation-time')
-                };
-                /*const eventCreationDateAndTime = event.creationDate.split('T')
-                const eventCreationTime = eventCreationDateAndTime[1]
-                const eventCreationDate = eventCreationDateAndTime[0]*/
-                _details.title.innerText = event.title;
-                _details.content.innerText = event.description;
-                _details.author.value = `${event.user.firstName} ${event.user.lastName}`;
-                _details.authorId.value = event.createdBy;
-                _details.date.value = event.creationDate;
-                _details.time.value = event.creationTime;
-                if (event.attachment !== undefined) {
-                    const image = await getFile(event.attachment);
-                    _details.picture.innerHTML = `
-                    <img id="note-picture" width="100%" class="note_picture margin_b_8" src="${image}">
-                `;
-                }
-                this.closeRightSidebar();
+                this.loadData(noteId);
             };
+        };
+        this.loadData = async (noteId) => {
+            const event = await getEntityData('Notification', noteId);
+            renderRightSidebar(UIRightSidebar);
+            const sidebarContainer = document.getElementById('entity-editor-container');
+            const closeSidebar = document.getElementById('close');
+            closeSidebar.addEventListener('click', () => {
+                new CloseDialog().x(sidebarContainer);
+            });
+            // Event details
+            const _details = {
+                picture: document.getElementById('event-picture-placeholder'),
+                title: document.getElementById('event-title'),
+                content: document.getElementById('event-content'),
+                author: document.getElementById('event-author'),
+                authorId: document.getElementById('event-author-id'),
+                date: document.getElementById('creation-date'),
+                time: document.getElementById('creation-time')
+            };
+            /*const eventCreationDateAndTime = event.creationDate.split('T')
+            const eventCreationTime = eventCreationDateAndTime[1]
+            const eventCreationDate = eventCreationDateAndTime[0]*/
+            _details.title.innerText = event.title;
+            _details.content.innerText = event.description;
+            _details.author.value = `${event.user.firstName} ${event.user.lastName}`;
+            _details.authorId.value = event.createdBy;
+            _details.date.value = event.creationDate;
+            _details.time.value = event.creationTime;
+            if (event.attachment !== undefined) {
+                const image = await getFile(event.attachment);
+                _details.picture.innerHTML = `
+                    <img id="note-picture" width="100%" class="zoom_picture margin_b_8" src="${image}">
+                `;
+                this.zoom(event);
+            }
+            this.closeRightSidebar();
         };
         this.export = () => {
             const exportNotes = document.getElementById('export-entities');
@@ -215,6 +219,26 @@ export class Events {
                 _closeButton.onclick = () => {
                     new CloseDialog().x(_dialog);
                 };
+            });
+        };
+        this.zoom = (event) => {
+            const picture = document.getElementById('note-picture');
+            const close = document.getElementById("close-modalZoom");
+            const modalZoom = document.getElementById('modalZoom');
+            picture.addEventListener('click', () => {
+                //this.dialogContainer.style.display = 'block'
+                //this.dialogContainer.innerHTML = modalZoomImage
+                const editor = document.getElementById('entity-editor-container');
+                new CloseDialog().x(editor);
+                const img01 = document.getElementById('img01');
+                const caption = document.getElementById('caption');
+                modalZoom.style.display = 'block';
+                img01.src = picture.src;
+                caption.innerHTML = `${event.title}`;
+            });
+            close.addEventListener('click', () => {
+                modalZoom.style.display = 'none';
+                //this.loadData(event.id)
             });
         };
         this.closeRightSidebar = () => {
