@@ -56,6 +56,14 @@ export const UIContentLayout = `
         </table>
 
         </div>
+
+        <!-- The Modal -->
+        <div id="modalZoom" class="modal_zoom">
+            <span class="close-zoom" id="close-modalZoom">&times;</span>
+            <img class="modal-content-zoom" id="img01">
+            <div id="caption" class="caption-zoom"></div>
+        </div>
+        
         <div class="datatable_footer">
             <div class="datatable_pagination" id="pagination-container"></div>
         </div>
@@ -163,12 +171,6 @@ export const UIRightSidebar = `
     <div id="galeria">
     </div>
 
-    <!-- The Modal -->
-    <div id="modalZoom" class="modal_zoom">
-        <span class="close-zoom" id="close-modalZoom">&times;</span>
-        <img class="modal-content-zoom" id="img01">
-        <div id="caption" class="caption-zoom"></div>
-    </div>
 </div>
 <!-- END EDITOR BODY -->
 </div>

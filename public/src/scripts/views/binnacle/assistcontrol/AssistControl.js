@@ -146,41 +146,46 @@ export class AssistControl {
                     if (markingData?.camera1 !== undefined) {
                         let details = {
                             "image": `${await getFile(markingData.camera1)}`,
-                            "description": "Cámara 1",
-                            "icon": "camera"
+                            "description": `Cámara 1 - ${markingData.user?.dni ?? ''}`,
+                            "icon": "camera",
+                            "id": "camera"
                         };
                         images.push(details);
                     }
                     if (markingData?.camera2 !== undefined) {
                         let details = {
                             "image": `${await getFile(markingData.camera2)}`,
-                            "description": "Cámara 2",
-                            "icon": "camera"
+                            "description": `Cámara 2 - ${markingData.user?.dni ?? ''}`,
+                            "icon": "camera",
+                            "id": "camera2"
                         };
                         images.push(details);
                     }
                     if (markingData?.camera3 !== undefined) {
                         let details = {
                             "image": `${await getFile(markingData.camera3)}`,
-                            "description": "Cámara 3",
-                            "icon": "camera"
+                            "description": `Cámara 3 - ${markingData.user?.dni ?? ''}`,
+                            "icon": "camera",
+                            "id": "camera3"
                         };
                         images.push(details);
                     }
                     if (markingData?.camera4 !== undefined) {
                         let details = {
                             "image": `${await getFile(markingData.camera4)}`,
-                            "description": "Cámara 4",
-                            "icon": "camera"
+                            "description": `Cámara 4 - ${markingData.user?.dni ?? ''}`,
+                            "icon": "camera",
+                            "id": "camera4"
                         };
                         images.push(details);
                     }
                     for (let i = 0; i < images.length; i++) {
                         _values.gallery.innerHTML += `
                         <label><i class="fa-solid fa-${images[i].icon}"></i> ${images[i].description}</label>
-                        <img width="100%" class="note_picture margin_b_8" src="${images[i].image}">
+                        <img width="100%" class="note_picture margin_b_8" src="${images[i].image}" id="entity-details-zoom" data-entityId="${images[i].id}" name="${images[i].id}">
                     `;
                     }
+                    this.previewZoom(images);
                 }
                 else {
                     _values.gallery.innerHTML += `
@@ -288,6 +293,38 @@ export class AssistControl {
                     new CloseDialog().x(_dialog);
                 };
             });
+        };
+        this.previewZoom = async (arrayImages) => {
+            const openButtons = document.querySelectorAll('#entity-details-zoom');
+            openButtons.forEach((openButton) => {
+                const entityId = openButton.dataset.entityid;
+                openButton.addEventListener('click', () => {
+                    renderInterfaceZoom(entityId, arrayImages);
+                });
+            });
+            const renderInterfaceZoom = async (entity, arrayImages) => {
+                let description = '';
+                for (let i = 0; i < arrayImages.length; i++) {
+                    if (arrayImages[i].id == entity) {
+                        description = arrayImages[i].description;
+                    }
+                }
+                const picture = document.getElementsByName(`${entity}`);
+                const close = document.getElementById("close-modalZoom");
+                const modalZoom = document.getElementById('modalZoom');
+                const editor = document.getElementById('entity-editor-container');
+                editor.style.display = 'none';
+                const img01 = document.getElementById('img01');
+                const caption = document.getElementById('caption');
+                modalZoom.style.display = 'block';
+                img01.src = picture[0].currentSrc;
+                caption.innerHTML = `${description}`;
+                close.addEventListener('click', () => {
+                    modalZoom.style.display = 'none';
+                    const editor = document.getElementById('entity-editor-container');
+                    editor.style.display = 'flex';
+                });
+            };
         };
     }
     pagination(items, limitRows, currentPage) {

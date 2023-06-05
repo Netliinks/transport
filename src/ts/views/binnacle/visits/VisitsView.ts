@@ -174,49 +174,55 @@ export class Visits {
                 if(entityData?.image !== undefined){
                     let details = {
                         "image": `${await getFile(entityData.image)}`,
-                        "description": "Adjunto",
-                        "icon": "mobile"
+                        "description": `Adjunto - ${entityData?.dni ?? ''}`,
+                        "icon": "mobile",
+                        "id": "image"
                     }
                     images.push(details)
                 }
                 if(entityData?.camera1 !== undefined){
                     let details = {
                         "image": `${await getFile(entityData.camera1)}`,
-                        "description": "Cámara 1",
-                        "icon": "camera"
+                        "description": `Cámara 1 - ${entityData?.dni ?? ''}`,
+                        "icon": "camera",
+                        "id": "camera1"
                     }
                     images.push(details)
                 }
                 if(entityData?.camera2 !== undefined){
                     let details = {
                         "image": `${await getFile(entityData.camera2)}`,
-                        "description": "Cámara 2",
-                        "icon": "camera"
+                        "description": `Cámara 2 - ${entityData?.dni ?? ''}`,
+                        "icon": "camera",
+                        "id": "camera2"
                     }
                     images.push(details)
                 }
                 if(entityData?.camera3 !== undefined){
                     let details = {
                         "image": `${await getFile(entityData.camera3)}`,
-                        "description": "Cámara 3",
-                        "icon": "camera"
+                        "description": `Cámara 3 - ${entityData?.dni ?? ''}`,
+                        "icon": "camera",
+                        "id": "camera3"
                     }
                     images.push(details)
                 }
                 if(entityData?.camera4 !== undefined){
                     let details = {
                         "image": `${await getFile(entityData.camera4)}`,
-                        "description": "Cámara 4",
-                        "icon": "camera"
+                        "description": `Cámara 4 - ${entityData?.dni ?? ''}`,
+                        "icon": "camera",
+                        "id": "camera4"
                     }
                     images.push(details)
                 }
                 for(let i=0; i<images.length; i++){
                     controlImages.innerHTML += `
                         <label><i class="fa-solid fa-${images[i].icon}"></i> ${images[i].description}</label>
-                        <img width="100%" class="note_picture margin_b_8" src="${images[i].image}">
+                        <img width="100%" class="note_picture margin_b_8" src="${images[i].image}" id="entity-details-zoom" data-entityId="${images[i].id}" name="${images[i].id}">
                     `
                 }
+                this.previewZoom(images)
             }else{
                 controlImages.innerHTML += `
                 <div class="input_detail">
@@ -376,6 +382,43 @@ export class Visits {
             })
 
             return button
+        }
+    }
+
+    private previewZoom = async (arrayImages: any): Promise<void> => {
+        const openButtons: InterfaceElement = document.querySelectorAll('#entity-details-zoom')
+        openButtons.forEach((openButton: InterfaceElement) => {
+            const entityId: string = openButton.dataset.entityid
+            openButton.addEventListener('click', (): void => {
+
+                renderInterfaceZoom(entityId, arrayImages)
+            })
+        })
+
+        const renderInterfaceZoom = async (entity: string, arrayImages: any): Promise<void> => {
+            let description = ''
+            for(let i = 0; i < arrayImages.length; i++){
+                if(arrayImages[i].id == entity){
+                    description = arrayImages[i].description
+                }
+            }
+            
+            const picture: InterfaceElement = document.getElementsByName(`${entity}`)
+            const close: InterfaceElement = document.getElementById("close-modalZoom");
+            const modalZoom: InterfaceElement = document.getElementById('modalZoom')
+            const editor: InterfaceElement = document.getElementById('entity-editor-container')
+            editor.style.display = 'none'
+            const img01: InterfaceElement = document.getElementById('img01')
+            const caption: InterfaceElement = document.getElementById('caption')
+            modalZoom.style.display = 'block'
+            img01.src = picture[0].currentSrc
+            caption.innerHTML = `${description}`
+
+            close.addEventListener('click', (): void => {
+                modalZoom.style.display = 'none'
+                const editor: InterfaceElement = document.getElementById('entity-editor-container')
+                editor.style.display = 'flex'
+            })
         }
     }
 }
