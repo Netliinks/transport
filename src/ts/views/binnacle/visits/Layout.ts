@@ -163,6 +163,13 @@ export const UIRightSidebar = `
 
     <div id="galeria">
     </div>
+
+    <!-- The Modal -->
+    <div id="modalZoom" class="modal_zoom">
+        <span class="close-zoom" id="close-modalZoom">&times;</span>
+        <img class="modal-content-zoom" id="img01">
+        <div id="caption" class="caption-zoom"></div>
+    </div>
 </div>
 <!-- END EDITOR BODY -->
 </div>

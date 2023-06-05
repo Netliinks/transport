@@ -7,6 +7,27 @@ export class Announcements {
         this._newAnnouncementButton = document.getElementById('new-announcement');
         this._announcementCardContainer = document.getElementById('cards-container');
         this._announcementCardControlsContainers = document.getElementById('cards-controls-container');
+        this.zoom = (data) => {
+            const picture = document.getElementById('announcement-picture');
+            const close = document.getElementById("close-modalZoom");
+            const modalZoom = document.getElementById('modalZoom');
+            picture.addEventListener('click', () => {
+                //this.dialogContainer.style.display = 'block'
+                //this.dialogContainer.innerHTML = modalZoomImage
+                const editor = document.getElementById('entity-editor-container');
+                editor.style.display = 'none';
+                const img01 = document.getElementById('img01');
+                const caption = document.getElementById('caption');
+                modalZoom.style.display = 'block';
+                img01.src = picture.src;
+                caption.innerHTML = `${data?.title ?? ''}`;
+            });
+            close.addEventListener('click', () => {
+                modalZoom.style.display = 'none';
+                const editor = document.getElementById('entity-editor-container');
+                editor.style.display = 'flex';
+            });
+        };
     }
     async render() {
         this._announcementCardContainer.innerHTML = '';
@@ -260,6 +281,7 @@ export class Announcements {
                 if (data.attachment !== undefined) {
                     const image = await getFile(data.attachment);
                     picture.src = image;
+                    this.zoom(data);
                 }
                 else {
                     placeholder.innerHTML = '';

@@ -126,6 +126,12 @@ export class Dashboard implements NDashbd.IRender {
           </div>
         </div>
         <!-- END RIGHT SECTION -->
+        <!-- The Modal -->
+        <div id="modalZoom" class="modal_zoom">
+            <span class="close-zoom" id="close-modalZoom">&times;</span>
+            <img class="modal-content-zoom" id="img01">
+            <div id="caption" class="caption-zoom"></div>
+        </div>
       </div>
     `
 

@@ -126,13 +126,7 @@ export class Events {
         })
 
         const previewBox = async (noteId: string): Promise<void> => {
-            this.loadData(noteId)
-        }
-    }
-
-    private loadData = async(noteId: string): Promise<void> => {
-        const event = await getEntityData('Notification', noteId)
-
+            const event = await getEntityData('Notification', noteId)
             renderRightSidebar(UIRightSidebar)
             const sidebarContainer: InterfaceElement = document.getElementById('entity-editor-container')
             const closeSidebar: InterfaceElement = document.getElementById('close')
@@ -163,11 +157,12 @@ export class Events {
             if (event.attachment !== undefined) {
                 const image = await getFile(event.attachment)
                 _details.picture.innerHTML = `
-                    <img id="note-picture" width="100%" class="zoom_picture margin_b_8" src="${image}">
+                    <img id="note-picture" width="100%" class="note_picture margin_b_8" src="${image}">
                 `
                 this.zoom(event)
             }
             this.closeRightSidebar()
+        }
     }
 
     private export = (): void => {
@@ -293,16 +288,17 @@ export class Events {
             //this.dialogContainer.style.display = 'block'
             //this.dialogContainer.innerHTML = modalZoomImage
             const editor: InterfaceElement = document.getElementById('entity-editor-container')
-            new CloseDialog().x(editor)
+            editor.style.display = 'none'
             const img01: InterfaceElement = document.getElementById('img01')
             const caption: InterfaceElement = document.getElementById('caption')
             modalZoom.style.display = 'block'
             img01.src = picture.src;
-            caption.innerHTML = `${event.title}`
+            caption.innerHTML = `${event?.title ?? ''}`
         })
         close.addEventListener('click', (): void => {
             modalZoom.style.display = 'none'
-            //this.loadData(event.id)
+            const editor: InterfaceElement = document.getElementById('entity-editor-container')
+            editor.style.display = 'flex'
         })
     }
 

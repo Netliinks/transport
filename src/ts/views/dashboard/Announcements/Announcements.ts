@@ -281,6 +281,7 @@ export class Announcements {
                 if (data.attachment !== undefined) {
                     const image = await getFile(data.attachment)
                     picture.src = image
+                    this.zoom(data)
                 }else{
                     placeholder.innerHTML = ''
                 }
@@ -320,6 +321,28 @@ export class Announcements {
                     this.render()
                 }, 1000)
             })
+        })
+    }
+
+    private zoom = (data: any):void =>{
+        const picture: InterfaceElement = document.getElementById('announcement-picture')
+        const close: InterfaceElement = document.getElementById("close-modalZoom");
+        const modalZoom: InterfaceElement = document.getElementById('modalZoom')
+        picture.addEventListener('click', (): void => {
+            //this.dialogContainer.style.display = 'block'
+            //this.dialogContainer.innerHTML = modalZoomImage
+            const editor: InterfaceElement = document.getElementById('entity-editor-container')
+            editor.style.display = 'none'
+            const img01: InterfaceElement = document.getElementById('img01')
+            const caption: InterfaceElement = document.getElementById('caption')
+            modalZoom.style.display = 'block'
+            img01.src = picture.src;
+            caption.innerHTML = `${data?.title ?? ''}`
+        })
+        close.addEventListener('click', (): void => {
+            modalZoom.style.display = 'none'
+            const editor: InterfaceElement = document.getElementById('entity-editor-container')
+            editor.style.display = 'flex'
         })
     }
 
