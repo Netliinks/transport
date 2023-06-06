@@ -94,10 +94,11 @@ export class SuperUsers {
         };
     }
     async render() {
-        let data = await getUsers(SUser);
         this.content.innerHTML = '';
         this.content.innerHTML = tableLayout;
         const tableBody = document.getElementById('datatable-body');
+        tableBody.innerHTML = '.Cargando...';
+        let data = await getUsers(SUser);
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows);
         this.load(tableBody, currentPage, data);
         this.searchEntity(tableBody, data);

@@ -24,7 +24,6 @@ export class Notes {
         this.siebarDialogContainer = document.getElementById('entity-editor-container');
         this.appContainer = document.getElementById('datatable-container');
         this.render = async () => {
-            let notesArray = await GetNotes();
             this.appContainer.innerHTML = '';
             this.appContainer.innerHTML = UIContentLayout;
             // Getting interface elements
@@ -32,6 +31,8 @@ export class Notes {
             const tableBody = document.getElementById('datatable-body');
             // Changing interface element content
             viewTitle.innerText = pageName;
+            tableBody.innerHTML = '.Cargando...';
+            let notesArray = await GetNotes();
             tableBody.innerHTML = UITableSkeletonTemplate.repeat(tableRows);
             // Exec functions
             this.load(tableBody, currentPage, notesArray);

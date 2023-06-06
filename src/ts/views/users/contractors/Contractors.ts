@@ -33,11 +33,12 @@ export class Contractors {
         document.getElementById('datatable-container')
 
     public async render(): Promise<void> {
-        let data: any = await getUsers()
         this.content.innerHTML = ''
         this.content.innerHTML = tableLayout
         const tableBody: InterfaceElement = document.getElementById('datatable-body')
+        tableBody.innerHTML = '.Cargando...'
 
+        let data: any = await getUsers()
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows)
         this.load(tableBody, currentPage, data)
 

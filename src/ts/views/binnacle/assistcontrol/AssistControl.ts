@@ -27,7 +27,6 @@ export class AssistControl {
     private appContainer: InterfaceElement = document.getElementById('datatable-container')
 
     public render = async (): Promise<void> => {
-        let assistControlArray: any = await GetAssistControl()
         this.appContainer.innerHTML = ''
         this.appContainer.innerHTML = UIContentLayout
 
@@ -37,6 +36,9 @@ export class AssistControl {
 
         // Changing interface element content
         viewTitle.innerText = pageName
+        tableBody.innerHTML = '.Cargando...'
+        
+        let assistControlArray: any = await GetAssistControl()
         tableBody.innerHTML = UITableSkeletonTemplate.repeat(tableRows)
 
         // Exec functions

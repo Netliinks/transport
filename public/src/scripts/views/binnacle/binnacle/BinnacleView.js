@@ -26,7 +26,6 @@ export class Binnacle {
         this.siebarDialogContainer = document.getElementById('entity-editor-container');
         this.appContainer = document.getElementById('datatable-container');
         this.render = async () => {
-            let eventsArray = await getEvents();
             this.appContainer.innerHTML = '';
             this.appContainer.innerHTML = UIContentLayout;
             // Getting interface elements
@@ -34,6 +33,8 @@ export class Binnacle {
             const tableBody = document.getElementById('datatable-body');
             // Changing interface element content
             viewTitle.innerText = pageName;
+            tableBody.innerHTML = '.Cargando...';
+            let eventsArray = await getEvents();
             tableBody.innerHTML = UITableSkeletonTemplate.repeat(tableRows);
             // Exec functions
             this.load(tableBody, currentPage, eventsArray);

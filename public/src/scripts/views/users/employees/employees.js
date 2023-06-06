@@ -104,10 +104,11 @@ export class Employees {
         };
     }
     async render() {
-        let data = await getUsers();
         this.content.innerHTML = '';
         this.content.innerHTML = tableLayout;
         const tableBody = document.getElementById('datatable-body');
+        tableBody.innerHTML = '.Cargando...';
+        let data = await getUsers();
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows);
         this.load(tableBody, currentPage, data);
         this.searchEntity(tableBody, data);

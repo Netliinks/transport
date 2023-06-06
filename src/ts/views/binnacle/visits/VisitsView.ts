@@ -27,7 +27,6 @@ export class Visits {
     private appContainer: InterfaceElement = document.getElementById('datatable-container')
 
     public render = async (): Promise<void> => {
-        let visitsArray: any = await GetVisits()
         this.appContainer.innerHTML = ''
         this.appContainer.innerHTML = UIContentLayout
 
@@ -37,6 +36,9 @@ export class Visits {
 
         // Changing interface element content
         viewTitle.innerText = pageName
+        tableBody.innerHTML = '.Cargando...'
+
+        let visitsArray: any = await GetVisits()
         tableBody.innerHTML = UITableSkeletonTemplate.repeat(tableRows)
 
         // Exec functions

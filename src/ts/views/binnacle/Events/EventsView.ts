@@ -26,8 +26,7 @@ export class Events {
     private siebarDialogContainer: InterfaceElement = document.getElementById('entity-editor-container')
     private appContainer: InterfaceElement = document.getElementById('datatable-container')
 
-    public render = async (): Promise<void> => {
-        let eventsArray: any = await getEvents()
+    public render = async (): Promise<void> => {      
         this.appContainer.innerHTML = ''
         this.appContainer.innerHTML = UIContentLayout
 
@@ -37,6 +36,9 @@ export class Events {
 
         // Changing interface element content
         viewTitle.innerText = pageName
+        tableBody.innerHTML = '.Cargando...'
+
+        let eventsArray: any = await getEvents()
         tableBody.innerHTML = UITableSkeletonTemplate.repeat(tableRows)
 
         // Exec functions
