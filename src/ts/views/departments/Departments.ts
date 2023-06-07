@@ -1,7 +1,7 @@
 // @filename: Departments.ts
 
 import { deleteEntity, getEntitiesData, registerEntity } from "../../endpoints.js"
-import { inputObserver, inputSelect, CloseDialog } from "../../tools.js"
+import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType } from "../../tools.js"
 import { InterfaceElement } from "../../types.js"
 import { Config } from "../../Configs.js"
 import { tableLayout } from "./Layout.js"
@@ -36,7 +36,7 @@ export class Departments {
         let data: any = await getDepartments()
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows)
         this.load(tableBody, currentPage, data)
-
+        new filterDataByHeaderType().filter()
         this.searchEntity(tableBody, data)
         this.pagination(data, tableRows, currentPage)
     }

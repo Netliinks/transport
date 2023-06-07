@@ -181,16 +181,29 @@ export class filterDataByHeaderType {
             })
 
             e.target.classList.add('datatable_header_selected')
-            this.sortGrid(th.cellIndex, span.dataset.type)
+            this.sortGrid(th.cellIndex, span.dataset.type, span)
         }
     }
 
-    private sortGrid = (colNum: number, type: string): void => {
+    private sortGrid = (colNum: number, type: string, span: any): void => {
         let tbody: any = this.datatable.querySelector('tbody')
         let rowsArray = Array.from(tbody.rows)
         let compare: any
 
-        switch (type) {
+        if(span.dataset.mode == "desc"){              
+            compare = (rowA: any, rowB: any) => {
+                return rowA.cells[colNum].innerHTML >
+                    rowB.cells[colNum].innerHTML ? -1 : 1
+            }
+            span.setAttribute("data-mode", "asc")
+        }else{
+            compare = (rowA: any, rowB: any) => {
+                return rowA.cells[colNum].innerHTML >
+                    rowB.cells[colNum].innerHTML ? 1 : -1
+            }
+            span.setAttribute("data-mode", "desc")
+        }
+        /*switch (type) {
             case 'name':
                 compare = (rowA: any, rowB: any) => {
                     return rowA.cells[colNum].innerHTML >
@@ -215,7 +228,7 @@ export class filterDataByHeaderType {
                         rowB.cells[colNum].innerHTML ? 1 : -1
                 }
                 break
-        }
+        }*/
 
         rowsArray.sort(compare)
         tbody.append(...rowsArray)

@@ -1,6 +1,6 @@
 // @filename: SuperUsers.ts
 import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, sendMail, getFilterEntityData } from "../../../endpoints.js";
-import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, generateCsv } from "../../../tools.js";
+import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, generateCsv, filterDataByHeaderType } from "../../../tools.js";
 import { Config } from "../../../Configs.js";
 import { tableLayout } from "./Layout.js";
 import { tableLayoutTemplate } from "./Templates.js";
@@ -98,6 +98,7 @@ export class SuperUsers {
         this.content.innerHTML = tableLayout;
         const tableBody = document.getElementById('datatable-body');
         tableBody.innerHTML = '.Cargando...';
+        new filterDataByHeaderType().filter();
         let data = await getUsers(SUser);
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows);
         this.load(tableBody, currentPage, data);
