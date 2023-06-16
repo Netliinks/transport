@@ -571,6 +571,11 @@ export class SuperUsers {
               <label for="tempPass">Clave temporal</label>
             </div>
             -->
+            <div style="display:flex;justify-content:center">
+                <img alt="Código QR ${data?.dni ?? ''}" id="qrcode">
+                <br>
+                <button id="btnDescargar">Descargar</button>
+            </div>
           </div>
           <!-- END EDITOR BODY -->
 
@@ -587,9 +592,32 @@ export class SuperUsers {
             inputSelect('State', 'entity-state', data.state.name)
             //inputSelect('Department', 'entity-department')
             //inputSelect('Business', 'entity-business')
+            const qr: InterfaceElement = document.getElementById("qrcode")
+            // @ts-ignore
+            new QRious({
+                element: qr,
+                value: data.id, // La URL o el texto
+                size: 250,
+                backgroundAlpha: 1, // 0 para fondo transparente
+                foreground: "#1D4C82FF", // Color del QR
+                level: "H", // Puede ser L,M,Q y H (L es el de menor nivel, H el mayor)
+            });
+            download(qr, data)
             this.close()
             UUpdate(entityID)
         }
+
+        const download = (qr: InterfaceElement, data: any) => {
+            const btnDescargar: InterfaceElement =
+                document.getElementById('btnDescargar')
+            btnDescargar.addEventListener('click', () => {
+                const enlace = document.createElement("a");
+                enlace.href = qr.src;
+                enlace.download = `Código QR ${data?.dni ?? ''}.png`;
+                enlace.click();
+            })
+        }
+
 
         const UUpdate = async (entityId: any) => {
             const updateButton: InterfaceElement = document.getElementById('update-changes');
