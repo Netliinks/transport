@@ -337,7 +337,7 @@ export class Clients {
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
                         new CloseDialog().x(container)
-                        this.load(tableBody, currentPage, data)
+                        new Clients().load(tableBody, currentPage, data)
                     }, 1000)
                 })
         }
@@ -725,7 +725,7 @@ export class Clients {
                                     document.getElementById('entity-editor-container')
                                 )
 
-                            this.load(tableBody
+                            new Clients().load(tableBody
                                 = document.getElementById('datatable-body'),
                                 currentPage,
                                 data

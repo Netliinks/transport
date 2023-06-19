@@ -432,7 +432,7 @@ export class Employees implements NUsers.IEmployees {
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
                         new CloseDialog().x(container)
-                        this.load(tableBody, currentPage, data)
+                        new Employees().load(tableBody, currentPage, data)
                     }, 1000)
                 })
         }
@@ -850,7 +850,7 @@ export class Employees implements NUsers.IEmployees {
                             data = await getUsers()
 
                             new CloseDialog().x(container)
-                            this.load(tableBody, currentPage, data)
+                            new Employees().load(tableBody, currentPage, data)
                         }, 100)
                     })
             }

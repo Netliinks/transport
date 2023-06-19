@@ -365,7 +365,7 @@ export class Clients {
                     const tableBody = document.getElementById('datatable-body');
                     const container = document.getElementById('entity-editor-container');
                     new CloseDialog().x(container);
-                    this.load(tableBody, currentPage, data);
+                    new Clients().load(tableBody, currentPage, data);
                 }, 1000);
             });
         };
@@ -701,7 +701,7 @@ export class Clients {
                         new CloseDialog()
                             .x(container =
                             document.getElementById('entity-editor-container'));
-                        this.load(tableBody
+                        new Clients().load(tableBody
                             = document.getElementById('datatable-body'), currentPage, data);
                     }, 100);
                 });

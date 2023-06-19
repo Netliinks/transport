@@ -422,7 +422,7 @@ export class Contractors {
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
                         new CloseDialog().x(container)
-                        this.load(tableBody, currentPage, data)
+                        new Contractors().load(tableBody, currentPage, data)
                     }, 1000)
                 })
         }
@@ -822,7 +822,7 @@ export class Contractors {
                             data = await getUsers()
 
                             new CloseDialog().x(container)
-                            this.load(tableBody, currentPage, data)
+                            new Contractors().load(tableBody, currentPage, data)
                         }, 100)
                     })
             }
