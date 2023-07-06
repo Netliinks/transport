@@ -1,7 +1,8 @@
 // @filename: EvetnsView.ts
 import { Config } from "../../../Configs.js";
 import { getEntityData, getEntitiesData, getFile } from "../../../endpoints.js";
-import { CloseDialog, renderRightSidebar, filterDataByHeaderType, inputObserver, generateCsv } from "../../../tools.js";
+import { exportEventPdf } from "../../../exportFiles/events.js";
+import { CloseDialog, renderRightSidebar, filterDataByHeaderType, inputObserver } from "../../../tools.js";
 import { UIContentLayout, UIRightSidebar } from "./Layout.js";
 import { UITableSkeletonTemplate } from "./Template.js";
 // Local configs
@@ -212,7 +213,8 @@ export class Events {
                             rows.push(obj);
                         }
                     }
-                    generateCsv(rows, "Eventos");
+                    //generateCsv(rows, "Eventos");
+                    exportEventPdf(events, "Eventos");
                 });
                 _closeButton.onclick = () => {
                     new CloseDialog().x(_dialog);

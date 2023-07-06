@@ -2,6 +2,7 @@
 
 import { Config } from "../../../Configs.js"
 import { getEntityData, getEntitiesData, getUserInfo, getFile } from "../../../endpoints.js"
+import { exportEventPdf } from "../../../exportFiles/events.js"
 import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver, generateCsv  } from "../../../tools.js"
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
 import { UIContentLayout, UIRightSidebar } from "./Layout.js"
@@ -240,7 +241,8 @@ export class Events {
                         }
                         
                     }
-                    generateCsv(rows, "Eventos");
+                    //generateCsv(rows, "Eventos");
+                    exportEventPdf(events, "Eventos");
                 
                 
             });

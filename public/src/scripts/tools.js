@@ -343,42 +343,87 @@ export const generateCsv = (ar, title) => {
         alert("Su navegador no permite esta acción");
     }
 };
-/*
-export const generatePDF = (ar: any, title: string) => {
+export const generateDocument = (ar, title) => {
     // @ts-ignore
     window.jsPDF = window.jspdf.jsPDF;
     // @ts-ignore
-    var doc = new jsPDF();
-    let columnsTitle = ["Nombre", "Apellido 1", "Apellido 2", "Usuario", "DNI", "Email", "Teléfono", "Tipo"]
+    var doc = new jsPDF('l');
     doc.text(20, 20, 'Hello world!');
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'bold');
     //construimos cabecera del csv
-    doc.text(10, 30, `${columnsTitle[]}`)
-    doc.text(10, 30, `Nombre`)
-    doc.text(10, 30, `Nombre`)
-    doc.text(10, 30, `Nombre`)
-    doc.text(10, 30, `Nombre`)
-    doc.text(10, 30, `Nombre`)
-    doc.text(10, 30, `Nombre`)
-    doc.text(10, 30, `Nombre`)
-    doc.text(10, 30, `Nombre`)
-    doc.text(10, 30, `Nombre`)
-            
-      
+    doc.text(10, 30, "Nombre");
+    doc.text(40, 30, "Apellido 1");
+    doc.text(70, 30, "Apellido 2");
+    doc.text(100, 30, "Usuario");
+    doc.text(150, 30, "DNI");
+    doc.text(180, 30, "Email");
+    doc.text(230, 30, "Teléfono");
+    doc.text(260, 30, "Tipo");
+    doc.setFontSize(9);
+    doc.setFont(undefined, 'normal');
+    let row = 40;
+    console.log(ar);
+    //resto del contenido
     for (var i = 0; i < ar.length; i++) {
-        //construimos cabecera del csv
-        if (i == 0){
-            doc.text(column, 30, `${ar[i].Tipo}`)
-            column++
-        }
-        //resto del contenido
+        doc.text(10, row, `${ar[i].firstName.split("\n").join("(salto)")}`);
+        doc.text(40, row, `${ar[i].lastName.split("\n").join("(salto)")}`);
+        doc.text(70, row, `${ar[i].secondLastName.split("\n").join("(salto)")}`);
+        doc.text(100, row, `${ar[i].username}`);
+        doc.text(150, row, `${ar[i]?.dni ?? ''}`);
+        doc.text(180, row, `${ar[i]?.email ?? ''}`);
+        doc.text(230, row, `${ar[i]?.phone ?? ''}`);
+        doc.text(260, row, `${verifyUserType(ar[i]?.userType)}`);
+        row += 5;
+    }
+    // Add new page
+    //doc.addPage();
+    //doc.text(20, 20, 'Visit CodexWorld.com');
+    // Save the PDF
+    doc.save('document.pdf');
+};
+/*export const generateDocument = (ar: any, title: string) => {
+    // @ts-ignore
+    window.jsPDF = window.jspdf.jsPDF;
+    // @ts-ignore
+    var doc = new jsPDF('l')
+    doc.text(20, 20, 'Hello world!')
+    doc.setFontSize(10)
+    doc.setFont(undefined, 'bold')
+    //construimos cabecera del csv
+    doc.text(10, 30, "Nombre")
+    doc.text(40, 30, "Apellido 1")
+    doc.text(70, 30, "Apellido 2")
+    doc.text(100, 30, "Usuario")
+    doc.text(150, 30, "DNI")
+    doc.text(180, 30, "Email")
+    doc.text(230, 30, "Teléfono")
+    doc.text(260, 30, "Tipo")
+    
+    doc.setFontSize(9)
+    doc.setFont(undefined, 'normal')
+    let row = 40
+    console.log(ar)
+    //resto del contenido
+    for (var i = 0; i < ar.length; i++) {
+        doc.text(10, row, `${ar[i].firstName.split("\n").join("(salto)")}`)
+        doc.text(40, row, `${ar[i].lastName.split("\n").join("(salto)")}`)
+        doc.text(70, row, `${ar[i].secondLastName.split("\n").join("(salto)")}`)
+        doc.text(100, row, `${ar[i].username}`)
+        doc.text(150, row, `${ar[i]?.dni ?? ''}`)
+        doc.text(180, row, `${ar[i]?.email ?? ''}`)
+        doc.text(230, row, `${ar[i]?.phone ?? ''}`)
+        doc.text(260, row, `${verifyUserType(ar[i]?.userType)}`)
 
-      }
+        row += 5
+
+    }
 
     
 
     // Add new page
-    doc.addPage();
-    doc.text(20, 20, 'Visit CodexWorld.com');
+    //doc.addPage();
+    //doc.text(20, 20, 'Visit CodexWorld.com');
 
     // Save the PDF
     doc.save('document.pdf');
