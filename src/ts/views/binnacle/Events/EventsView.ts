@@ -3,7 +3,7 @@
 import { Config } from "../../../Configs.js"
 import { getEntityData, getEntitiesData, getUserInfo, getFile } from "../../../endpoints.js"
 import { exportEventCsv, exportEventPdf, exportEventXls } from "../../../exportFiles/events.js"
-import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver, generateCsv  } from "../../../tools.js"
+import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver } from "../../../tools.js"
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
 import { UIContentLayout, UIRightSidebar } from "./Layout.js"
 import { UITableSkeletonTemplate } from "./Template.js"

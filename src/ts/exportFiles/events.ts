@@ -21,8 +21,6 @@ export const exportEventPdf = (ar: any, start: any, end: any) => {
     let row = 40
     let lineas = 0
     let pagina = 1
-    doc.setFontSize(9)
-    doc.setFont(undefined, 'normal')
     doc.text(10, 200, `Página # ${pagina}`)
     //resto del contenido
     for (let i = 0; i < ar.length; i++) {

@@ -1,7 +1,8 @@
 // @filename: EvetnsView.ts
 import { Config } from "../../../Configs.js";
 import { getEntityData, getEntitiesData } from "../../../endpoints.js";
-import { CloseDialog, renderRightSidebar, filterDataByHeaderType, inputObserver, generateCsv } from "../../../tools.js";
+import { exportBinnacleCsv, exportBinnaclePdf, exportBinnacleXls } from "../../../exportFiles/binnacle.js";
+import { CloseDialog, renderRightSidebar, filterDataByHeaderType, inputObserver } from "../../../tools.js";
 import { UIContentLayout, UIRightSidebar } from "./Layout.js";
 import { UITableSkeletonTemplate } from "./Template.js";
 // Local configs
@@ -159,6 +160,18 @@ export class Binnacle {
                                         <label class="form_label" for="end-date">Hasta:</label>
                                         <input type="date" class="input_date input_date-end" id="end-date" name="end-date">
                                     </div>
+
+                                    <label for="exportCsv">
+                                        <input type="radio" id="exportCsv" name="exportOption" value="csv" /> CSV
+                                    </label>
+
+                                    <label for="exportXls">
+                                        <input type="radio" id="exportXls" name="exportOption" value="xls" checked /> XLS
+                                    </label>
+
+                                    <label for="exportPdf">
+                                        <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
+                                    </label>
                                 </div>
                             </div>
 
@@ -191,23 +204,28 @@ export class Binnacle {
                     const _values = {
                         start: document.getElementById('start-date'),
                         end: document.getElementById('end-date'),
+                        exportOption: document.getElementsByName('exportOption')
                     };
                     const events = await getEvents();
-                    for (let i = 0; i < events.length; i++) {
-                        let event = events[i];
-                        // @ts-ignore
-                        if (event.creationDate >= _values.start.value && event.creationDate <= _values.end.value) {
-                            let obj = {
-                                "Título": `${event.title.split("\n").join("(salto)")}`,
-                                "Fecha": `${event.creationDate}`,
-                                "Hora": `${event.creationTime}`,
-                                "Usuario": `${event.user.firstName} ${event.user.lastName}`,
-                                "Descripción": `${event.description.split("\n").join("(salto)")}`
-                            };
-                            rows.push(obj);
+                    for (let i = 0; i < _values.exportOption.length; i++) {
+                        let ele = _values.exportOption[i];
+                        if (ele.type = "radio") {
+                            if (ele.checked) {
+                                if (ele.value == "xls") {
+                                    // @ts-ignore
+                                    exportBinnacleXls(events, _values.start.value, _values.end.value);
+                                }
+                                else if (ele.value == "csv") {
+                                    // @ts-ignore
+                                    exportBinnacleCsv(events, _values.start.value, _values.end.value);
+                                }
+                                else if (ele.value == "pdf") {
+                                    // @ts-ignore
+                                    exportBinnaclePdf(events, _values.start.value, _values.end.value);
+                                }
+                            }
                         }
                     }
-                    generateCsv(rows, "Bitácora");
                 });
                 _closeButton.onclick = () => {
                     new CloseDialog().x(_dialog);
