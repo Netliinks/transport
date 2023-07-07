@@ -30,16 +30,21 @@ export const exportBinnaclePdf = (ar, start, end) => {
             doc.text(30, row, `${event.creationTime}`);
             doc.text(50, row, `${event.user.firstName} ${event.user.lastName}`);
             doc.text(90, row, `${event.title.split("\n").join("(salto)")}`);
-            //doc.text(140, row, `${event.description.split("\n").join("(salto)")}`)
             var lMargin = 140; //left margin in mm
             var rMargin = 15; //right margin in mm
-            var pdfInMM = 210; // width of A4 in mm
+            var pdfInMM = 310; //210;  // width of A4 in mm
             var description = event.description.split("\n").join("(salto)");
-            console.log(description.length);
-            //var description =doc.splitTextToSize(, (pdfInMM-lMargin-rMargin));
-            doc.text(lMargin, row, description);
+            if (description.length > 60) {
+                console.log(description.length);
+                var paragraph = doc.splitTextToSize(description, (pdfInMM - lMargin - rMargin));
+                doc.text(lMargin, row, paragraph);
+                row += 5;
+            }
+            else {
+                doc.text(140, row, `${description}`);
+            }
             row += 5;
-            if (lineas >= 30) {
+            if (lineas >= 15) {
                 doc.addPage();
                 lineas = 0;
                 row = 30;
