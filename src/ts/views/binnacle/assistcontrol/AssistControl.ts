@@ -9,6 +9,7 @@ import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeader
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
 import { UIContentLayout, UIRightSidebar } from "./Layout.js"
 import { UITableSkeletonTemplate } from "./Template.js"
+import { exportMarcationsCsv, exportMarcationsPdf, exportMarcationsXls } from "../../../exportFiles/marcations.js"
 
 // Local configs
 const tableRows = Config.tableRows
@@ -270,6 +271,18 @@ export class AssistControl {
                                         <label class="form_label" for="end-date">Hasta:</label>
                                         <input type="date" class="input_date input_date-end" id="end-date" name="end-date">
                                     </div>
+
+                                    <label for="exportCsv">
+                                        <input type="radio" id="exportCsv" name="exportOption" value="csv" /> CSV
+                                    </label>
+
+                                    <label for="exportXls">
+                                        <input type="radio" id="exportXls" name="exportOption" value="xls" checked /> XLS
+                                    </label>
+
+                                    <label for="exportPdf">
+                                        <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
+                                    </label>
                                 </div>
                             </div>
 
@@ -303,27 +316,28 @@ export class AssistControl {
                 const _values = {
                     start: document.getElementById('start-date'),
                     end: document.getElementById('end-date'),
+                    exportOption: document.getElementsByName('exportOption')
                 }
                 const marcations: any = await GetAssistControl();
-                for(let i=0; i < marcations.length; i++){
-                    let marcation = marcations[i]
-                    // @ts-ignore
-                    if(marcation.ingressDate >= _values.start.value && marcation.ingressDate <= _values.end.value){
-                        let obj = {
-                            "DNI": `${marcation.user.dni}`,
-                            "Usuario": `${marcation.user.firstName} ${marcation.user.lastName}`,
-                            "Fecha Ingreso": `${marcation.ingressDate}`,
-                            "Hora Ingreso": `${marcation.ingressTime}`,
-                            "Emitido Ingreso": `${marcation.ingressIssued.firstName} ${marcation.ingressIssued.lastName}`,
-                            "Fecha Salida": `${marcation.egressDate}`,
-                            "Hora Salida": `${marcation.egressTime}`,
-                            "Emitido Salida": `${marcation.egressIssued?.firstName} ${marcation.egressIssued?.lastName}`,
-                          }
-                          rows.push(obj);
+                
+                for (let i = 0; i < _values.exportOption.length; i++) {
+                    let ele: any = _values.exportOption[i]
+                    if (ele.type = "radio") {
+    
+                        if (ele.checked){
+                            if(ele.value == "xls"){
+                                // @ts-ignore
+                               exportMarcationsXls(marcations, _values.start.value, _values.end.value)
+                            }else if(ele.value == "csv"){
+                                // @ts-ignore
+                                exportMarcationsCsv(marcations, _values.start.value, _values.end.value)
+                            }else if(ele.value == "pdf"){
+                                // @ts-ignore
+                                exportMarcationsPdf(marcations, _values.start.value, _values.end.value)
+                            }
+                        }
                     }
-                    
                 }
-                generateCsv(rows, "Marcaciones");
                 
                 
             });

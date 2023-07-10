@@ -1,21 +1,24 @@
-//import {generateFile } from "../tools";
-
-export const exportEventPdf = (ar: any, start: any, end: any) => {
+export const exportVisitPdf = (ar: any, start: any, end: any) => {
     // @ts-ignore
     window.jsPDF = window.jspdf.jsPDF;
     // @ts-ignore
     var doc = new jsPDF('l')
     doc.setDrawColor(0, 0, 128);
     doc.setFont(undefined, 'bold')
-    doc.text(10, 20, `Eventos desde ${start} hasta ${end}`)
+    doc.text(10, 20, `Visitas desde ${start} hasta ${end}`)
     doc.setFontSize(10)
     
     //construimos cabecera del csv
-    doc.text(10, 30, "Fecha")
-    doc.text(30, 30, "Hora")
-    doc.text(50, 30, "Usuario")
-    doc.text(90, 30, "Título")
-    doc.text(140, 30, "Descripción")   
+    doc.text(10, 30, "Nombre")
+    doc.text(60, 30, "DNI")
+    doc.text(90, 30, "Fecha")
+    doc.text(110, 30, "Hora")
+    doc.text(130, 30, "Usuario")
+    doc.text(170, 30, "Tipo")
+    doc.text(190, 30, "Dpto")
+    doc.text(230, 30, "Estado")
+    doc.text(250, 30, "Inicio")
+    doc.text(270, 30, "Fin")
     doc.line(10, 35, 290, 35);
     
     let row = 40
@@ -24,16 +27,21 @@ export const exportEventPdf = (ar: any, start: any, end: any) => {
     doc.text(10, 200, `Página # ${pagina}`)
     //resto del contenido
     for (let i = 0; i < ar.length; i++) {
-        let event = ar[i]
+        let visit = ar[i]
         // @ts-ignore
-        if(event.creationDate >= start && event.creationDate <= end){
+        if(visit.creationDate >= start && visit.creationDate <= end){
             doc.setFontSize(9)
             doc.setFont(undefined, 'normal')
-            doc.text(10, row, `${event.creationDate}`)
-            doc.text(30, row, `${event.creationTime}`)
-            doc.text(50, row, `${event.user.firstName} ${event.user.lastName}`)
-            doc.text(90, row, `${event.title.split("\n").join("(salto)")}`)
-            doc.text(140, row, `${event.description.split("\n").join("(salto)")}`)
+            doc.text(10, row, `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`)
+            doc.text(60, row, `${visit.dni}`)
+            doc.text(90, row, `${visit.creationDate}`)
+            doc.text(110, row, `${visit.creationTime}`)
+            doc.text(130, row, `${visit.user?.firstName ?? ''} ${visit.user?.lastName ?? ''}`)
+            doc.text(170, row, `${verifyUserType(visit.user.userType)}`)
+            doc.text(190, row, `${visit.department?.name ?? ''}`)
+            doc.text(230, row, `${visit.visitState?.name ?? ''}`)
+            doc.text(250, row, `${visit?.ingressTime ?? ''}`)
+            doc.text(270, row, `${visit?.egressTime ?? ''}`)
             row += 5
             let limitLineas = 33
             if(pagina == 1) limitLineas = 30
@@ -46,11 +54,16 @@ export const exportEventPdf = (ar: any, start: any, end: any) => {
                 doc.setFont(undefined, 'bold')
                 doc.setFontSize(10)
                 //construimos cabecera del csv
-                doc.text(10, 20, "Fecha")
-                doc.text(30, 20, "Hora")
-                doc.text(50, 20, "Usuario")
-                doc.text(90, 20, "Título")
-                doc.text(140, 20, "Descripción")   
+                doc.text(10, 20, "Nombre")
+                doc.text(60, 20, "DNI")
+                doc.text(90, 20, "Fecha")
+                doc.text(110, 20, "Hora")
+                doc.text(130, 20, "Usuario")
+                doc.text(170, 20, "Tipo")
+                doc.text(190, 20, "Dpto")
+                doc.text(230, 20, "Estado")
+                doc.text(250, 20, "Inicio")
+                doc.text(270, 20, "Fin")  
                 doc.line(10, 25, 290, 25);
                 doc.text(10, 200, `Página # ${pagina}`)
             }
@@ -60,12 +73,12 @@ export const exportEventPdf = (ar: any, start: any, end: any) => {
     }
     // Save the PDF
     var d = new Date()
-    var title = "log_Eventos_"+ d.getDate() + "_" + (d.getMonth()+1) + "_" + d.getFullYear() +`.pdf`;
+    var title = "log_Visitas_"+ d.getDate() + "_" + (d.getMonth()+1) + "_" + d.getFullYear() +`.pdf`;
     doc.save(title);
 
 }
 
-export const exportEventCsv = (ar: any, start: any, end: any) => {
+export const exportVisitCsv = (ar: any, start: any, end: any) => {
     let rows = [];
     for(let i=0; i < ar.length; i++){
         let event = ar[i]
@@ -85,7 +98,7 @@ export const exportEventCsv = (ar: any, start: any, end: any) => {
     generateFile(rows, "Eventos", "csv");
 }
 
-export const exportEventXls = (ar: any, start: any, end: any) => {
+export const exportVisitXls = (ar: any, start: any, end: any) => {
     let rows = [];
     for(let i=0; i < ar.length; i++){
         let event = ar[i]
@@ -162,4 +175,50 @@ const generateFile = (ar: any, title: string, extension: string) => {
         alert("Su navegador no permite esta acción");
       }
 
+}
+
+/*
+for(let i=0; i < visits.length; i++){
+    let visit = visits[i]
+    // @ts-ignore
+    if(visit.ingressDate >= _values.start.value && visit.ingressDate <= _values.end.value){
+        let obj = {
+            "Nombre": `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`,
+            "DNI": `${visit.dni}`,
+            "Fecha Creación": `${visit.creationDate}`,
+            "Hora Creación": `${visit.creationTime}`,
+            "Usuario": `${visit.user.firstName} ${visit.user.lastName}`,
+            "Tipo": `${verifyUserType(visit.user.userType)}`,
+            "Departamento": `${visit.department.name}`,
+            "Estado": `${visit.visitState.name}`,
+            "Verificado": `${visit.verifiedDocument ? 'Si' : 'No'}`,
+            "Favorita": `${visit.favorite ? 'Si' : 'No'}`,
+            "Teléfono": `${visit.phoneNumber}`,
+            "Autorizado": `${visit.authorizer}`,
+            "Fecha Ingreso": `${visit.ingressDate}`,
+            "Hora Ingreso": `${visit.ingressTime}`,
+            "Emitido Ingreso": `${visit.ingressIssuedId.firstName} ${visit.ingressIssuedId.lastName}`,
+            "Fecha Salida": `${visit.egressDate}`,
+            "Hora Salida": `${visit.egressTime}`,
+            "Emitido Salida": `${visit.egressIssuedId?.firstName} ${visit.egressIssuedId?.lastName}`,
+            "Asunto": `${visit.reason.split("\n").join("(salto)")}`,
+          }
+          rows.push(obj);
+    }
+    
+}
+generateCsv(rows, "Visitas");*/
+
+const verifyUserType = (userType: string) =>{
+    if(userType == 'CUSTOMER'){
+      return 'Cliente'
+    }else if(userType == 'GUARD'){
+      return 'Guardia'
+    }else if(userType == 'EMPLOYEE'){
+      return 'Empleado'
+    }else if(userType == 'CONTRACTOR'){
+      return 'Contratista'
+    }else{
+      return userType
+    }
 }

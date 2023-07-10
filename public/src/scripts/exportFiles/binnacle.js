@@ -34,17 +34,18 @@ export const exportBinnaclePdf = (ar, start, end) => {
             var rMargin = 15; //right margin in mm
             var pdfInMM = 310; //210;  // width of A4 in mm
             var description = event.description.split("\n").join("(salto)");
-            if (description.length > 60) {
-                console.log(description.length);
-                var paragraph = doc.splitTextToSize(description, (pdfInMM - lMargin - rMargin));
-                doc.text(lMargin, row, paragraph);
-                row += 5;
-            }
-            else {
-                doc.text(140, row, `${description}`);
-            }
-            row += 5;
-            if (lineas >= 15) {
+            //if(description.length > 60){
+            var paragraph = doc.splitTextToSize(description, (pdfInMM - lMargin - rMargin));
+            doc.text(lMargin, row, paragraph);
+            //row += 5
+            //}else{
+            //    doc.text(140, row, `${description}`)
+            //}
+            row += 10;
+            let limitLineas = 16;
+            if (pagina == 1)
+                limitLineas = 15;
+            if (lineas >= limitLineas) {
                 doc.addPage();
                 lineas = 0;
                 row = 30;

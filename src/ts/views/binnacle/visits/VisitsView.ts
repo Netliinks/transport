@@ -9,6 +9,7 @@ import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeader
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
 import { UIContentLayout, UIRightSidebar } from "./Layout.js"
 import { UITableSkeletonTemplate } from "./Template.js"
+import { exportVisitCsv, exportVisitPdf, exportVisitXls } from "../../../exportFiles/visits.js"
 
 // Local configs
 const tableRows = Config.tableRows
@@ -281,6 +282,18 @@ export class Visits {
                                         <label class="form_label" for="end-date">Hasta:</label>
                                         <input type="date" class="input_date input_date-end" id="end-date" name="end-date">
                                     </div>
+
+                                    <label for="exportCsv">
+                                        <input type="radio" id="exportCsv" name="exportOption" value="csv" /> CSV
+                                    </label>
+
+                                    <label for="exportXls">
+                                        <input type="radio" id="exportXls" name="exportOption" value="xls" checked /> XLS
+                                    </label>
+
+                                    <label for="exportPdf">
+                                        <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
+                                    </label>
                                 </div>
                             </div>
 
@@ -314,38 +327,27 @@ export class Visits {
                 const _values = {
                     start: document.getElementById('start-date'),
                     end: document.getElementById('end-date'),
+                    exportOption: document.getElementsByName('exportOption')
                 }
                 const visits: any = await GetVisits();
-                    for(let i=0; i < visits.length; i++){
-                        let visit = visits[i]
-                        // @ts-ignore
-                        if(visit.ingressDate >= _values.start.value && visit.ingressDate <= _values.end.value){
-                            let obj = {
-                                "Nombre": `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`,
-                                "DNI": `${visit.dni}`,
-                                "Fecha Creación": `${visit.creationDate}`,
-                                "Hora Creación": `${visit.creationTime}`,
-                                "Usuario": `${visit.user.firstName} ${visit.user.lastName}`,
-                                "Tipo": `${verifyUserType(visit.user.userType)}`,
-                                "Departamento": `${visit.department.name}`,
-                                "Estado": `${visit.visitState.name}`,
-                                "Verificado": `${visit.verifiedDocument ? 'Si' : 'No'}`,
-                                "Favorita": `${visit.favorite ? 'Si' : 'No'}`,
-                                "Teléfono": `${visit.phoneNumber}`,
-                                "Autorizado": `${visit.authorizer}`,
-                                "Fecha Ingreso": `${visit.ingressDate}`,
-                                "Hora Ingreso": `${visit.ingressTime}`,
-                                "Emitido Ingreso": `${visit.ingressIssuedId.firstName} ${visit.ingressIssuedId.lastName}`,
-                                "Fecha Salida": `${visit.egressDate}`,
-                                "Hora Salida": `${visit.egressTime}`,
-                                "Emitido Salida": `${visit.egressIssuedId?.firstName} ${visit.egressIssuedId?.lastName}`,
-                                "Asunto": `${visit.reason.split("\n").join("(salto)")}`,
-                              }
-                              rows.push(obj);
+                for (let i = 0; i < _values.exportOption.length; i++) {
+                    let ele: any = _values.exportOption[i]
+                    if (ele.type = "radio") {
+    
+                        if (ele.checked){
+                            if(ele.value == "xls"){
+                                // @ts-ignore
+                               exportVisitXls(visits, _values.start.value, _values.end.value)
+                            }else if(ele.value == "csv"){
+                                // @ts-ignore
+                                exportVisitCsv(visits, _values.start.value, _values.end.value)
+                            }else if(ele.value == "pdf"){
+                                // @ts-ignore
+                                exportVisitPdf(visits, _values.start.value, _values.end.value)
+                            }
                         }
-                        
                     }
-                    generateCsv(rows, "Visitas");
+                }
                 
                 
             });
