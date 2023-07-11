@@ -3,26 +3,37 @@ export const exportVisitPdf = (ar, start, end) => {
     window.jsPDF = window.jspdf.jsPDF;
     // @ts-ignore
     var doc = new jsPDF('l');
+    doc.addImage("./public/src/assets/pictures/report.png", "PNG", 10, 10, 50, 15);
     doc.setDrawColor(0, 0, 128);
     doc.setFont(undefined, 'bold');
-    doc.text(10, 20, `Visitas desde ${start} hasta ${end}`);
+    doc.setTextColor(0, 0, 128);
+    doc.setFontSize(25);
+    doc.text(10, 40, `Visitas`);
     doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont(undefined, 'italic');
+    doc.text(220, 40, `Fecha: Desde ${start} Hasta ${end}`);
     //construimos cabecera del csv
-    doc.text(10, 30, "Nombre");
-    doc.text(60, 30, "DNI");
-    doc.text(90, 30, "Fecha");
-    doc.text(110, 30, "Hora");
-    doc.text(130, 30, "Usuario");
-    doc.text(170, 30, "Tipo");
-    doc.text(190, 30, "Dpto");
-    doc.text(230, 30, "Estado");
-    doc.text(250, 30, "Inicio");
-    doc.text(270, 30, "Fin");
-    doc.line(10, 35, 290, 35);
-    let row = 40;
+    doc.setFont(undefined, 'bold');
+    doc.line(5, 45, 290, 45);
+    doc.setFillColor(210, 210, 210);
+    doc.rect(5, 45, 285, 10, 'F');
+    doc.text(10, 50, "Nombre");
+    doc.text(60, 50, "DNI");
+    doc.text(90, 50, "Fecha");
+    doc.text(110, 50, "Hora");
+    doc.text(130, 50, "Usuario");
+    doc.text(170, 50, "Tipo");
+    doc.text(190, 50, "Departamento");
+    doc.text(230, 50, "Estado");
+    doc.text(250, 50, "Inicio");
+    doc.text(270, 50, "Fin");
+    doc.line(5, 55, 290, 55);
+    let row = 60;
     let lineas = 0;
     let pagina = 1;
-    doc.text(10, 200, `Página # ${pagina}`);
+    doc.setTextColor(0, 0, 128);
+    doc.text(10, 200, `Página ${pagina}`);
     //resto del contenido
     for (let i = 0; i < ar.length; i++) {
         let visit = ar[i];
@@ -30,6 +41,7 @@ export const exportVisitPdf = (ar, start, end) => {
         if (visit.creationDate >= start && visit.creationDate <= end) {
             doc.setFontSize(9);
             doc.setFont(undefined, 'normal');
+            doc.setTextColor(0, 0, 0);
             doc.text(10, row, `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`);
             doc.text(60, row, `${visit.dni}`);
             doc.text(90, row, `${visit.creationDate}`);
@@ -43,7 +55,7 @@ export const exportVisitPdf = (ar, start, end) => {
             row += 5;
             let limitLineas = 33;
             if (pagina == 1)
-                limitLineas = 30;
+                limitLineas = 26;
             if (lineas >= limitLineas) {
                 doc.addPage();
                 lineas = 0;
@@ -52,18 +64,22 @@ export const exportVisitPdf = (ar, start, end) => {
                 doc.setFont(undefined, 'bold');
                 doc.setFontSize(10);
                 //construimos cabecera del csv
+                doc.line(5, 15, 290, 15);
+                doc.setFillColor(210, 210, 210);
+                doc.rect(5, 15, 285, 10, 'F');
                 doc.text(10, 20, "Nombre");
                 doc.text(60, 20, "DNI");
                 doc.text(90, 20, "Fecha");
                 doc.text(110, 20, "Hora");
                 doc.text(130, 20, "Usuario");
                 doc.text(170, 20, "Tipo");
-                doc.text(190, 20, "Dpto");
+                doc.text(190, 20, "Departamento");
                 doc.text(230, 20, "Estado");
                 doc.text(250, 20, "Inicio");
                 doc.text(270, 20, "Fin");
-                doc.line(10, 25, 290, 25);
-                doc.text(10, 200, `Página # ${pagina}`);
+                doc.line(5, 25, 290, 25);
+                doc.setTextColor(0, 0, 128);
+                doc.text(10, 200, `Página ${pagina}`);
             }
             lineas++;
         }
