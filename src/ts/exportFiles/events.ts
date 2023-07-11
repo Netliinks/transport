@@ -5,23 +5,33 @@ export const exportEventPdf = (ar: any, start: any, end: any) => {
     window.jsPDF = window.jspdf.jsPDF;
     // @ts-ignore
     var doc = new jsPDF('l')
+    doc.addImage("./public/src/assets/pictures/report.png", "PNG", 10, 10, 50, 15)
     doc.setDrawColor(0, 0, 128);
     doc.setFont(undefined, 'bold')
-    doc.text(10, 20, `Eventos desde ${start} hasta ${end}`)
+    doc.setTextColor(0,0,128)
+    doc.setFontSize(25)
+    doc.text(10, 40, `Eventos`)
     doc.setFontSize(10)
-    
+    doc.setTextColor(0,0,0)
+    doc.setFont(undefined, 'italic')
+    doc.text(220, 40, `Fecha: Desde ${start} Hasta ${end}`)
     //construimos cabecera del csv
-    doc.text(10, 30, "Fecha")
-    doc.text(30, 30, "Hora")
-    doc.text(50, 30, "Usuario")
-    doc.text(90, 30, "Título")
-    doc.text(140, 30, "Descripción")   
-    doc.line(10, 35, 290, 35);
+    doc.setFont(undefined, 'bold')
+    doc.line(5, 45, 290, 45);
+    doc.setFillColor(210,210,210)
+    doc.rect(5, 45, 285, 10, 'F')
+    doc.text(10, 50, "Fecha")
+    doc.text(30, 50, "Hora")
+    doc.text(50, 50, "Usuario")
+    doc.text(90, 50, "Título")
+    doc.text(140, 50, "Descripción")   
+    doc.line(5, 55, 290, 55);
     
-    let row = 40
+    let row = 60
     let lineas = 0
     let pagina = 1
-    doc.text(10, 200, `Página # ${pagina}`)
+    doc.setTextColor(0,0,128)
+    doc.text(10, 200, `Página ${pagina}`)
     //resto del contenido
     for (let i = 0; i < ar.length; i++) {
         let event = ar[i]
@@ -29,14 +39,15 @@ export const exportEventPdf = (ar: any, start: any, end: any) => {
         if(event.creationDate >= start && event.creationDate <= end){
             doc.setFontSize(9)
             doc.setFont(undefined, 'normal')
+            doc.setTextColor(0,0,0)
             doc.text(10, row, `${event.creationDate}`)
             doc.text(30, row, `${event.creationTime}`)
-            doc.text(50, row, `${event.user.firstName} ${event.user.lastName}`)
+            doc.text(50, row, `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`)
             doc.text(90, row, `${event.title.split("\n").join("(salto)")}`)
             doc.text(140, row, `${event.description.split("\n").join("(salto)")}`)
             row += 5
             let limitLineas = 33
-            if(pagina == 1) limitLineas = 30
+            if(pagina == 1) limitLineas = 26
             if(lineas >= limitLineas){ 
                 
                 doc.addPage()
@@ -46,13 +57,17 @@ export const exportEventPdf = (ar: any, start: any, end: any) => {
                 doc.setFont(undefined, 'bold')
                 doc.setFontSize(10)
                 //construimos cabecera del csv
+                doc.line(5, 15, 290, 15)
+                doc.setFillColor(210,210,210);
+                doc.rect(5, 15, 285, 10, 'F');
                 doc.text(10, 20, "Fecha")
                 doc.text(30, 20, "Hora")
                 doc.text(50, 20, "Usuario")
                 doc.text(90, 20, "Título")
                 doc.text(140, 20, "Descripción")   
-                doc.line(10, 25, 290, 25);
-                doc.text(10, 200, `Página # ${pagina}`)
+                doc.line(5, 25, 290, 25);
+                doc.setTextColor(0,0,128)
+                doc.text(10, 200, `Página ${pagina}`)
             }
             lineas++
         }
@@ -75,7 +90,7 @@ export const exportEventCsv = (ar: any, start: any, end: any) => {
                 "Título": `${event.title.split("\n").join("(salto)")}`,
                 "Fecha": `${event.creationDate}`,
                 "Hora": `${event.creationTime}`,
-                "Usuario": `${event.user.firstName} ${event.user.lastName}`,
+                "Usuario": `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`,
                 "Descripción": `${event.description.split("\n").join("(salto)")}`
               }
               rows.push(obj);
@@ -95,7 +110,7 @@ export const exportEventXls = (ar: any, start: any, end: any) => {
                 "Título": `${event.title.split("\n").join("(salto)")}`,
                 "Fecha": `${event.creationDate}`,
                 "Hora": `${event.creationTime}`,
-                "Usuario": `${event.user.firstName} ${event.user.lastName}`,
+                "Usuario": `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`,
                 "Descripción": `${event.description.split("\n").join("(salto)")}`
               }
               rows.push(obj);

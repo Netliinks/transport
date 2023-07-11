@@ -3,25 +3,35 @@ export const exportMarcationsPdf = (ar: any, start: any, end: any) => {
     window.jsPDF = window.jspdf.jsPDF;
     // @ts-ignore
     var doc = new jsPDF()
+    doc.addImage("./public/src/assets/pictures/report.png", "PNG", 10, 10, 50, 15)
     doc.setDrawColor(0, 0, 128);
     doc.setFont(undefined, 'bold')
-    doc.text(10, 20, `Marcaciones desde ${start} hasta ${end}`)
+    doc.setTextColor(0,0,128)
+    doc.setFontSize(25)
+    doc.text(10, 40, `Marcaciones`)
     doc.setFontSize(10)
-    
+    doc.setTextColor(0,0,0)
+    doc.setFont(undefined, 'italic')
+    doc.text(130, 40, `Fecha: Desde ${start} Hasta ${end}`)
     //construimos cabecera del csv
-    doc.text(10, 30, "Nombre")
-    doc.text(50, 30, "DNI")
-    doc.text(80, 30, "Inicio")
-    doc.text(100, 30, "Hora")
-    doc.text(130, 30, "Fin")
-    doc.text(150, 30, "Hora")
-    doc.text(170, 30, "Estado")   
-    doc.line(10, 35, 200, 35);
+    doc.setFont(undefined, 'bold')
+    doc.line(5, 45, 200, 45);
+    doc.setFillColor(210,210,210)
+    doc.rect(5, 45, 195, 10, 'F')
+    doc.text(10, 50, "Nombre")
+    doc.text(50, 50, "DNI")
+    doc.text(80, 50, "Inicio")
+    doc.text(100, 50, "Hora")
+    doc.text(130, 50, "Fin")
+    doc.text(150, 50, "Hora")
+    doc.text(170, 50, "Estado")   
+    doc.line(5, 55, 200, 55);
     
-    let row = 40
+    let row = 60
     let lineas = 0
     let pagina = 1
-    doc.text(10, 290, `Página # ${pagina}`)
+    doc.setTextColor(0,0,128)
+    doc.text(10, 290, `Página ${pagina}`)
     //resto del contenido
     for (let i = 0; i < ar.length; i++) {
         let marcation = ar[i]
@@ -29,16 +39,17 @@ export const exportMarcationsPdf = (ar: any, start: any, end: any) => {
         if(marcation.ingressDate >= start && marcation.ingressDate <= end){
             doc.setFontSize(9)
             doc.setFont(undefined, 'normal')
-            doc.text(10, row, `${marcation.user.firstName} ${marcation.user.lastName}`)
+            doc.setTextColor(0,0,0)
+            doc.text(10, row, `${marcation.user?.firstName ?? ''} ${marcation.user?.lastName ?? ''}`)
             doc.text(50, row, `${marcation.user?.dni ?? ''}`)
             doc.text(80, row, `${marcation.ingressDate}`)
             doc.text(100, row, `${marcation.ingressTime}`)
             doc.text(130, row, `${marcation?.egressDate ?? ''}`)
             doc.text(150, row, `${marcation?.egressTime ?? ''}`)
-            doc.text(170, row, `${marcation.marcationState.name}`)
+            doc.text(170, row, `${marcation.marcationState?.name ?? ''}`)
             row += 5
             let limitLineas = 51
-            if(pagina == 1) limitLineas = 48
+            if(pagina == 1) limitLineas = 44
             if(lineas >= limitLineas){ 
                 
                 doc.addPage()
@@ -48,6 +59,9 @@ export const exportMarcationsPdf = (ar: any, start: any, end: any) => {
                 doc.setFont(undefined, 'bold')
                 doc.setFontSize(10)
                 //construimos cabecera del csv
+                doc.line(5, 15, 200, 15)
+                doc.setFillColor(210,210,210);
+                doc.rect(5, 15, 195, 10, 'F');
                 doc.text(10, 20, "Nombre")
                 doc.text(50, 20, "DNI")
                 doc.text(80, 20, "Inicio")
@@ -55,8 +69,9 @@ export const exportMarcationsPdf = (ar: any, start: any, end: any) => {
                 doc.text(130, 20, "Fin")
                 doc.text(150, 20, "Hora")
                 doc.text(170, 20, "Estado")      
-                doc.line(10, 25, 200, 25);
-                doc.text(10, 290, `Página # ${pagina}`)
+                doc.line(5, 25, 200, 25);
+                doc.setTextColor(0,0,128)
+                doc.text(10, 290, `Página ${pagina}`)
             }
             lineas++
         }
@@ -77,14 +92,14 @@ export const exportMarcationsCsv = (ar: any, start: any, end: any) => {
         if(marcation.ingressDate >= _values.start.value && marcation.ingressDate <= _values.end.value){
             let obj = {
                 "DNI": `${marcation.user?.dni ?? ''}`,
-                "Usuario": `${marcation.user.firstName} ${marcation.user.lastName}`,
+                "Usuario": `${marcation.user?.firstName ?? ''} ${marcation.user?.lastName ?? ''}`,
                 "Fecha Ingreso": `${marcation.ingressDate}`,
                 "Hora Ingreso": `${marcation.ingressTime}`,
-                "Emitido Ingreso": `${marcation.ingressIssued.firstName} ${marcation.ingressIssued.lastName}`,
+                "Emitido Ingreso": `${marcation.ingressIssued?.firstName ?? ''} ${marcation.ingressIssued?.lastName ?? ''}`,
                 "Fecha Salida": `${marcation?.egressDate ?? ''}`,
                 "Hora Salida": `${marcation?.egressTime ?? ''}`,
                 "Emitido Salida": `${marcation.egressIssued?.firstName ?? ''} ${marcation.egressIssued?.lastName ?? ''}`,
-                "Estado": `${marcation.marcationState.name}`,
+                "Estado": `${marcation.marcationState?.name ?? ''}`,
               }
               rows.push(obj);
         }
@@ -101,14 +116,14 @@ export const exportMarcationsXls = (ar: any, start: any, end: any) => {
         if(marcation.ingressDate >= start && marcation.ingressDate <= end){
             let obj = {
                 "DNI": `${marcation.user?.dni ?? ''}`,
-                "Usuario": `${marcation.user.firstName} ${marcation.user.lastName}`,
+                "Usuario": `${marcation.user?.firstName ?? ''} ${marcation.user?.lastName ?? ''}`,
                 "Fecha Ingreso": `${marcation.ingressDate}`,
                 "Hora Ingreso": `${marcation.ingressTime}`,
-                "Emitido Ingreso": `${marcation.ingressIssued.firstName} ${marcation.ingressIssued.lastName}`,
+                "Emitido Ingreso": `${marcation.ingressIssued?.firstName ?? ''} ${marcation.ingressIssued?.lastName ?? ''}`,
                 "Fecha Salida": `${marcation?.egressDate ?? ''}`,
                 "Hora Salida": `${marcation?.egressTime ?? ''}`,
                 "Emitido Salida": `${marcation.egressIssued?.firstName ?? ''} ${marcation.egressIssued?.lastName ?? ''}`,
-                "Estado": `${marcation.marcationState.name}`,
+                "Estado": `${marcation.marcationState?.name ?? ''}`,
               }
               rows.push(obj);
         }
