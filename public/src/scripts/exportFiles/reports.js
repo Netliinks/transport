@@ -1,5 +1,5 @@
 //import {generateFile } from "../tools";
-export const exportBinnaclePdf = (ar, start, end) => {
+export const exportReportPdf = (ar, start, end) => {
     // @ts-ignore
     window.jsPDF = window.jspdf.jsPDF;
     // @ts-ignore
@@ -9,7 +9,7 @@ export const exportBinnaclePdf = (ar, start, end) => {
     doc.setFont(undefined, 'bold');
     doc.setTextColor(0, 0, 128);
     doc.setFontSize(25);
-    doc.text(10, 40, `Bitácora`);
+    doc.text(10, 40, `Reportes`);
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
     doc.setFont(undefined, 'italic');
@@ -23,7 +23,8 @@ export const exportBinnaclePdf = (ar, start, end) => {
     doc.text(30, 50, "Hora");
     doc.text(50, 50, "Usuario");
     doc.text(90, 50, "Título");
-    doc.text(140, 50, "Descripción");
+    doc.text(140, 50, "Contenido");
+    doc.text(240, 50, "Foto");
     doc.line(5, 55, 290, 55);
     let row = 60;
     let lineas = 0;
@@ -32,94 +33,98 @@ export const exportBinnaclePdf = (ar, start, end) => {
     doc.text(10, 200, `Página ${pagina}`);
     //resto del contenido
     for (let i = 0; i < ar.length; i++) {
-        let event = ar[i];
-        // @ts-ignore
-        if (event.creationDate >= start && event.creationDate <= end) {
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(0, 0, 0);
-            doc.text(10, row, `${event.creationDate}`);
-            doc.text(30, row, `${event.creationTime}`);
-            doc.text(50, row, `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`);
-            doc.text(90, row, `${event.title.split("\n").join("(salto)")}`);
-            var lMargin = 140; //left margin in mm
-            var rMargin = 15; //right margin in mm
-            var pdfInMM = 305; //210;  // width of A4 in mm
-            var description = event.description.split("\n").join("(salto)");
-            //if(description.length > 60){
-            var paragraph = doc.splitTextToSize(description, (pdfInMM - lMargin - rMargin));
-            doc.text(lMargin, row, paragraph);
-            //row += 5
-            //}else{
-            //    doc.text(140, row, `${description}`)
-            //}
-            row += 10;
-            let limitLineas = 17;
-            if (pagina == 1)
-                limitLineas = 13;
-            if (lineas >= limitLineas) {
-                doc.addPage();
-                lineas = 0;
-                row = 30;
-                pagina += 1;
-                doc.setFont(undefined, 'bold');
-                doc.setFontSize(10);
-                //construimos cabecera del csv
-                doc.line(5, 15, 290, 15);
-                doc.setFillColor(210, 210, 210);
-                doc.rect(5, 15, 285, 10, 'F');
-                doc.text(10, 20, "Fecha");
-                doc.text(30, 20, "Hora");
-                doc.text(50, 20, "Usuario");
-                doc.text(90, 20, "Título");
-                doc.text(140, 20, "Descripción");
-                doc.line(5, 25, 290, 25);
-                doc.setTextColor(0, 0, 128);
-                doc.text(10, 200, `Página ${pagina}`);
-            }
-            lineas++;
+        let report = ar[i];
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        doc.setTextColor(0, 0, 0);
+        doc.text(10, row + 15, `${report.fecha}`);
+        doc.text(30, row + 15, `${report.hora}`);
+        doc.text(50, row + 15, `${report.usuario}`);
+        doc.text(90, row + 15, `${report.titulo}`);
+        var description = report.contenido.split("\n").join("(salto)");
+        console.log(description.length);
+        if (description.length > 550)
+            doc.setFontSize(7);
+        var lMargin = 140; //left margin in mm
+        var rMargin = 15; //right margin in mm
+        var pdfInMM = 250; //210;  // width of A4 in mm
+        var paragraph = doc.splitTextToSize(description, (pdfInMM - lMargin - rMargin));
+        doc.text(lMargin, row, paragraph);
+        doc.line(5, row + 30, 290, row + 30);
+        doc.addImage(`${report.imagen}`, "JPEG", 240, row - 2, 50, 30);
+        row += 34;
+        let limitLineas = 5;
+        if (pagina == 1)
+            limitLineas = 3;
+        if (lineas >= limitLineas) {
+            doc.addPage();
+            lineas = 0;
+            row = 30;
+            pagina += 1;
+            doc.setFont(undefined, 'bold');
+            doc.setFontSize(10);
+            //construimos cabecera del csv
+            doc.line(5, 15, 290, 15);
+            doc.setFillColor(210, 210, 210);
+            doc.rect(5, 15, 285, 10, 'F');
+            doc.text(10, 20, "Fecha");
+            doc.text(30, 20, "Hora");
+            doc.text(50, 20, "Usuario");
+            doc.text(90, 20, "Título");
+            doc.text(140, 20, "Contenido");
+            doc.text(240, 20, "Foto");
+            doc.line(5, 25, 290, 25);
+            doc.setTextColor(0, 0, 128);
+            doc.text(10, 200, `Página ${pagina}`);
         }
+        lineas++;
     }
     // Save the PDF
     var d = new Date();
-    var title = "log_Bitácora_" + d.getDate() + "_" + (d.getMonth() + 1) + "_" + d.getFullYear() + `.pdf`;
+    var title = "log_Reportes_" + d.getDate() + "_" + (d.getMonth() + 1) + "_" + d.getFullYear() + `.pdf`;
     doc.save(title);
 };
-export const exportBinnacleCsv = (ar, start, end) => {
+export const exportReportCsv = (ar, start, end) => {
     let rows = [];
     for (let i = 0; i < ar.length; i++) {
-        let event = ar[i];
+        let note = ar[i];
+        let noteCreationDateAndTime = note.creationDate.split('T');
+        let noteCreationDate = noteCreationDateAndTime[0];
+        let noteCreationTime = noteCreationDateAndTime[1];
         // @ts-ignore
-        if (event.creationDate >= _values.start.value && event.creationDate <= _values.end.value) {
+        if (noteCreationDate >= start && noteCreationDate <= end) {
             let obj = {
-                "Título": `${event.title.split("\n").join("(salto)")}`,
-                "Fecha": `${event.creationDate}`,
-                "Hora": `${event.creationTime}`,
-                "Usuario": `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`,
-                "Descripción": `${event.description.split("\n").join("(salto)")}`
+                "Título": `${note.title.split("\n").join("(salto)")}`,
+                "Fecha": `${noteCreationDate}`,
+                "Hora": `${noteCreationTime}`,
+                "Usuario": `${note.user?.firstName ?? ''} ${note.user?.lastName ?? ''}`,
+                "Contenido": `${note.content.split("\n").join("(salto)")}`,
             };
             rows.push(obj);
         }
     }
-    generateFile(rows, "Bitácora", "csv");
+    generateFile(rows, "Reportes", "csv");
 };
-export const exportBinnacleXls = (ar, start, end) => {
+export const exportReportXls = (ar, start, end) => {
     let rows = [];
     for (let i = 0; i < ar.length; i++) {
-        let event = ar[i];
+        let note = ar[i];
+        let noteCreationDateAndTime = note.creationDate.split('T');
+        let noteCreationDate = noteCreationDateAndTime[0];
+        let noteCreationTime = noteCreationDateAndTime[1];
         // @ts-ignore
-        if (event.creationDate >= start && event.creationDate <= end) {
+        if (noteCreationDate >= start && noteCreationDate <= end) {
             let obj = {
-                "Título": `${event.title.split("\n").join("(salto)")}`,
-                "Fecha": `${event.creationDate}`,
-                "Hora": `${event.creationTime}`,
-                "Usuario": `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`,
-                "Descripción": `${event.description.split("\n").join("(salto)")}`
+                "Título": `${note.title.split("\n").join("(salto)")}`,
+                "Fecha": `${noteCreationDate}`,
+                "Hora": `${noteCreationTime}`,
+                "Usuario": `${note.user?.firstName ?? ''} ${note.user?.lastName ?? ''}`,
+                "Contenido": `${note.content.split("\n").join("(salto)")}`,
             };
             rows.push(obj);
         }
     }
-    generateFile(rows, "Bitácora", "xls");
+    generateFile(rows, "Reportes", "xls");
 };
 const generateFile = (ar, title, extension) => {
     //comprobamos compatibilidad

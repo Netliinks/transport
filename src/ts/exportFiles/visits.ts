@@ -220,38 +220,6 @@ const generateFile = (ar: any, title: string, extension: string) => {
 
 }
 
-/*
-for(let i=0; i < visits.length; i++){
-    let visit = visits[i]
-    // @ts-ignore
-    if(visit.ingressDate >= _values.start.value && visit.ingressDate <= _values.end.value){
-        let obj = {
-            "Nombre": `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`,
-            "DNI": `${visit.dni}`,
-            "Fecha Creación": `${visit.creationDate}`,
-            "Hora Creación": `${visit.creationTime}`,
-            "Usuario": `${visit.user.firstName} ${visit.user.lastName}`,
-            "Tipo": `${verifyUserType(visit.user.userType)}`,
-            "Departamento": `${visit.department.name}`,
-            "Estado": `${visit.visitState.name}`,
-            "Verificado": `${visit.verifiedDocument ? 'Si' : 'No'}`,
-            "Favorita": `${visit.favorite ? 'Si' : 'No'}`,
-            "Teléfono": `${visit.phoneNumber}`,
-            "Autorizado": `${visit.authorizer}`,
-            "Fecha Ingreso": `${visit.ingressDate}`,
-            "Hora Ingreso": `${visit.ingressTime}`,
-            "Emitido Ingreso": `${visit.ingressIssuedId.firstName} ${visit.ingressIssuedId.lastName}`,
-            "Fecha Salida": `${visit.egressDate}`,
-            "Hora Salida": `${visit.egressTime}`,
-            "Emitido Salida": `${visit.egressIssuedId?.firstName} ${visit.egressIssuedId?.lastName}`,
-            "Asunto": `${visit.reason.split("\n").join("(salto)")}`,
-          }
-          rows.push(obj);
-    }
-    
-}
-generateCsv(rows, "Visitas");*/
-
 const verifyUserType = (userType: string) =>{
     if(userType == 'CUSTOMER'){
       return 'Cliente'

@@ -767,7 +767,7 @@ export class SuperUsers {
                         }
                         rows.push(obj)
             }
-            //generateCsv(rows, "Super")
+            generateCsv(rows, "Super")
             //generatePDF(users, "Super")
         });
     };

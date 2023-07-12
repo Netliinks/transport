@@ -47,7 +47,7 @@ export const exportBinnaclePdf = (ar: any, start: any, end: any) => {
             
             var lMargin=140; //left margin in mm
             var rMargin=15; //right margin in mm
-            var pdfInMM=310//210;  // width of A4 in mm
+            var pdfInMM=305//210;  // width of A4 in mm
             var description = event.description.split("\n").join("(salto)")
             //if(description.length > 60){
             var paragraph =doc.splitTextToSize(description, (pdfInMM-lMargin-rMargin));

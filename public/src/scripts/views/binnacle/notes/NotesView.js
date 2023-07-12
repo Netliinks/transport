@@ -5,9 +5,10 @@
 //
 import { Config } from "../../../Configs.js";
 import { getEntityData, getEntitiesData, getFile } from "../../../endpoints.js";
-import { CloseDialog, renderRightSidebar, filterDataByHeaderType, inputObserver, generateCsv } from "../../../tools.js";
+import { CloseDialog, renderRightSidebar, filterDataByHeaderType, inputObserver } from "../../../tools.js";
 import { UIContentLayout, UIRightSidebar } from "./Layout.js";
 import { UITableSkeletonTemplate } from "./Template.js";
+import { exportReportCsv, exportReportPdf, exportReportXls } from "../../../exportFiles/reports.js";
 // Local configs
 const tableRows = Config.tableRows;
 let currentPage = Config.currentPage;
@@ -166,6 +167,18 @@ export class Notes {
                                         <label class="form_label" for="end-date">Hasta:</label>
                                         <input type="date" class="input_date input_date-end" id="end-date" name="end-date">
                                     </div>
+
+                                    <label for="exportCsv">
+                                        <input type="radio" id="exportCsv" name="exportOption" value="csv" /> CSV
+                                    </label>
+
+                                    <label for="exportXls">
+                                        <input type="radio" id="exportXls" name="exportOption" value="xls" checked /> XLS
+                                    </label>
+
+                                    <label for="exportPdf">
+                                        <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
+                                    </label>
                                 </div>
                             </div>
 
@@ -194,30 +207,54 @@ export class Notes {
                 const exportButton = document.getElementById('export-data');
                 const _dialog = document.getElementById('dialog-content');
                 exportButton.addEventListener('click', async () => {
-                    let rows = [];
                     const _values = {
                         start: document.getElementById('start-date'),
                         end: document.getElementById('end-date'),
+                        exportOption: document.getElementsByName('exportOption')
                     };
                     const notes = await GetNotes();
-                    for (let i = 0; i < notes.length; i++) {
-                        let note = notes[i];
-                        let noteCreationDateAndTime = note.creationDate.split('T');
-                        let noteCreationDate = noteCreationDateAndTime[0];
-                        let noteCreationTime = noteCreationDateAndTime[1];
-                        // @ts-ignore
-                        if (noteCreationDate >= _values.start.value && noteCreationDate <= _values.end.value) {
-                            let obj = {
-                                "Título": `${note.title.split("\n").join("(salto)")}`,
-                                "Fecha": `${noteCreationDate}`,
-                                "Hora": `${noteCreationTime}`,
-                                "Usuario": `${note.user.firstName} ${note.user.lastName}`,
-                                "Contenido": `${note.content.split("\n").join("(salto)")}`
-                            };
-                            rows.push(obj);
+                    for (let i = 0; i < _values.exportOption.length; i++) {
+                        let ele = _values.exportOption[i];
+                        if (ele.type = "radio") {
+                            if (ele.checked) {
+                                if (ele.value == "xls") {
+                                    // @ts-ignore
+                                    exportReportXls(notes, _values.start.value, _values.end.value);
+                                }
+                                else if (ele.value == "csv") {
+                                    // @ts-ignore
+                                    exportReportCsv(notes, _values.start.value, _values.end.value);
+                                }
+                                else if (ele.value == "pdf") {
+                                    let rows = [];
+                                    for (let i = 0; i < notes.length; i++) {
+                                        let note = notes[i];
+                                        let noteCreationDateAndTime = note.creationDate.split('T');
+                                        let noteCreationDate = noteCreationDateAndTime[0];
+                                        let noteCreationTime = noteCreationDateAndTime[1];
+                                        // @ts-ignore
+                                        if (noteCreationDate >= _values.start.value && noteCreationDate <= _values.end.value) {
+                                            let image = '';
+                                            if (note.attachment !== undefined) {
+                                                image = await getFile(note.attachment);
+                                            }
+                                            let obj = {
+                                                "titulo": `${note.title.split("\n").join("(salto)")}`,
+                                                "fecha": `${noteCreationDate}`,
+                                                "hora": `${noteCreationTime}`,
+                                                "usuario": `${note.user?.firstName ?? ''} ${note.user?.lastName ?? ''}`,
+                                                "contenido": `${note.content.split("\n").join("(salto)")}`,
+                                                "imagen": `${image}`
+                                            };
+                                            rows.push(obj);
+                                        }
+                                    }
+                                    // @ts-ignore
+                                    exportReportPdf(rows, _values.start.value, _values.end.value);
+                                }
+                            }
                         }
                     }
-                    generateCsv(rows, "Reportes");
                 });
                 _closeButton.onclick = () => {
                     new CloseDialog().x(_dialog);
