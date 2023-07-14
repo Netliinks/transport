@@ -323,7 +323,6 @@ export class Visits {
             const exportButton: InterfaceElement = document.getElementById('export-data');
             const _dialog: InterfaceElement = document.getElementById('dialog-content');
             exportButton.addEventListener('click', async() => {
-                let rows = [];
                 const _values = {
                     start: document.getElementById('start-date'),
                     end: document.getElementById('end-date'),
