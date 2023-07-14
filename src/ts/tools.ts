@@ -315,7 +315,7 @@ export const registryPlataform = async(id: any) => {
         console.log("Registrado")
     })
 }
-
+/*
 export const generateCsv = (ar: any, title: string)=>{
     //comprobamos compatibilidad
     if(window.Blob && (window.URL || window.webkitURL)){
@@ -372,4 +372,4 @@ export const generateCsv = (ar: any, title: string)=>{
         //el navegador no admite esta opción
         alert("Su navegador no permite esta acción");
       }
-}
+}*/
