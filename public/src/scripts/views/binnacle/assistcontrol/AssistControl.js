@@ -278,7 +278,6 @@ export class AssistControl {
                 const exportButton = document.getElementById('export-data');
                 const _dialog = document.getElementById('dialog-content');
                 exportButton.addEventListener('click', async () => {
-                    let rows = [];
                     const _values = {
                         start: document.getElementById('start-date'),
                         end: document.getElementById('end-date'),
