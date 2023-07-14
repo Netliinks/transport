@@ -966,7 +966,7 @@ export class Clients {
                     <div class="dialog">
                         <div class="dialog_container padding_8">
                             <div class="dialog_header">
-                                <h2>Seleccionar la fecha</h2>
+                                <h2>Seleccione un tipo</h2>
                             </div>
 
                             <div class="dialog_message padding_8">
@@ -1021,7 +1021,9 @@ export class Clients {
                     }
                 }
             })
-            
+            _closeButton.onclick = () => {
+                new CloseDialog().x(_dialog);
+            };
         });
     };
 

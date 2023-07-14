@@ -10,6 +10,7 @@ import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
 import { Config } from "../../../Configs.js"
 import { tableLayout } from "./Layout.js"
 import { tableLayoutTemplate } from "./Templates.js"
+import { exportEmployeeCsv, exportEmployeePdf, exportEmployeeXls } from "../../../exportFiles/employees.js"
 
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
@@ -917,25 +918,70 @@ export class Employees implements NUsers.IEmployees {
     private export = (): void => {
         const exportUsers: InterfaceElement = document.getElementById('export-entities');
         exportUsers.addEventListener('click', async() => {
-            let rows = []
-            const users: any = await getUsers()
-            for(let i=0; i < users.length; i++){
-                let user = users[i]
-                // @ts-ignore
-                    let obj = {
-                        "Nombre": `${user.firstName.split("\n").join("(salto)")}`,
-                        "Apellido 1": `${user.lastName.split("\n").join("(salto)")}`,
-                        "Apellido 2": `${user.secondLastName.split("\n").join("(salto)")}`,
-                        "Usuario": `${user.username}`,
-                        "DNI": `${user?.dni ?? ''}`,
-                        "Email": `${user?.email ?? ''}`,
-                        "Teléfono": `${user?.phone ?? ''}`,
-                        "ingressHour": `${user?.ingressHour ?? ''}`,
-                        "turnChange": `${user?.turnChange ?? ''}`
+            this.dialogContainer.style.display = 'block';
+            this.dialogContainer.innerHTML = `
+                <div class="dialog_content" id="dialog-content">
+                    <div class="dialog">
+                        <div class="dialog_container padding_8">
+                            <div class="dialog_header">
+                                <h2>Seleccione un tipo</h2>
+                            </div>
+
+                            <div class="dialog_message padding_8">
+                                <div class="form_group">
+                                    <label for="exportCsv">
+                                        <input type="radio" id="exportCsv" name="exportOption" value="csv" /> CSV
+                                    </label>
+
+                                    <label for="exportXls">
+                                        <input type="radio" id="exportXls" name="exportOption" value="xls" checked /> XLS
+                                    </label>
+
+                                    <label for="exportPdf">
+                                        <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="dialog_footer">
+                                <button class="btn btn_primary" id="cancel">Cancelar</button>
+                                <button class="btn btn_danger" id="export-data">Exportar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            inputObserver();
+            const _closeButton: InterfaceElement = document.getElementById('cancel');
+            const exportButton: InterfaceElement = document.getElementById('export-data');
+            const _dialog: InterfaceElement = document.getElementById('dialog-content');
+            exportButton.addEventListener('click', async() => {
+                const _values = {
+                    exportOption: document.getElementsByName('exportOption')
+                }
+                const users: any = await getUsers()
+                for (let i = 0; i < _values.exportOption.length; i++) {
+                    let ele: any = _values.exportOption[i]
+                    if (ele.type = "radio") {
+    
+                        if (ele.checked){
+                            if(ele.value == "xls"){
+                                // @ts-ignore
+                                exportEmployeeXls(users)
+                            }else if(ele.value == "csv"){
+                                // @ts-ignore
+                                exportEmployeeCsv(users)
+                            }else if(ele.value == "pdf"){
+                                // @ts-ignore
+                                exportEmployeePdf(users)
+                            }
                         }
-                        rows.push(obj)
-            }
-            generateCsv(rows, "Empleados")
+                    }
+                }
+            })
+            _closeButton.onclick = () => {
+                new CloseDialog().x(_dialog);
+            };
         });
     };
 
