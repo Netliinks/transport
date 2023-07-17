@@ -25,12 +25,20 @@ export const UIContentLayout = `
             CI <i class="fa-regular fa-filter"></i>
             </span></th>
 
-            <th class="thead_centered" width=100><span data-type="start">
+            <th class="thead_centered" width=100><span data-type="start-date">
             Inicio <i class="fa-regular fa-filter"></i>
             </span></th>
 
-            <th class="thead_centered" width=120><span data-type="end">
+            <th class="thead_centered" width=100><span data-type="start">
+            Hora <i class="fa-regular fa-filter"></i>
+            </span></th>
+
+            <th class="thead_centered" width=100><span data-type="end-date">
             Fin <i class="fa-regular fa-filter"></i>
+            </span></th>
+
+            <th class="thead_centered" width=120><span data-type="end">
+            Hora <i class="fa-regular fa-filter"></i>
             </span></th>
 
             <th class="thead_centered" width=110><span data-type="state">
