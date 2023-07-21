@@ -6,7 +6,8 @@ import { Visits } from "../views/binnacle/visits/VisitsView.js";
 import { Employees } from "../views/users/employees/employees.js";
 // @ts-ignore
 import { Contractors } from "../views/users/contractors/Contractors.js";
-import { AssistControl } from "../views/binnacle/assistcontrol/AssistControl.js";
+import { AssistControl } from "../views/attendance/assistcontrol/AssistControl.js";
+import { AssistGestion } from "../views/attendance/assistgestion/AssistGestion.js";
 import { Departments } from "../views/departments/Departments.js";
 import { SuperUsers } from "../views/users/SuperUsers/SuperUsers.js";
 import { Events } from "../views/binnacle/Events/EventsView.js";
@@ -38,7 +39,7 @@ export class Sidebar {
         <div class="sidebar_top">
           <div class="sidebar_header"></div>
 
-          <div class="sidebar_items">
+          <div class="sidebar_items"  style="overflow-y:scroll; height: 100%; max-height: 45rem;">
             <div class="sidebar_item">
               <span class="sidebar_item_label" id="render-dashboard">
                 <i class="fa-regular fa-chart-simple"></i> <div class="label">Dashboard</div>
@@ -90,12 +91,6 @@ export class Sidebar {
                   </span>
                 </div>
 
-                <div class="sidebar_subitem" id="render-assistControl">
-                  <span class="sidebar_subitem_label">
-                    <i class="fa-regular fa-marker"></i> <div class="label">Control de<br> asistencia</div>
-                  </span>
-                </div>
-
                 <div class="sidebar_subitem" id="render-events">
                   <span class="sidebar_subitem_label">
                     <i class="fa-regular fa-megaphone"></i> <div class="label">Eventos</div>
@@ -120,6 +115,28 @@ export class Sidebar {
               <span class="sidebar_item_label">
                 <i class="fa-regular fa-shield"></i> <div class="label">Superusuarios</div>
               </span>
+            </div>
+
+            <div class="sidebar_item">
+              <span class="sidebar_item_label">
+              <i class="fa-regular fa-calendar"></i></i> <div class="label">Asistencia</div>
+              </span>
+
+              <div class="sidebar_subitems">
+
+                <div class="sidebar_subitem" id="render-assistControl">
+                  <span class="sidebar_subitem_label">
+                    <i class="fa-regular fa-marker"></i> <div class="label">Control</div>
+                  </span>
+                </div>
+
+                <div class="sidebar_subitem" id="render-assistGestion">
+                  <span class="sidebar_subitem_label">
+                    <i class="fa-regular fa-list-alt"></i> <div class="label">Gestión</div>
+                  </span>
+                </div>
+
+              </div>
             </div>
           </div>
         </div>
@@ -156,6 +173,9 @@ export class Sidebar {
         // render AssistControl
         document.getElementById('render-assistControl')?.addEventListener('click', () => {
             new AssistControl().render();
+        });
+        document.getElementById('render-assistGestion')?.addEventListener('click', () => {
+            new AssistGestion().render();
         });
         // render AssistControl
         document.getElementById('render-events')?.addEventListener('click', () => {

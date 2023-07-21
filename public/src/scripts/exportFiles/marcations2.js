@@ -8,7 +8,7 @@ export const exportMarcationsPdf = (ar, start, end) => {
     doc.setFont(undefined, 'bold');
     doc.setTextColor(0, 0, 128);
     doc.setFontSize(25);
-    doc.text(10, 40, `Marcaciones`);
+    doc.text(10, 40, `Gestión Marcaciones`);
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
     doc.setFont(undefined, 'italic');
@@ -20,11 +20,9 @@ export const exportMarcationsPdf = (ar, start, end) => {
     doc.rect(5, 45, 195, 10, 'F');
     doc.text(10, 50, "Nombre");
     doc.text(50, 50, "DNI");
-    doc.text(80, 50, "Inicio");
-    doc.text(100, 50, "Hora");
-    doc.text(130, 50, "Fin");
-    doc.text(150, 50, "Hora");
-    doc.text(170, 50, "Estado");
+    doc.text(90, 50, "Fecha");
+    doc.text(120, 50, "Primera Marcación");
+    doc.text(160, 50, "última Marcación");
     doc.line(5, 55, 200, 55);
     let row = 60;
     let lineas = 0;
@@ -39,13 +37,11 @@ export const exportMarcationsPdf = (ar, start, end) => {
             doc.setFontSize(9);
             doc.setFont(undefined, 'normal');
             doc.setTextColor(0, 0, 0);
-            doc.text(10, row, `${marcation.user?.firstName ?? ''} ${marcation.user?.lastName ?? ''}`);
-            doc.text(50, row, `${marcation.user?.dni ?? ''}`);
-            doc.text(80, row, `${marcation.ingressDate}`);
-            doc.text(100, row, `${marcation.ingressTime}`);
-            doc.text(130, row, `${marcation?.egressDate ?? ''}`);
-            doc.text(150, row, `${marcation?.egressTime ?? ''}`);
-            doc.text(170, row, `${marcation.marcationState?.name ?? ''}`);
+            doc.text(10, row, `${marcation?.firstName ?? ''} ${marcation?.lastName ?? ''}`);
+            doc.text(50, row, `${marcation?.dni ?? ''}`);
+            doc.text(90, row, `${marcation.ingressDate}`);
+            doc.text(120, row, `${marcation.ingressTime}`);
+            doc.text(160, row, `${marcation?.egressTime ?? ''}`);
             row += 5;
             let limitLineas = 51;
             if (pagina == 1)
@@ -63,11 +59,9 @@ export const exportMarcationsPdf = (ar, start, end) => {
                 doc.rect(5, 15, 195, 10, 'F');
                 doc.text(10, 20, "Nombre");
                 doc.text(50, 20, "DNI");
-                doc.text(80, 20, "Inicio");
-                doc.text(100, 20, "Hora");
-                doc.text(130, 20, "Fin");
-                doc.text(150, 20, "Hora");
-                doc.text(170, 20, "Estado");
+                doc.text(90, 20, "Fecha");
+                doc.text(120, 20, "Primera Marcación");
+                doc.text(160, 20, "última Marcación");
                 doc.line(5, 25, 200, 25);
                 doc.setTextColor(0, 0, 128);
                 doc.text(10, 290, `Página ${pagina}`);
@@ -77,7 +71,7 @@ export const exportMarcationsPdf = (ar, start, end) => {
     }
     // Save the PDF
     var d = new Date();
-    var title = "log_Marcaciones_" + d.getDate() + "_" + (d.getMonth() + 1) + "_" + d.getFullYear() + `.pdf`;
+    var title = "log_GestMarc_" + d.getDate() + "_" + (d.getMonth() + 1) + "_" + d.getFullYear() + `.pdf`;
     doc.save(title);
 };
 export const exportMarcationsCsv = (ar, start, end) => {
@@ -87,20 +81,16 @@ export const exportMarcationsCsv = (ar, start, end) => {
         // @ts-ignore
         if (marcation.ingressDate >= start && marcation.ingressDate <= end) {
             let obj = {
-                "DNI": `${marcation.user?.dni ?? ''}`,
-                "Usuario": `${marcation.user?.firstName ?? ''} ${marcation.user?.lastName ?? ''}`,
-                "Fecha Ingreso": `${marcation.ingressDate}`,
-                "Hora Ingreso": `${marcation.ingressTime}`,
-                "Emitido Ingreso": `${marcation.ingressIssued?.firstName ?? ''} ${marcation.ingressIssued?.lastName ?? ''}`,
-                "Fecha Salida": `${marcation?.egressDate ?? ''}`,
-                "Hora Salida": `${marcation?.egressTime ?? ''}`,
-                "Emitido Salida": `${marcation.egressIssued?.firstName ?? ''} ${marcation.egressIssued?.lastName ?? ''}`,
-                "Estado": `${marcation.marcationState?.name ?? ''}`,
+                "DNI": `${marcation?.dni ?? ''}`,
+                "Usuario": `${marcation?.firstName ?? ''} ${marcation?.lastName ?? ''}`,
+                "Fecha": `${marcation.ingressDate}`,
+                "Primera Marcación": `${marcation.ingressTime}`,
+                "última Marcación": `${marcation?.egressTime ?? ''}`,
             };
             rows.push(obj);
         }
     }
-    generateFile(rows, "Marcaciones", "csv");
+    generateFile(rows, "GestMarc", "csv");
 };
 export const exportMarcationsXls = (ar, start, end) => {
     let rows = [];
@@ -109,20 +99,16 @@ export const exportMarcationsXls = (ar, start, end) => {
         // @ts-ignore
         if (marcation.ingressDate >= start && marcation.ingressDate <= end) {
             let obj = {
-                "DNI": `${marcation.user?.dni ?? ''}`,
-                "Usuario": `${marcation.user?.firstName ?? ''} ${marcation.user?.lastName ?? ''}`,
-                "Fecha Ingreso": `${marcation.ingressDate}`,
-                "Hora Ingreso": `${marcation.ingressTime}`,
-                "Emitido Ingreso": `${marcation.ingressIssued?.firstName ?? ''} ${marcation.ingressIssued?.lastName ?? ''}`,
-                "Fecha Salida": `${marcation?.egressDate ?? ''}`,
-                "Hora Salida": `${marcation?.egressTime ?? ''}`,
-                "Emitido Salida": `${marcation.egressIssued?.firstName ?? ''} ${marcation.egressIssued?.lastName ?? ''}`,
-                "Estado": `${marcation.marcationState?.name ?? ''}`,
+                "DNI": `${marcation?.dni ?? ''}`,
+                "Usuario": `${marcation?.firstName ?? ''} ${marcation?.lastName ?? ''}`,
+                "Fecha": `${marcation.ingressDate}`,
+                "Primera Marcación": `${marcation.ingressTime}`,
+                "última Marcación": `${marcation?.egressTime ?? ''}`,
             };
             rows.push(obj);
         }
     }
-    generateFile(rows, "Marcaciones", "xls");
+    generateFile(rows, "GestMarc", "xls");
 };
 const generateFile = (ar, title, extension) => {
     //comprobamos compatibilidad
