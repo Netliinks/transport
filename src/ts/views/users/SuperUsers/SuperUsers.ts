@@ -2,7 +2,7 @@
 
 import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, sendMail, getFilterEntityData } from "../../../endpoints.js"
 import { NUsers } from "../../../namespaces.js"
-import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, filterDataByHeaderType } from "../../../tools.js"
+import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, filterDataByHeaderType, getVerifyUsername } from "../../../tools.js"
 import { InterfaceElement } from "../../../types.js"
 import { Config } from "../../../Configs.js"
 import { tableLayout } from "./Layout.js"
@@ -383,7 +383,10 @@ export class SuperUsers {
                                                                ${randomKey.key}\nNo responder a este correo.\nSaludos.\n\n\nNetliinks S.A.`
                 })
                 const existEmail = await getVerifyEmail(inputsCollection.email.value)
-                if(existEmail == true){
+                const existUsername = await getVerifyUsername(`${inputsCollection.username.value}@${currentUserInfo.customer.name.toLowerCase().replace(/\s+/g, '')}.com`)
+                if(existUsername != "none"){
+                    alert("¡Usuario ya existe, es tipo "+existUsername+"!")
+                }else if(existEmail == true){
                     alert("¡Correo electrónico ya existe!")
                 }else if(inputsCollection.firstName.value === '' || inputsCollection.firstName.value === undefined){
                     alert("¡Nombre vacío!")

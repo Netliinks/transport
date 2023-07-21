@@ -5,7 +5,7 @@
 //
 import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, getFilterEntityData } from "../../../endpoints.js"
 import { NUsers } from "../../../namespaces.js"
-import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail } from "../../../tools.js"
+import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, getVerifyUsername } from "../../../tools.js"
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
 import { Config } from "../../../Configs.js"
 import { tableLayout } from "./Layout.js"
@@ -405,7 +405,10 @@ export class Employees implements NUsers.IEmployees {
                 /*if(existEmail == true){
                     alert("¡Correo electrónico ya existe!");
                 }else */
-                if(_values.firstName.value === '' || _values.firstName.value === undefined){
+                const existUsername = await getVerifyUsername(`${_values.username.value}@${currentUserInfo.customer.name.toLowerCase().replace(/\s+/g, '')}.com`)
+                if(existUsername != "none"){
+                    alert("¡Usuario ya existe, es tipo "+existUsername+"!")
+                }else if(_values.firstName.value === '' || _values.firstName.value === undefined){
                     alert("¡Nombre vacío!")
                 }else if(_values.lastName.value === '' || _values.lastName.value === undefined){
                     alert("¡Primer apellido vacío!")
