@@ -41,6 +41,10 @@ export const tableLayout = `
           Estado <i class="fa-regular fa-filter"></i>
         </span></th>
 
+        <th class="thead_centered"><span data-type="verified">
+          Verif. <i class="fa-regular fa-filter"></i>
+        </span></th>
+
         <th class="header_filled"></th>
 
       </tr></thead>
