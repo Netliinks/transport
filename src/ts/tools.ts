@@ -281,7 +281,7 @@ export const getVerifyUsername = async (username: string) => {
         });
         let data = await getFilterEntityData("User", raw);
         if(data.length != 0){
-            value = `${verifyUserType(data[0].userType)}`;
+            value = `${verifyUserType(data[0].userType)}, super: ${data[0].isSuper ? 'Si' : 'No'}`;
         }
     }
     return value;
