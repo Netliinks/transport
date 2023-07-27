@@ -56,20 +56,20 @@ export class Clients {
             let UserNameSLNFragment = '';
             firstName.addEventListener('keyup', (e) => {
                 UserNameFFragment = firstName.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                userName.setAttribute('value', `${UserNameFFragment.trim()}.${UserNameLNFragment}${UserNameSLNFragment}`);
+                userName.setAttribute('value', `${UserNameFFragment.trim()}.${UserNameLNFragment}${UserNameSLNFragment[0] ?? ''}`);
             });
             lastName.addEventListener('keyup', (e) => {
                 UserNameLNFragment = lastName.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                userName.setAttribute('value', `${UserNameFFragment.trim()}.${UserNameLNFragment}${UserNameSLNFragment}`);
+                userName.setAttribute('value', `${UserNameFFragment.trim()}.${UserNameLNFragment}${UserNameSLNFragment[0] ?? ''}`);
             });
             secondLastName.addEventListener('keyup', (e) => {
                 UserNameSLNFragment = secondLastName.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                 if (secondLastName.value.length > 0) {
-                    UserNameFFragment[0];
+                    //UserNameFFragment[0]
                     userName.setAttribute('value', `${UserNameFFragment}.${UserNameLNFragment}${UserNameSLNFragment[0]}`);
                 }
                 else {
-                    userName.setAttribute('value', `${UserNameFFragment}.${UserNameLNFragment}${UserNameSLNFragment}`);
+                    userName.setAttribute('value', `${UserNameFFragment}.${UserNameLNFragment}`);
                 }
             });
         };

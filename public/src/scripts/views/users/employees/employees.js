@@ -62,20 +62,20 @@ export class Employees {
             _fragmentThree = '';
             firstName.addEventListener('keyup', (e) => {
                 _fragmentOne = firstName.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                userName.setAttribute('value', `${_fragmentOne.trim()}.${_fragmentTwo}${_fragmentThree}`);
+                userName.setAttribute('value', `${_fragmentOne.trim()}.${_fragmentTwo}${_fragmentThree[0] ?? ''}`);
             });
             lastName.addEventListener('keyup', (e) => {
                 _fragmentTwo = lastName.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                userName.setAttribute('value', `${_fragmentOne.trim()}.${_fragmentTwo}${_fragmentThree}`);
+                userName.setAttribute('value', `${_fragmentOne.trim()}.${_fragmentTwo}${_fragmentThree[0] ?? ''}`);
             });
             secondLastName.addEventListener('keyup', (e) => {
                 _fragmentThree = secondLastName.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                 if (secondLastName.value.length > 0) {
-                    _fragmentOne[0];
+                    //_fragmentOne[0]
                     userName.setAttribute('value', `${_fragmentOne}.${_fragmentTwo}${_fragmentThree[0]}`);
                 }
                 else {
-                    userName.setAttribute('value', `${_fragmentOne}.${_fragmentTwo}${_fragmentThree}`);
+                    userName.setAttribute('value', `${_fragmentOne}.${_fragmentTwo}`);
                 }
             });
         };
