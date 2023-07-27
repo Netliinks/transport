@@ -671,7 +671,7 @@ export class Contractors {
                         id="entity-dni"
                         class="input_filled"
                         maxlength="10"
-                        value="${data?.dni ?? ''}" disabled>
+                        value="${data?.dni ?? ''}">
                     <label for="entity-dni">Cédula</label>
                     </div>
 
@@ -793,18 +793,18 @@ export class Contractors {
         const updatecontractor = async (contractorId) => {
             let updateButton;
             updateButton = document.getElementById('update-changes');
-            const _values = {
-                //firstName: document.getElementById('entity-firstname'),
-                //lastName: document.getElementById('entity-lastname'),
-                //secondLastName: document.getElementById('entity-secondlastname'),
-                phone: document.getElementById('entity-phone'),
-                //dni: document.getElementById('entity-dni'),
-                status: document.getElementById('entity-state'),
-                ingressHour: document.getElementById('start-time'),
-                turnChange: document.getElementById('end-time'),
-                //contractor: document.getElementById('entity-contractor'),
-            };
             updateButton.addEventListener('click', () => {
+                const _values = {
+                    //firstName: document.getElementById('entity-firstname'),
+                    //lastName: document.getElementById('entity-lastname'),
+                    //secondLastName: document.getElementById('entity-secondlastname'),
+                    phone: document.getElementById('entity-phone'),
+                    dni: document.getElementById('entity-dni'),
+                    status: document.getElementById('entity-state'),
+                    ingressHour: document.getElementById('start-time'),
+                    turnChange: document.getElementById('end-time'),
+                    //contractor: document.getElementById('entity-contractor'),
+                };
                 let contractorRaw = JSON.stringify({
                     //"lastName": `${_values.lastName.value}`,
                     //"secondLastName": `${_values.secondLastName.value}`,
@@ -816,12 +816,17 @@ export class Contractors {
                     "ingressHour": `${_values.ingressHour.value}`,
                     "turnChange": `${_values.turnChange.value}`,
                     "phone": `${_values.phone.value}`,
-                    //"dni": `${_values.dni.value}`,
+                    "dni": `${_values.dni.value}`,
                     /*"contractor": {
                         "id": `${_values.contractor.optionid}`
                     }*/
                 });
-                update(contractorRaw);
+                if (_values.dni.value === '' || _values.dni.value === undefined) {
+                    alert("DNI vacío!");
+                }
+                else {
+                    update(contractorRaw);
+                }
             });
             /**
              * Update entity and execute functions to finish defying user

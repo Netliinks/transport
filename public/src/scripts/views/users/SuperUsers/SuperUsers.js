@@ -557,7 +557,7 @@ export class SuperUsers {
             </div>
 
             <div class="material_input">
-              <input type="text" maxlength="10" id="entity-dni" class="input_filled" value="${data.dni}" readonly>
+              <input type="text" maxlength="10" id="entity-dni" class="input_filled" value="${data.dni}">
               <label for="entity-dni">Cédula</label>
             </div>
 
@@ -651,31 +651,33 @@ export class SuperUsers {
         };
         const UUpdate = async (entityId) => {
             const updateButton = document.getElementById('update-changes');
-            const $value = {
-                // @ts-ignore
-                //firstName: document.getElementById('entity-firstname'),
-                // @ts-ignore
-                //lastName: document.getElementById('entity-lastname'),
-                // @ts-ignore
-                //secondLastName: document.getElementById('entity-secondlastname'),
-                // @ts-ignore
-                phone: document.getElementById('entity-phone'),
-                // @ts-ignore
-                //email: document.getElementById('entity-email'),
-                // @ts-ignore
-                status: document.getElementById('entity-state'),
-                // @ts-ignore
-                //business: document.getElementById('entity-business'),
-                // @ts-ignore
-                //citadel: document.getElementById('entity-citadel'),
-                // @ts-ignore
-                //department: document.getElementById('entity-department'),
-                // @ts-ignore
-                //customer: document.getElementById('entity-customer'),
-                //// @ts-ignore
-                //userType: document.getElementById('entity-type')
-            };
             updateButton.addEventListener('click', async () => {
+                const $value = {
+                    // @ts-ignore
+                    //firstName: document.getElementById('entity-firstname'),
+                    // @ts-ignore
+                    //lastName: document.getElementById('entity-lastname'),
+                    // @ts-ignore
+                    //secondLastName: document.getElementById('entity-secondlastname'),
+                    // @ts-ignore
+                    phone: document.getElementById('entity-phone'),
+                    // @ts-ignore
+                    //email: document.getElementById('entity-email'),
+                    // @ts-ignore
+                    status: document.getElementById('entity-state'),
+                    // @ts-ignore
+                    dni: document.getElementById('entity-dni'),
+                    // @ts-ignore
+                    //business: document.getElementById('entity-business'),
+                    // @ts-ignore
+                    //citadel: document.getElementById('entity-citadel'),
+                    // @ts-ignore
+                    //department: document.getElementById('entity-department'),
+                    // @ts-ignore
+                    //customer: document.getElementById('entity-customer'),
+                    //// @ts-ignore
+                    //userType: document.getElementById('entity-type')
+                };
                 let raw = JSON.stringify({
                     // @ts-ignore
                     //"lastName": `${$value.lastName?.value}`,
@@ -693,6 +695,8 @@ export class SuperUsers {
                     // @ts-ignore
                     "phone": `${$value.phone?.value}`,
                     // @ts-ignore
+                    "dni": `${$value.dni.value}`,
+                    // @ts-ignore
                     //"email": `${$value.email?.value}`,
                     // @ts-ignore
                     //"userType": `${$value.userType?.dataset.optionid}`,
@@ -703,7 +707,13 @@ export class SuperUsers {
                 }else{
                     update(raw);
                 } */
-                update(raw);
+                // @ts-ignore
+                if ($value.dni.value === '' || $value.dni.value === undefined) {
+                    alert("DNI vacío!");
+                }
+                else {
+                    update(raw);
+                }
             });
             const update = (raw) => {
                 updateEntity('User', entityId, raw)
