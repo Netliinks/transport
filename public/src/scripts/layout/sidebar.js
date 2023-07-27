@@ -13,6 +13,7 @@ import { SuperUsers } from "../views/users/SuperUsers/SuperUsers.js";
 import { Events } from "../views/binnacle/Events/EventsView.js";
 import { Binnacle } from "../views/binnacle/binnacle/BinnacleView.js";
 import { Blacklist } from "../views/users/blacklist/blacklist.js";
+import { Vehiculars } from "../views/binnacle/vehiculars/Vehiculars.js";
 export class Sidebar {
     constructor() {
         this.sidebarContainer = document.getElementById('app-sidebar');
@@ -109,6 +110,12 @@ export class Sidebar {
                     <i class="fa-regular fa-book"></i> <div class="label">Bitácora</div>
                   </span>
                 </div>
+
+                <div class="sidebar_subitem" id="render-vehiculars">
+                  <span class="sidebar_subitem_label">
+                    <i class="fa-regular fa-car"></i> <div class="label">Ingreso Vehicular</div>
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -179,6 +186,10 @@ export class Sidebar {
         });
         document.getElementById('render-binnacle')?.addEventListener('click', () => {
             new Binnacle().render();
+        });
+        // render AssistControl
+        document.getElementById('render-vehiculars')?.addEventListener('click', () => {
+            new Vehiculars().render();
         });
         // render AssistControl
         document.getElementById('render-assistControl')?.addEventListener('click', () => {
