@@ -1,5 +1,5 @@
 // @filename: Departments.ts
-import { deleteEntity, getEntitiesData, registerEntity } from "../../endpoints.js";
+import { deleteEntity, registerEntity, getFilterEntityData } from "../../endpoints.js";
 import { inputObserver, CloseDialog, filterDataByHeaderType } from "../../tools.js";
 import { Config } from "../../Configs.js";
 import { tableLayout } from "./Layout.js";
@@ -7,10 +7,24 @@ import { tableLayoutTemplate } from "./Template.js";
 const tableRows = Config.tableRows;
 const currentPage = Config.currentPage;
 const customerId = localStorage.getItem('customer_id');
+let dataPage;
 const getDepartments = async () => {
-    const departmentRaw = await getEntitiesData('Department');
-    const department = departmentRaw.filter((data) => `${data.customer?.id}` === `${customerId}`);
-    return department;
+    //const departmentRaw: any = await getEntitiesData('Department')
+    //const department = departmentRaw.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    let raw = JSON.stringify({
+        "filter": {
+            "conditions": [
+                {
+                    "property": "customer.id",
+                    "operator": "=",
+                    "value": `${customerId}`
+                }
+            ],
+        },
+        sort: "-createdDate",
+    });
+    dataPage = await getFilterEntityData("Department", raw);
+    return dataPage;
 };
 export class Departments {
     constructor() {
@@ -221,13 +235,3 @@ export class Departments {
         }
     }
 }
-export const setNewPassword = async () => {
-    const users = await getEntitiesData('User');
-    const FNewUsers = users.filter((data) => data.isSuper === false);
-    FNewUsers.forEach((newUser) => {
-    });
-    console.group('Nuevos usuarios');
-    console.log(FNewUsers);
-    console.time(FNewUsers);
-    console.groupEnd();
-};

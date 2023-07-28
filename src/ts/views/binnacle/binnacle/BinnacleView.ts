@@ -1,7 +1,7 @@
 // @filename: EvetnsView.ts
 
 import { Config } from "../../../Configs.js"
-import { getEntityData, getEntitiesData, getUserInfo } from "../../../endpoints.js"
+import { getEntityData, getFilterEntityData } from "../../../endpoints.js"
 import { exportBinnacleCsv, exportBinnaclePdf, exportBinnacleXls } from "../../../exportFiles/binnacle.js"
 import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver } from "../../../tools.js"
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
@@ -13,16 +13,63 @@ const tableRows = Config.tableRows
 let currentPage = Config.currentPage
 const pageName = 'Bitácora'
 const customerId = localStorage.getItem('customer_id')
+let dataPage: any
 const getEvents = async (): Promise<void> => {
-    const eventsRaw = await getEntitiesData('Notification')
+    /*const eventsRaw = await getEntitiesData('Notification')
     const events = eventsRaw.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
     const removeOtroFromList = events.filter((data: any) => data.notificationType.name !== "Otro")
     const removeFuegoFromList = removeOtroFromList.filter((data: any) => data.notificationType.name !== '🔥 Fuego')
     const removeCaidoFromList = removeFuegoFromList.filter((data: any) => data.notificationType.name !== '🚨 Hombre Caído')
     const removeIntrusionFromList = removeCaidoFromList.filter((data: any) => data.notificationType.name !== '🚪 Intrusión')
     const removeRoboFromList = removeIntrusionFromList.filter((data: any) => data.notificationType.name !== '🏚 Robo')
-    const removePanicoFromList = removeRoboFromList.filter((data: any) => data.notificationType.name !== 'Botón Pánico')
-    return removePanicoFromList
+    const removePanicoFromList = removeRoboFromList.filter((data: any) => data.notificationType.name !== 'Botón Pánico')*/
+    let raw = JSON.stringify({
+        "filter": {
+            "conditions": [
+              {
+                "property": "customer.id",
+                "operator": "=",
+                "value": `${customerId}`
+              },
+              {
+                "property": "notificationType.name",
+                "operator": "<>",
+                "value": `Otro`
+              },
+              {
+                "property": "notificationType.name",
+                "operator": "<>",
+                "value": `🔥 Fuego`
+              },
+              {
+                "property": "notificationType.name",
+                "operator": "<>",
+                "value": `🚨 Hombre Caído`
+              },
+              {
+                "property": "notificationType.name",
+                "operator": "<>",
+                "value": `🚪 Intrusión`
+              },
+              {
+                "property": "notificationType.name",
+                "operator": "<>",
+                "value": `🏚 Robo`
+              },
+              {
+                "property": "notificationType.name",
+                "operator": "<>",
+                "value": `Botón Pánico`
+              },
+            ],
+            
+        }, 
+        sort: "-createdDate",
+        fetchPlan: 'full',
+        
+    })
+    dataPage = await getFilterEntityData("Notification", raw)
+    return dataPage
 }
 
 export class Binnacle {
@@ -229,13 +276,12 @@ export class Binnacle {
             const exportButton: InterfaceElement = document.getElementById('export-data');
             const _dialog: InterfaceElement = document.getElementById('dialog-content');
             exportButton.addEventListener('click', async() => {
-                let rows = [];
                 const _values = {
                     start: document.getElementById('start-date'),
                     end: document.getElementById('end-date'),
                     exportOption: document.getElementsByName('exportOption')
                 }
-                const events: any = await getEvents();
+                const events: any = dataPage //await getEvents();
                 for (let i = 0; i < _values.exportOption.length; i++) {
                     let ele: any = _values.exportOption[i]
                     if (ele.type = "radio") {

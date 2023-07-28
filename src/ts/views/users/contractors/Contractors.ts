@@ -1,6 +1,6 @@
 // @filename: Contractors.ts
 
-import { deleteEntity, getEntitiesData, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, getFilterEntityData } from "../../../endpoints.js"
+import { deleteEntity, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, getFilterEntityData } from "../../../endpoints.js"
 import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, getVerifyUsername } from "../../../tools.js"
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
 import { Config } from "../../../Configs.js"
@@ -12,15 +12,42 @@ const tableRows = Config.tableRows
 const currentPage = Config.currentPage
 const customerId = localStorage.getItem('customer_id')
 let currentUserInfo : any
+let dataPage: any
 const getUsers = async (): Promise<void> => {
     const currentUser = await getUserInfo()
     currentUserInfo = await getEntityData('User', `${currentUser.attributes.id}`)
 
-    const users: any = await getEntitiesData('User')
-    const FSuper: any = users.filter((data: any) => data.isSuper === false)
-    const FCustomer: any = FSuper.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
-    const data: any = FCustomer.filter((data: any) => `${data.userType}`.includes('CONTRACTOR'))
-    return data
+    //const users: any = await getEntitiesData('User')
+    //const FSuper: any = users.filter((data: any) => data.isSuper === false)
+    //const FCustomer: any = FSuper.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    //const data: any = FCustomer.filter((data: any) => `${data.userType}`.includes('CONTRACTOR'))
+    let raw = JSON.stringify({
+        "filter": {
+            "conditions": [
+              {
+                "property": "customer.id",
+                "operator": "=",
+                "value": `${customerId}`
+              },
+              {
+                "property": "isSuper",
+                "operator": "=",
+                "value": `${false}`
+              },
+              {
+                "property": "userType",
+                "operator": "=",
+                "value": `CONTRACTOR`
+              }
+            ],
+            
+        }, 
+        sort: "-createdDate",
+        fetchPlan: 'full',
+        
+    })
+    dataPage = await getFilterEntityData("User", raw)
+    return dataPage
 }
 
 export class Contractors {
@@ -934,7 +961,7 @@ export class Contractors {
                 const _values = {
                     exportOption: document.getElementsByName('exportOption')
                 }
-                const users: any = await getUsers()
+                const users: any = dataPage //await getUsers()
                 for (let i = 0; i < _values.exportOption.length; i++) {
                     let ele: any = _values.exportOption[i]
                     if (ele.type = "radio") {

@@ -41,10 +41,6 @@ export const UIContentLayout = `
             Estado <i class="fa-regular fa-filter"></i>
             </span></th>
 
-            <th class="thead_centered" width=150><span data-type="citadel">
-            Ciudadela <i class="fa-regular fa-filter"></i>
-            </span></th>
-
             <th class="thead_centered" width=120><span data-type="details">
             Detalles
             </span></th>

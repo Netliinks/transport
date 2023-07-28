@@ -42,7 +42,7 @@ export const exportReportPdf = (ar, start, end) => {
         doc.text(50, row + 15, `${report.usuario}`);
         doc.text(90, row + 15, `${report.titulo}`);
         var description = report.contenido.split("\n").join("(salto)");
-        console.log(description.length);
+        //console.log(description.length)
         if (description.length > 550)
             doc.setFontSize(7);
         var lMargin = 140; //left margin in mm

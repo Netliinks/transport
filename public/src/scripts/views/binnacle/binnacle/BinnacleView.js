@@ -1,6 +1,6 @@
 // @filename: EvetnsView.ts
 import { Config } from "../../../Configs.js";
-import { getEntityData, getEntitiesData } from "../../../endpoints.js";
+import { getEntityData, getFilterEntityData } from "../../../endpoints.js";
 import { exportBinnacleCsv, exportBinnaclePdf, exportBinnacleXls } from "../../../exportFiles/binnacle.js";
 import { CloseDialog, renderRightSidebar, filterDataByHeaderType, inputObserver } from "../../../tools.js";
 import { UIContentLayout, UIRightSidebar } from "./Layout.js";
@@ -10,16 +10,61 @@ const tableRows = Config.tableRows;
 let currentPage = Config.currentPage;
 const pageName = 'Bitácora';
 const customerId = localStorage.getItem('customer_id');
+let dataPage;
 const getEvents = async () => {
-    const eventsRaw = await getEntitiesData('Notification');
-    const events = eventsRaw.filter((data) => `${data.customer?.id}` === `${customerId}`);
-    const removeOtroFromList = events.filter((data) => data.notificationType.name !== "Otro");
-    const removeFuegoFromList = removeOtroFromList.filter((data) => data.notificationType.name !== '🔥 Fuego');
-    const removeCaidoFromList = removeFuegoFromList.filter((data) => data.notificationType.name !== '🚨 Hombre Caído');
-    const removeIntrusionFromList = removeCaidoFromList.filter((data) => data.notificationType.name !== '🚪 Intrusión');
-    const removeRoboFromList = removeIntrusionFromList.filter((data) => data.notificationType.name !== '🏚 Robo');
-    const removePanicoFromList = removeRoboFromList.filter((data) => data.notificationType.name !== 'Botón Pánico');
-    return removePanicoFromList;
+    /*const eventsRaw = await getEntitiesData('Notification')
+    const events = eventsRaw.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    const removeOtroFromList = events.filter((data: any) => data.notificationType.name !== "Otro")
+    const removeFuegoFromList = removeOtroFromList.filter((data: any) => data.notificationType.name !== '🔥 Fuego')
+    const removeCaidoFromList = removeFuegoFromList.filter((data: any) => data.notificationType.name !== '🚨 Hombre Caído')
+    const removeIntrusionFromList = removeCaidoFromList.filter((data: any) => data.notificationType.name !== '🚪 Intrusión')
+    const removeRoboFromList = removeIntrusionFromList.filter((data: any) => data.notificationType.name !== '🏚 Robo')
+    const removePanicoFromList = removeRoboFromList.filter((data: any) => data.notificationType.name !== 'Botón Pánico')*/
+    let raw = JSON.stringify({
+        "filter": {
+            "conditions": [
+                {
+                    "property": "customer.id",
+                    "operator": "=",
+                    "value": `${customerId}`
+                },
+                {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `Otro`
+                },
+                {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `🔥 Fuego`
+                },
+                {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `🚨 Hombre Caído`
+                },
+                {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `🚪 Intrusión`
+                },
+                {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `🏚 Robo`
+                },
+                {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `Botón Pánico`
+                },
+            ],
+        },
+        sort: "-createdDate",
+        fetchPlan: 'full',
+    });
+    dataPage = await getFilterEntityData("Notification", raw);
+    return dataPage;
 };
 export class Binnacle {
     constructor() {
@@ -200,13 +245,12 @@ export class Binnacle {
                 const exportButton = document.getElementById('export-data');
                 const _dialog = document.getElementById('dialog-content');
                 exportButton.addEventListener('click', async () => {
-                    let rows = [];
                     const _values = {
                         start: document.getElementById('start-date'),
                         end: document.getElementById('end-date'),
                         exportOption: document.getElementsByName('exportOption')
                     };
-                    const events = await getEvents();
+                    const events = dataPage; //await getEvents();
                     for (let i = 0; i < _values.exportOption.length; i++) {
                         let ele = _values.exportOption[i];
                         if (ele.type = "radio") {

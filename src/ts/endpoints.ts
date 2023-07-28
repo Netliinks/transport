@@ -128,7 +128,7 @@ export const getEntityData = async (entities: string, entity: string): Endpoint 
 
 export const getFilterEntityData = async (entities: string, raw: any): Endpoint => {
     const req = {
-        url: `${NetliinksUrl}${entities}/search?fetchPlan=full&sort=-createdDate`,
+        url: `${NetliinksUrl}${entities}/search`,
         method: 'POST'
     };
     const requestOptions: {} = {

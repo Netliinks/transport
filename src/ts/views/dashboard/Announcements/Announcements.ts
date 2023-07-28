@@ -1,6 +1,6 @@
 // @filename: announcements
 
-import { deleteEntity, getEntitiesData, getUserInfo, registerEntity, getEntityData, setFile, getFile, updateEntity } from "../../../endpoints.js";
+import { deleteEntity, getUserInfo, registerEntity, getEntityData, setFile, getFile, updateEntity, getFilterEntityData } from "../../../endpoints.js";
 import { CloseDialog, inputObserver, userInfo } from "../../../tools.js";
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js";
 import { announcementCreatorController } from "./AnnouncementsCreatorControllers.js";
@@ -14,8 +14,24 @@ export class Announcements {
         this._announcementCardContainer.innerHTML = ''
         this._announcementCardControlsContainers.innerHTML = ''
         const customerId = localStorage.getItem('customer_id');
-        const announcements: any = await getEntitiesData('Announcement')
-        const announcementsList = announcements.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+        //const announcements: any = await getEntitiesData('Announcement')
+        //const announcementsList = announcements.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+        let raw = JSON.stringify({
+            "filter": {
+                "conditions": [
+                  {
+                    "property": "customer.id",
+                    "operator": "=",
+                    "value": `${customerId}`
+                  }
+                ],
+                
+            }, 
+            sort: "-createdDate",
+            fetchPlan: 'full',
+            
+        })
+        let announcementsList = await getFilterEntityData("Announcement", raw)
         //let _userinfo: any = await getUserInfo()
         //console.log(_userinfo)
         let prop: any
