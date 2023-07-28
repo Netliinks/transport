@@ -98,7 +98,6 @@ export class Notes {
                     <td>${note.title}</td>
                     <td>${note.content}</td>
                     <td id="table-date">${noteCreationDate}</td>
-                    <td id="table-Time">${noteCreationTime}</td>
                     <td>
                         <button class="button" id="entity-details" data-entityId="${note.id}">
                             <i class="fa-solid fa-magnifying-glass"></i>

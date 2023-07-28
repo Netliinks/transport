@@ -28,11 +28,6 @@ export const UIContentLayout = `
             Fecha <i class="fa-regular fa-filter"></i>
             </span></th>
 
-            <th class="thead_centered" width=220><span data-type="time">
-            Hora <i class="fa-regular fa-filter"></i>
-            </span></th>
-
-
             <th class="thead_centered" width=130><span data-type="details">
             Detalles
             </span></th>
