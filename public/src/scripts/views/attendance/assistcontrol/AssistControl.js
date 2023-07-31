@@ -84,6 +84,7 @@ export class AssistControl {
                     <td>${assistControl?.dni ?? ''}</td>
                     <td id="table-date">${assistControl.ingressDate}</td>
                     <td id="table-date">${assistControl.ingressTime}</td>
+                    <td id="table-date">${assistControl?.egressDate ?? ''}</td>
                     <td id="table-date">${assistControl?.egressTime ?? ''}</td>
                     <td class="tag"><span>${assistControl.marcationState?.name ?? ''}</span></td>
 

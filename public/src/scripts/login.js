@@ -82,7 +82,7 @@ export class SignIn {
             else {
                 if (customerId == null) {
                     let user = await getEntityData('User', currentUser.attributes.id);
-                    if (user.customer.id) {
+                    if (user.customer?.id != null || user.customer?.id != undefined) {
                         localStorage.setItem('customer_id', user.customer?.id);
                         window.location.reload();
                     }
