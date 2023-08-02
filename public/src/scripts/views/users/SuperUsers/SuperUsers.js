@@ -857,7 +857,7 @@ export class SuperUsers {
                     const modalContainer = document.getElementById('modal_container');
                     let mailRaw = [];
                     let updateRaw = [];
-                    let roleRaw = [];
+                    //let roleRaw: any = [];
                     inputMail.value = user.email;
                     nextButton.addEventListener('click', async () => {
                         const randomKey = { key: Math.floor(Math.random() * 999999) };
@@ -888,13 +888,13 @@ export class SuperUsers {
                                 "email": inputMail.value,
                                 "hashSuper": randomKey.key,
                             });
-                            roleRaw = JSON.stringify({
+                            /*roleRaw = JSON.stringify({
                                 "id": `${user.id}`,
                                 "roleCode": `app_web_clientes`
-                            });
+                            })*/
                             sendMail(mailRaw);
                             updateEntity('User', entityId, updateRaw);
-                            setUserRole(roleRaw);
+                            //setUserRole(roleRaw);
                             setTimeout(async () => {
                                 let data = await getUsers(SUser);
                                 const tableBody = document.getElementById('datatable-body');
