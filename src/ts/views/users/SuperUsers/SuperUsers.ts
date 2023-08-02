@@ -5,7 +5,7 @@ import { NUsers } from "../../../namespaces.js"
 import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, filterDataByHeaderType, getVerifyUsername } from "../../../tools.js"
 import { InterfaceElement } from "../../../types.js"
 import { Config } from "../../../Configs.js"
-import { tableLayout } from "./Layout.js"
+import { tableLayout, UIConvertToSU } from "./Layout.js"
 import { tableLayoutTemplate } from "./Templates.js"
 //import { verifyUserType } from "../../../tools.js"
 import { exportSuperCsv, exportSuperPdf, exportSuperXls } from "../../../exportFiles/superUsers.js"
@@ -108,6 +108,10 @@ export class SuperUsers {
           <td>${client.verifiedSuper ? 'Si' : 'No'}</td>
 
           <td class="entity_options">
+            <button class="button" id="convert-entity" data-entityId="${client.id}">
+                <i class="fa-solid fa-envelope"></i>
+            </button>
+
             <button class="button" id="edit-entity" data-entityId="${client.id}">
               <i class="fa-solid fa-pen"></i>
             </button>
@@ -889,12 +893,96 @@ export class SuperUsers {
         }
     }
 
-    public convertToSuper() {
+    private convertToSuper() {
         const convert: InterfaceElement = document.querySelectorAll('#convert-entity')
         convert.forEach((convert: InterfaceElement) => {
             const entityId = convert.dataset.entityid
-            convert.addEventListener('click', (): void => {
-                alert('Converting...')
+            convert.addEventListener('click', async (): Promise<void> => {
+                const user = await getEntityData('User', entityId)
+                if(!user.verifiedSuper){
+                    this.dialogContainer.style.display = 'block'
+                    this.dialogContainer.innerHTML = UIConvertToSU
+
+                    const modalUsername: InterfaceElement = document.getElementById('username')
+                    modalUsername.innerHTML = user.firstName
+                    inputObserver()
+
+                    // modal functionality
+                    const nextButton: InterfaceElement = document.getElementById('button-next-userconverter')
+                    const cancelButton: InterfaceElement = document.getElementById('button-cancel')
+                    const buttonBack: InterfaceElement = document.getElementById('button-back')
+                    const buttonSubmit: InterfaceElement = document.getElementById('button-submit')
+
+                    const modalViews: InterfaceElement = document.querySelectorAll('.modal_view')
+                    const buttonGroups: InterfaceElement = document.querySelectorAll('.modal_button_group')
+                    const stepCount: InterfaceElement = document.getElementById('stepCount')
+                    const resultMail: InterfaceElement = document.getElementById('result-mail')
+                    const inputMail: InterfaceElement = document.getElementById('input-email')
+                    const confirmationCode: InterfaceElement = document.getElementById('confirmation-code')
+                    const modalContainer: InterfaceElement = document.getElementById('modal_container')
+                    let mailRaw: any = []
+                    let updateRaw: any = []
+                    let roleRaw: any = [];
+                    inputMail.value = user.email;
+                    nextButton.addEventListener('click', async() => {
+                        const randomKey = { key: Math.floor(Math.random() * 999999) }
+                        const existEmail = await getVerifyEmail(inputMail.value);
+
+                        if (inputMail.value === '' || inputMail.value == null) {
+                            alert('Debe ingresar un correo para continuar.')
+                        }
+                        else if(inputMail.value != user.email && existEmail == true){
+                            alert("¡Correo electrónico ya existe!")
+                        } 
+                        else {
+                            modalViews.forEach((modalView: InterfaceElement) => {
+                                modalView.classList.toggle('modal_view-isHidden')
+                                stepCount.innerText = '2'
+                            });
+
+                            buttonGroups.forEach((buttonGroup: InterfaceElement) => {
+                                buttonGroup.classList.toggle('modal_button_group-isHidden')
+                            })
+
+                            resultMail.innerText = inputMail.value
+                            confirmationCode.innerText = randomKey.key
+
+                            mailRaw = JSON.stringify({
+                                "address": inputMail.value,
+                                "subject": "Netliinks - Clave de validación.",
+                                "body": `Estimado ${user.firstName}, el código de confirmación para ingresar a la plataforma de Netvisitors es: \n
+                                                                            ${randomKey.key}\nNo responder a este correo.\nSaludos.\n\n\nNetliinks S.A.`
+                            })
+
+                            updateRaw = JSON.stringify({
+                                "email": inputMail.value,
+                                "hashSuper": randomKey.key,
+                            })
+
+                            roleRaw = JSON.stringify({
+                                "id": `${user.id}`,
+                                "roleCode": `app_web_clientes`
+                            })
+
+                            sendMail(mailRaw);
+                            updateEntity('User', entityId, updateRaw);
+                            setUserRole(roleRaw);
+                            setTimeout(async () => {
+                                let data = await getUsers(SUser);
+                                const tableBody = document.getElementById('datatable-body');
+                                new CloseDialog().x(modalContainer);
+                                this.load(tableBody, currentPage, data);
+                            },100);
+                        }
+                    })
+                    cancelButton.onclick = () => {
+                        new CloseDialog().x(modalContainer)
+                    }
+                }else{
+                    alert(`Usuario ${user.username} ya está verificado.`)
+                }
+                
+
             })
         })
     }

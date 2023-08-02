@@ -57,3 +57,61 @@ export const tableLayout = `
     <div class="datatable_footer">
       <div class="datatable_pagination" id="pagination-container"></div>
     </div>`;
+export const UIConvertToSU = `
+  <div class="modal_container" id="modal_container">
+
+      <div class="modal_window">
+          <div class="modal_header">
+              <div class="modal_title modal_title-info">
+                  <div class="title">
+                      <i class="fa-solid fa-add-user"></i>
+                      <span class="title">Verificación</span>
+                  </div>
+
+                  <div class="counter">
+                      <span id="stepsCounter">Paso <span id="stepCount">1</span> de 2</span>
+                  </div>
+              </div>
+          </div>
+
+          <div class="modal_body">
+              <div id="modal-view-one" class="modal_view">
+                  <p>¿Desea enviar un nuevo código a verificación a <span id="username"></span>?</p>
+                  <br>
+
+                  <form>
+                      <div>
+                          <label for="input-email">
+                            Email <input type="email" id="input-email">
+                          </label>
+                      </div>
+
+                      <div class="material_input" style="display: none">
+                          <input type="password" id="input-password">
+                          <label for="input-password">Contraseña</label>
+                      </div>
+                  </form>
+              </div>
+
+              <div id="modal-view-two" class="modal_view modal_view-isHidden">
+                  <p>Se enviará un código de verificación al correo de <br> <b><span id="result-mail"></span></b></p>
+                  <p style="display: none">Su código de verificación es:</p>
+                  <b class="verification_code_result" style="display: none"><span id="confirmation-code"></span></b>
+              </div>
+          </div>
+
+          <div class="modal_footer">
+              <div class="modal_footer-align_right">
+                  <div class="modal_button_group align_right">
+                      <button class="btn btn_default" id="button-cancel">Cancelar</button>
+                      <button class="btn btn_primary" id="button-next-userconverter">Enviar</button>
+                  </div>
+                  <div class="modal_button_group modal_button_group-isHidden align_right">
+                      <button class="btn btn_default" id="button-back">Atrás</button>
+                      <button class="btn btn_primary" id="button-subtmit">Enviar</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+`;
