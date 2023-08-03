@@ -206,6 +206,10 @@ $TableBorder: 1px solid darken($gray, 10%);
         &:hover {
             box-shadow: $lightShadow2;
         }
+
+        &:active {
+          background: $lightShadow2;
+        }
     }
   }
 }

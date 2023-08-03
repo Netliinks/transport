@@ -5,7 +5,7 @@
 //
 import { Config } from "../../../Configs.js";
 import { getEntityData, getFile, getFilterEntityData } from "../../../endpoints.js";
-import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver, verifyUserType } from "../../../tools.js";
+import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver, verifyUserType, pageNumbers, fillBtnPagination } from "../../../tools.js";
 import { UIContentLayout, UIRightSidebar } from "./Layout.js";
 import { UITableSkeletonTemplate } from "./Template.js";
 import { exportVisitCsv, exportVisitPdf, exportVisitXls } from "../../../exportFiles/visits.js";
@@ -374,19 +374,74 @@ export class Visits {
         let pageCount;
         pageCount = Math.ceil(items.length / limitRows);
         let button;
-        for (let i = 1; i < pageCount + 1; i++) {
-            button = setupButtons(i, items, currentPage, tableBody, limitRows);
-            paginationWrapper.appendChild(button);
+        if (pageCount <= Config.maxLimitPage) {
+            for (let i = 1; i < pageCount + 1; i++) {
+                button = setupButtons(i, items, currentPage, tableBody, limitRows);
+                paginationWrapper.appendChild(button);
+            }
+            fillBtnPagination(currentPage, Config.colorPagination);
+        }
+        else {
+            pagesOptions(items, currentPage);
         }
         function setupButtons(page, items, currentPage, tableBody, limitRows) {
             const button = document.createElement('button');
             button.classList.add('pagination_button');
+            button.setAttribute("name", "pagination-button");
+            button.setAttribute("id", "btnPag" + page);
             button.innerText = page;
             button.addEventListener('click', () => {
+                const buttons = document.getElementsByName("pagination-button");
+                buttons.forEach(button => {
+                    button.style.background = "#ffffff";
+                });
                 currentPage = page;
+                fillBtnPagination(page, Config.colorPagination);
                 new Visits().load(tableBody, page, items);
             });
             return button;
+        }
+        function setupButtons2(page) {
+            const button = document.createElement('button');
+            button.classList.add('pagination_button');
+            button.setAttribute("id", "btnPag" + page);
+            button.innerText = page;
+            button.addEventListener('click', () => {
+                currentPage = page;
+                pagesOptions(items, currentPage);
+                new Visits().load(tableBody, page, items);
+            });
+            return button;
+        }
+        function pagesOptions(items, currentPage) {
+            paginationWrapper.innerHTML = '';
+            let pages = pageNumbers(items, Config.maxLimitPage, currentPage);
+            const prevButton = document.createElement('button');
+            prevButton.classList.add('pagination_button');
+            prevButton.innerText = "<<";
+            paginationWrapper.appendChild(prevButton);
+            const nextButton = document.createElement('button');
+            nextButton.classList.add('pagination_button');
+            nextButton.innerText = ">>";
+            for (let i = 0; i < pages.length; i++) {
+                if (pages[i] <= pageCount) {
+                    button = setupButtons2(pages[i]);
+                    paginationWrapper.appendChild(button);
+                }
+            }
+            paginationWrapper.appendChild(nextButton);
+            fillBtnPagination(currentPage, Config.colorPagination);
+            setupButtonsEvents(prevButton, nextButton);
+        }
+        function setupButtonsEvents(prevButton, nextButton) {
+            prevButton.addEventListener('click', () => {
+                pagesOptions(items, 1);
+                new Visits().load(tableBody, 1, items);
+            });
+            nextButton.addEventListener('click', () => {
+                pagesOptions(items, pageCount);
+                new Visits().load(tableBody, pageCount, items);
+            });
         }
     }
 }

@@ -313,3 +313,20 @@ export const registryPlataform = async (id) => {
         console.log("Registrado");
     });
 };
+export const pageNumbers = (items, max, currentPage) => {
+    const half = Math.round(max / 2);
+    let to = max;
+    if (currentPage + half >= items.length) {
+        to = items.length;
+    }
+    else if (currentPage > half) {
+        to = currentPage + half;
+    }
+    let from = to - max;
+    return Array.from({ length: max }, (_, i) => (i + 1) + from);
+};
+export const fillBtnPagination = (currentPage, color) => {
+    let btnActive = document.getElementById("btnPag" + currentPage);
+    btnActive.style.backgroundColor = color;
+    //btnActive.focus();
+};

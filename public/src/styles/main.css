@@ -802,6 +802,9 @@ table button:hover {
 .datatable_pagination .pagination_button:hover {
   box-shadow: 0 0 1px 0 rgba(38, 35, 58, 0.04), 0 2px 4px 0 rgba(112, 111, 142, 0.16);
 }
+.datatable_pagination .pagination_button:active {
+  background: rgba(112, 111, 142, 0.16);
+}
 
 .dialog_content {
   position: fixed;

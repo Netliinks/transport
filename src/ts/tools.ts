@@ -340,3 +340,23 @@ export const registryPlataform = async(id: any) => {
         console.log("Registrado")
     })
 }
+
+export const pageNumbers: any = (items: [], max: number, currentPage: number) => {
+    const half: number = Math.round(max/2)
+    let to = max
+
+    if(currentPage + half >= items.length){
+        to = items.length
+    } else if(currentPage > half){
+        to = currentPage + half
+    }
+    let from = to - max
+
+    return Array.from({length: max}, (_,i) => (i+1)+from)
+}
+
+export const fillBtnPagination: any = (currentPage: number, color: any) => {
+    let btnActive: InterfaceElement = document.getElementById("btnPag"+currentPage)
+    btnActive.style.backgroundColor=color;
+    //btnActive.focus();
+}

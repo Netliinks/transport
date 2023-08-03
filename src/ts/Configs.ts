@@ -6,5 +6,7 @@
 export const Config = {
     tableRows: 50,
     currentPage: 1,
-    isSuperUser: false
+    maxLimitPage: 10,
+    isSuperUser: false,
+    colorPagination: "rgba(112, 111, 142, 0.16)"
 }

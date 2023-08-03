@@ -5,7 +5,7 @@
 //
 import { Config } from "../../../Configs.js";
 import { getEntityData, getFilterEntityData } from "../../../endpoints.js";
-import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver } from "../../../tools.js";
+import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver, pageNumbers, fillBtnPagination } from "../../../tools.js";
 import { UIContentLayout, UIRightSidebar } from "./Layout.js";
 import { UITableSkeletonTemplate } from "./Template.js";
 import { exportVehicularCsv, exportVehicularPdf, exportVehicularXls } from "../../../exportFiles/vehiculars.js";
@@ -309,25 +309,88 @@ export class Vehiculars {
 
         let button: InterfaceElement
 
-        for (let i = 1; i < pageCount + 1; i++) {
-            button = setupButtons(
-                i, items, currentPage, tableBody, limitRows
-            )
+        if(pageCount <= Config.maxLimitPage){
+            for (let i = 1; i < pageCount + 1; i++) {
+                button = setupButtons(
+                    i, items, currentPage, tableBody, limitRows
+                )
 
-            paginationWrapper.appendChild(button)
+                paginationWrapper.appendChild(button)
+            }
+            fillBtnPagination(currentPage, Config.colorPagination)
+        }else{
+            pagesOptions(items, currentPage)  
         }
 
         function setupButtons(page: any, items: any, currentPage: number, tableBody: InterfaceElement, limitRows: number) {
             const button: InterfaceElement = document.createElement('button')
             button.classList.add('pagination_button')
+            button.setAttribute("name", "pagination-button")
+            button.setAttribute("id", "btnPag"+page)
             button.innerText = page
 
             button.addEventListener('click', (): void => {
+                const buttons = document.getElementsByName("pagination-button");
+                buttons.forEach(button => {
+                    button.style.background = "#ffffff"; 
+                })
                 currentPage = page
+                fillBtnPagination(page, Config.colorPagination)
                 new Vehiculars().load(tableBody, page, items)
             })
 
             return button
+        }
+
+        function setupButtons2(page: any) {
+            const button: InterfaceElement = document.createElement('button')
+            button.classList.add('pagination_button')
+            button.setAttribute("id", "btnPag"+page)
+            button.innerText = page
+            button.addEventListener('click', (): void => {
+                currentPage = page
+                pagesOptions(items, currentPage)
+                new Vehiculars().load(tableBody, page, items)
+            })
+            return button
+        }
+
+        function pagesOptions(items: any, currentPage: any) {
+            paginationWrapper.innerHTML = ''
+            let pages = pageNumbers(items, Config.maxLimitPage, currentPage)
+            
+            const prevButton: InterfaceElement = document.createElement('button')
+            prevButton.classList.add('pagination_button')
+            prevButton.innerText = "<<"     
+            paginationWrapper.appendChild(prevButton)
+
+            const nextButton: InterfaceElement = document.createElement('button')
+            nextButton.classList.add('pagination_button')
+            nextButton.innerText = ">>"
+    
+            for (let i = 0; i < pages.length; i++) {
+                if(pages[i] <= pageCount){
+                    button = setupButtons2(
+                        pages[i]
+                    )
+                    paginationWrapper.appendChild(button)
+                }
+            }
+            paginationWrapper.appendChild(nextButton)
+            fillBtnPagination(currentPage, Config.colorPagination)
+            setupButtonsEvents(prevButton, nextButton)
+        }
+
+        function setupButtonsEvents(prevButton: InterfaceElement, nextButton: InterfaceElement) {
+            prevButton.addEventListener('click', (): void => {
+                pagesOptions(items, 1)
+                new Vehiculars().load(tableBody, 1, items)
+            })
+
+            nextButton.addEventListener('click', (): void => {
+                pagesOptions(items, pageCount)
+                new Vehiculars().load(tableBody, pageCount, items)
+            })
         }
     }
 
