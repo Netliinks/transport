@@ -357,6 +357,6 @@ export const pageNumbers: any = (items: [], max: number, currentPage: number) =>
 
 export const fillBtnPagination: any = (currentPage: number, color: any) => {
     let btnActive: InterfaceElement = document.getElementById("btnPag"+currentPage)
-    btnActive.style.backgroundColor=color;
+    if(btnActive) btnActive.style.backgroundColor=color;
     //btnActive.focus();
 }

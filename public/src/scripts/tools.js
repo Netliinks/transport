@@ -327,6 +327,7 @@ export const pageNumbers = (items, max, currentPage) => {
 };
 export const fillBtnPagination = (currentPage, color) => {
     let btnActive = document.getElementById("btnPag" + currentPage);
-    btnActive.style.backgroundColor = color;
+    if (btnActive)
+        btnActive.style.backgroundColor = color;
     //btnActive.focus();
 };
