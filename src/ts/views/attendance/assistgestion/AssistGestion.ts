@@ -484,7 +484,7 @@ export class AssistGestion {
 
         function pagesOptions(items: any, currentPage: any) {
             paginationWrapper.innerHTML = ''
-            let pages = pageNumbers(items, Config.maxLimitPage, currentPage)
+            let pages = pageNumbers(pageCount, Config.maxLimitPage, currentPage)
             
             const prevButton: InterfaceElement = document.createElement('button')
             prevButton.classList.add('pagination_button')
@@ -496,7 +496,7 @@ export class AssistGestion {
             nextButton.innerText = ">>"
     
             for (let i = 0; i < pages.length; i++) {
-                if(pages[i] <= pageCount){
+                if(pages[i] > 0 && pages[i] <= pageCount){
                     button = setupButtons2(
                         pages[i]
                     )

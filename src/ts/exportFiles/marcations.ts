@@ -36,7 +36,7 @@ export const exportMarcationsPdf = (ar: any, start: any, end: any) => {
     for (let i = 0; i < ar.length; i++) {
         let marcation = ar[i]
         // @ts-ignore
-        if(marcation.ingressDate >= start && marcation.ingressDate <= end){
+        //if(marcation.ingressDate >= start && marcation.ingressDate <= end){
             doc.setFontSize(9)
             doc.setFont(undefined, 'normal')
             doc.setTextColor(0,0,0)
@@ -74,7 +74,7 @@ export const exportMarcationsPdf = (ar: any, start: any, end: any) => {
                 doc.text(10, 290, `Página ${pagina}`)
             }
             lineas++
-        }
+        //}
 
     }
     // Save the PDF
@@ -89,7 +89,7 @@ export const exportMarcationsCsv = (ar: any, start: any, end: any) => {
     for(let i=0; i < ar.length; i++){
         let marcation = ar[i]
         // @ts-ignore
-        if(marcation.ingressDate >= start && marcation.ingressDate <= end){
+        //if(marcation.ingressDate >= start && marcation.ingressDate <= end){
             let obj = {
                 "DNI": `${marcation.user?.dni ?? ''}`,
                 "Usuario": `${marcation.user?.firstName ?? ''} ${marcation.user?.lastName ?? ''}`,
@@ -102,7 +102,7 @@ export const exportMarcationsCsv = (ar: any, start: any, end: any) => {
                 "Estado": `${marcation.marcationState?.name ?? ''}`,
               }
               rows.push(obj);
-        }
+        //}
         
     }
     generateFile(rows, "Marcaciones", "csv");
@@ -113,7 +113,7 @@ export const exportMarcationsXls = (ar: any, start: any, end: any) => {
     for(let i=0; i < ar.length; i++){
         let marcation = ar[i]
         // @ts-ignore
-        if(marcation.ingressDate >= start && marcation.ingressDate <= end){
+        //if(marcation.ingressDate >= start && marcation.ingressDate <= end){
             let obj = {
                 "DNI": `${marcation.user?.dni ?? ''}`,
                 "Usuario": `${marcation.user?.firstName ?? ''} ${marcation.user?.lastName ?? ''}`,
@@ -126,7 +126,7 @@ export const exportMarcationsXls = (ar: any, start: any, end: any) => {
                 "Estado": `${marcation.marcationState?.name ?? ''}`,
               }
               rows.push(obj);
-        }
+        //}
         
     }
     generateFile(rows, "Marcaciones", "xls");

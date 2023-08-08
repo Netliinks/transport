@@ -38,51 +38,51 @@ export const exportVisitPdf = (ar, start, end) => {
     for (let i = 0; i < ar.length; i++) {
         let visit = ar[i];
         // @ts-ignore
-        if (visit.creationDate >= start && visit.creationDate <= end) {
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(0, 0, 0);
-            doc.text(10, row, `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`);
-            doc.text(60, row, `${visit.dni}`);
-            doc.text(90, row, `${visit.creationDate}`);
-            doc.text(110, row, `${visit.creationTime}`);
-            doc.text(130, row, `${visit.user?.firstName ?? ''} ${visit.user?.lastName ?? ''}`);
-            doc.text(170, row, `${verifyUserType(visit.user.userType)}`);
-            doc.text(190, row, `${visit.department?.name ?? ''}`);
-            doc.text(230, row, `${visit.visitState?.name ?? ''}`);
-            doc.text(250, row, `${visit?.ingressTime ?? ''}`);
-            doc.text(270, row, `${visit?.egressTime ?? ''}`);
-            row += 5;
-            let limitLineas = 33;
-            if (pagina == 1)
-                limitLineas = 26;
-            if (lineas >= limitLineas) {
-                doc.addPage();
-                lineas = 0;
-                row = 30;
-                pagina += 1;
-                doc.setFont(undefined, 'bold');
-                doc.setFontSize(10);
-                //construimos cabecera del csv
-                doc.line(5, 15, 290, 15);
-                doc.setFillColor(210, 210, 210);
-                doc.rect(5, 15, 285, 10, 'F');
-                doc.text(10, 20, "Nombre");
-                doc.text(60, 20, "DNI");
-                doc.text(90, 20, "Fecha");
-                doc.text(110, 20, "Hora");
-                doc.text(130, 20, "Usuario");
-                doc.text(170, 20, "Tipo");
-                doc.text(190, 20, "Departamento");
-                doc.text(230, 20, "Estado");
-                doc.text(250, 20, "Inicio");
-                doc.text(270, 20, "Fin");
-                doc.line(5, 25, 290, 25);
-                doc.setTextColor(0, 0, 128);
-                doc.text(10, 200, `Página ${pagina}`);
-            }
-            lineas++;
+        //if(visit.creationDate >= start && visit.creationDate <= end){
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        doc.setTextColor(0, 0, 0);
+        doc.text(10, row, `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`);
+        doc.text(60, row, `${visit.dni}`);
+        doc.text(90, row, `${visit.creationDate}`);
+        doc.text(110, row, `${visit.creationTime}`);
+        doc.text(130, row, `${visit.user?.firstName ?? ''} ${visit.user?.lastName ?? ''}`);
+        doc.text(170, row, `${verifyUserType(visit.user.userType)}`);
+        doc.text(190, row, `${visit.department?.name ?? ''}`);
+        doc.text(230, row, `${visit.visitState?.name ?? ''}`);
+        doc.text(250, row, `${visit?.ingressTime ?? ''}`);
+        doc.text(270, row, `${visit?.egressTime ?? ''}`);
+        row += 5;
+        let limitLineas = 33;
+        if (pagina == 1)
+            limitLineas = 26;
+        if (lineas >= limitLineas) {
+            doc.addPage();
+            lineas = 0;
+            row = 30;
+            pagina += 1;
+            doc.setFont(undefined, 'bold');
+            doc.setFontSize(10);
+            //construimos cabecera del csv
+            doc.line(5, 15, 290, 15);
+            doc.setFillColor(210, 210, 210);
+            doc.rect(5, 15, 285, 10, 'F');
+            doc.text(10, 20, "Nombre");
+            doc.text(60, 20, "DNI");
+            doc.text(90, 20, "Fecha");
+            doc.text(110, 20, "Hora");
+            doc.text(130, 20, "Usuario");
+            doc.text(170, 20, "Tipo");
+            doc.text(190, 20, "Departamento");
+            doc.text(230, 20, "Estado");
+            doc.text(250, 20, "Inicio");
+            doc.text(270, 20, "Fin");
+            doc.line(5, 25, 290, 25);
+            doc.setTextColor(0, 0, 128);
+            doc.text(10, 200, `Página ${pagina}`);
         }
+        lineas++;
+        //}
     }
     // Save the PDF
     var d = new Date();
@@ -94,30 +94,30 @@ export const exportVisitCsv = (ar, start, end) => {
     for (let i = 0; i < ar.length; i++) {
         let visit = ar[i];
         // @ts-ignore
-        if (visit.creationDate >= start && visit.creationDate <= end) {
-            let obj = {
-                "Nombre": `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`,
-                "DNI": `${visit.dni}`,
-                "Fecha Creación": `${visit.creationDate}`,
-                "Hora Creación": `${visit.creationTime}`,
-                "Usuario": `${visit.user?.firstName ?? ''} ${visit.user?.lastName ?? ''}`,
-                "Tipo": `${verifyUserType(visit.user.userType)}`,
-                "Departamento": `${visit.department?.name ?? ''}`,
-                "Estado": `${visit.visitState?.name ?? ''}`,
-                "Verificado": `${visit.verifiedDocument ? 'Si' : 'No'}`,
-                "Favorita": `${visit.favorite ? 'Si' : 'No'}`,
-                "Teléfono": `${visit.phoneNumber}`,
-                "Autorizado": `${visit.authorizer}`,
-                "Fecha Ingreso": `${visit.ingressDate}`,
-                "Hora Ingreso": `${visit.ingressTime}`,
-                "Emitido Ingreso": `${visit.ingressIssuedId?.firstName ?? ''} ${visit.ingressIssuedId?.lastName ?? ''}`,
-                "Fecha Salida": `${visit?.egressDate ?? ''}`,
-                "Hora Salida": `${visit?.egressTime ?? ''}`,
-                "Emitido Salida": `${visit.egressIssuedId?.firstName ?? ''} ${visit.egressIssuedId?.lastName ?? ''}`,
-                "Asunto": `${visit.reason.split("\n").join("(salto)")}`,
-            };
-            rows.push(obj);
-        }
+        //if(visit.creationDate >= start && visit.creationDate <= end){
+        let obj = {
+            "Nombre": `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`,
+            "DNI": `${visit.dni}`,
+            "Fecha Creación": `${visit.creationDate}`,
+            "Hora Creación": `${visit.creationTime}`,
+            "Usuario": `${visit.user?.firstName ?? ''} ${visit.user?.lastName ?? ''}`,
+            "Tipo": `${verifyUserType(visit.user.userType)}`,
+            "Departamento": `${visit.department?.name ?? ''}`,
+            "Estado": `${visit.visitState?.name ?? ''}`,
+            "Verificado": `${visit.verifiedDocument ? 'Si' : 'No'}`,
+            "Favorita": `${visit.favorite ? 'Si' : 'No'}`,
+            "Teléfono": `${visit?.phoneNumber ?? ''}`,
+            "Autorizado": `${visit?.authorizer ?? ''}`,
+            "Fecha Ingreso": `${visit.ingressDate}`,
+            "Hora Ingreso": `${visit.ingressTime}`,
+            "Emitido Ingreso": `${visit.ingressIssuedId?.firstName ?? ''} ${visit.ingressIssuedId?.lastName ?? ''}`,
+            "Fecha Salida": `${visit?.egressDate ?? ''}`,
+            "Hora Salida": `${visit?.egressTime ?? ''}`,
+            "Emitido Salida": `${visit.egressIssuedId?.firstName ?? ''} ${visit.egressIssuedId?.lastName ?? ''}`,
+            "Asunto": `${visit.reason.split("\n").join("(salto)")}`,
+        };
+        rows.push(obj);
+        //}
     }
     generateFile(rows, "Visitas", "csv");
 };
@@ -126,30 +126,30 @@ export const exportVisitXls = (ar, start, end) => {
     for (let i = 0; i < ar.length; i++) {
         let visit = ar[i];
         // @ts-ignore
-        if (visit.creationDate >= start && visit.creationDate <= end) {
-            let obj = {
-                "Nombre": `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`,
-                "DNI": `${visit.dni}`,
-                "Fecha Creación": `${visit.creationDate}`,
-                "Hora Creación": `${visit.creationTime}`,
-                "Usuario": `${visit.user?.firstName ?? ''} ${visit.user?.lastName ?? ''}`,
-                "Tipo": `${verifyUserType(visit.user.userType)}`,
-                "Departamento": `${visit.department?.name ?? ''}`,
-                "Estado": `${visit.visitState?.name ?? ''}`,
-                "Verificado": `${visit.verifiedDocument ? 'Si' : 'No'}`,
-                "Favorita": `${visit.favorite ? 'Si' : 'No'}`,
-                "Teléfono": `${visit.phoneNumber}`,
-                "Autorizado": `${visit.authorizer}`,
-                "Fecha Ingreso": `${visit.ingressDate}`,
-                "Hora Ingreso": `${visit.ingressTime}`,
-                "Emitido Ingreso": `${visit.ingressIssuedId?.firstName ?? ''} ${visit.ingressIssuedId?.lastName ?? ''}`,
-                "Fecha Salida": `${visit?.egressDate ?? ''}`,
-                "Hora Salida": `${visit?.egressTime ?? ''}`,
-                "Emitido Salida": `${visit.egressIssuedId?.firstName ?? ''} ${visit.egressIssuedId?.lastName ?? ''}`,
-                "Asunto": `${visit.reason.split("\n").join("(salto)")}`,
-            };
-            rows.push(obj);
-        }
+        //if(visit.creationDate >= start && visit.creationDate <= end){
+        let obj = {
+            "Nombre": `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`,
+            "DNI": `${visit.dni}`,
+            "Fecha Creación": `${visit.creationDate}`,
+            "Hora Creación": `${visit.creationTime}`,
+            "Usuario": `${visit.user?.firstName ?? ''} ${visit.user?.lastName ?? ''}`,
+            "Tipo": `${verifyUserType(visit.user.userType)}`,
+            "Departamento": `${visit.department?.name ?? ''}`,
+            "Estado": `${visit.visitState?.name ?? ''}`,
+            "Verificado": `${visit.verifiedDocument ? 'Si' : 'No'}`,
+            "Favorita": `${visit.favorite ? 'Si' : 'No'}`,
+            "Teléfono": `${visit?.phoneNumber ?? ''}`,
+            "Autorizado": `${visit?.authorizer ?? ''}`,
+            "Fecha Ingreso": `${visit.ingressDate}`,
+            "Hora Ingreso": `${visit.ingressTime}`,
+            "Emitido Ingreso": `${visit.ingressIssuedId?.firstName ?? ''} ${visit.ingressIssuedId?.lastName ?? ''}`,
+            "Fecha Salida": `${visit?.egressDate ?? ''}`,
+            "Hora Salida": `${visit?.egressTime ?? ''}`,
+            "Emitido Salida": `${visit.egressIssuedId?.firstName ?? ''} ${visit.egressIssuedId?.lastName ?? ''}`,
+            "Asunto": `${visit.reason.split("\n").join("(salto)")}`,
+        };
+        rows.push(obj);
+        //}
     }
     generateFile(rows, "Visitas", "xls");
 };

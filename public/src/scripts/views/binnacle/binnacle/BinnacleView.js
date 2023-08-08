@@ -1,6 +1,6 @@
 // @filename: EvetnsView.ts
 import { Config } from "../../../Configs.js";
-import { getEntityData, getFilterEntityData } from "../../../endpoints.js";
+import { getEntityData, getFilterEntityData, getFilterEntityCount } from "../../../endpoints.js";
 import { exportBinnacleCsv, exportBinnaclePdf, exportBinnacleXls } from "../../../exportFiles/binnacle.js";
 import { CloseDialog, renderRightSidebar, filterDataByHeaderType, inputObserver, pageNumbers, fillBtnPagination } from "../../../tools.js";
 import { UIContentLayout, UIRightSidebar } from "./Layout.js";
@@ -10,6 +10,12 @@ const tableRows = Config.tableRows;
 let currentPage = Config.currentPage;
 const pageName = 'Bitácora';
 const customerId = localStorage.getItem('customer_id');
+let infoPage = {
+    count: 0,
+    offset: Config.offset,
+    currentPage: currentPage,
+    search: ""
+};
 let dataPage;
 const getEvents = async () => {
     /*const eventsRaw = await getEntitiesData('Notification')
@@ -61,8 +67,73 @@ const getEvents = async () => {
             ],
         },
         sort: "-createdDate",
+        limit: Config.tableRows,
+        offset: infoPage.offset,
         fetchPlan: 'full',
     });
+    if (infoPage.search != "") {
+        raw = JSON.stringify({
+            "filter": {
+                "conditions": [
+                    {
+                        "group": "OR",
+                        "conditions": [
+                            {
+                                "property": "title",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            },
+                            {
+                                "property": "description",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            }
+                        ]
+                    },
+                    {
+                        "property": "customer.id",
+                        "operator": "=",
+                        "value": `${customerId}`
+                    },
+                    {
+                        "property": "notificationType.name",
+                        "operator": "<>",
+                        "value": `Otro`
+                    },
+                    {
+                        "property": "notificationType.name",
+                        "operator": "<>",
+                        "value": `🔥 Fuego`
+                    },
+                    {
+                        "property": "notificationType.name",
+                        "operator": "<>",
+                        "value": `🚨 Hombre Caído`
+                    },
+                    {
+                        "property": "notificationType.name",
+                        "operator": "<>",
+                        "value": `🚪 Intrusión`
+                    },
+                    {
+                        "property": "notificationType.name",
+                        "operator": "<>",
+                        "value": `🏚 Robo`
+                    },
+                    {
+                        "property": "notificationType.name",
+                        "operator": "<>",
+                        "value": `Botón Pánico`
+                    },
+                ]
+            },
+            sort: "-createdDate",
+            limit: Config.tableRows,
+            offset: infoPage.offset,
+            fetchPlan: 'full',
+        });
+    }
+    infoPage.count = await getFilterEntityCount("Notification", raw);
     dataPage = await getFilterEntityData("Notification", raw);
     return dataPage;
 };
@@ -71,7 +142,10 @@ export class Binnacle {
         this.dialogContainer = document.getElementById('app-dialogs');
         this.siebarDialogContainer = document.getElementById('entity-editor-container');
         this.appContainer = document.getElementById('datatable-container');
-        this.render = async () => {
+        this.render = async (offset, actualPage, search) => {
+            infoPage.offset = offset;
+            infoPage.currentPage = actualPage;
+            infoPage.search = search;
             this.appContainer.innerHTML = '';
             this.appContainer.innerHTML = UIContentLayout;
             // Getting interface elements
@@ -84,9 +158,9 @@ export class Binnacle {
             tableBody.innerHTML = UITableSkeletonTemplate.repeat(tableRows);
             // Exec functions
             this.load(tableBody, currentPage, eventsArray);
-            this.searchNotes(tableBody, eventsArray);
+            this.searchNotes(tableBody /*, eventsArray*/);
             new filterDataByHeaderType().filter();
-            this.pagination(eventsArray, tableRows, currentPage);
+            this.pagination(eventsArray, tableRows, infoPage.currentPage);
             this.export();
             // Rendering icons
         };
@@ -128,21 +202,31 @@ export class Binnacle {
                 this.previewEvent();
             }
         };
-        this.searchNotes = async (tableBody, events) => {
+        this.searchNotes = async (tableBody /*, events: any*/) => {
             const search = document.getElementById('search');
+            const btnSearch = document.getElementById('btnSearch');
+            search.value = infoPage.search;
             await search.addEventListener('keyup', () => {
-                const arrayEvents = events.filter((event) => `${event.title}
-                ${event.description}
-                ${event.creationDate}`
-                    .toLowerCase()
-                    .includes(search.value.toLowerCase()));
-                let filteredEvents = arrayEvents.length;
-                let result = arrayEvents;
-                if (filteredEvents >= Config.tableRows)
-                    filteredEvents = Config.tableRows;
-                this.load(tableBody, currentPage, result);
-                this.pagination(result, tableRows, currentPage);
+                /*const arrayEvents: any = events.filter((event: any) =>
+                    `${event.title}
+                    ${event.description}
+                    ${event.creationDate}`
+                        .toLowerCase()
+                        .includes(search.value.toLowerCase())
+                )
+    
+                let filteredEvents = arrayEvents.length
+                let result = arrayEvents
+    
+                if (filteredEvents >= Config.tableRows) filteredEvents = Config.tableRows
+    
+                this.load(tableBody, currentPage, result)
+                this.pagination(result, tableRows, currentPage)
+                */
                 // Rendering icons
+            });
+            btnSearch.addEventListener('click', async () => {
+                new Binnacle().render(Config.offset, Config.currentPage, search.value.toLowerCase().trim());
             });
         };
         this.previewEvent = async () => {
@@ -250,7 +334,60 @@ export class Binnacle {
                         end: document.getElementById('end-date'),
                         exportOption: document.getElementsByName('exportOption')
                     };
-                    const events = dataPage; //await getEvents();
+                    let rawExport = JSON.stringify({
+                        "filter": {
+                            "conditions": [
+                                {
+                                    "property": "customer.id",
+                                    "operator": "=",
+                                    "value": `${customerId}`
+                                },
+                                {
+                                    "property": "notificationType.name",
+                                    "operator": "<>",
+                                    "value": `Otro`
+                                },
+                                {
+                                    "property": "notificationType.name",
+                                    "operator": "<>",
+                                    "value": `🔥 Fuego`
+                                },
+                                {
+                                    "property": "notificationType.name",
+                                    "operator": "<>",
+                                    "value": `🚨 Hombre Caído`
+                                },
+                                {
+                                    "property": "notificationType.name",
+                                    "operator": "<>",
+                                    "value": `🚪 Intrusión`
+                                },
+                                {
+                                    "property": "notificationType.name",
+                                    "operator": "<>",
+                                    "value": `🏚 Robo`
+                                },
+                                {
+                                    "property": "notificationType.name",
+                                    "operator": "<>",
+                                    "value": `Botón Pánico`
+                                },
+                                {
+                                    "property": "creationDate",
+                                    "operator": ">=",
+                                    "value": `${_values.start.value}`
+                                },
+                                {
+                                    "property": "creationDate",
+                                    "operator": "<=",
+                                    "value": `${_values.end.value}`
+                                }
+                            ],
+                        },
+                        sort: "-createdDate",
+                        fetchPlan: 'full',
+                    });
+                    const events = await getFilterEntityData("Notification", rawExport); //await getEvents();
                     for (let i = 0; i < _values.exportOption.length; i++) {
                         let ele = _values.exportOption[i];
                         if (ele.type = "radio") {
@@ -289,7 +426,7 @@ export class Binnacle {
         const paginationWrapper = document.getElementById('pagination-container');
         paginationWrapper.innerHTML = '';
         let pageCount;
-        pageCount = Math.ceil(items.length / limitRows);
+        pageCount = Math.ceil(infoPage.count / limitRows);
         let button;
         if (pageCount <= Config.maxLimitPage) {
             for (let i = 1; i < pageCount + 1; i++) {
@@ -312,9 +449,10 @@ export class Binnacle {
                 buttons.forEach(button => {
                     button.style.background = "#ffffff";
                 });
+                infoPage.offset = Config.tableRows * (page - 1);
                 currentPage = page;
                 fillBtnPagination(page, Config.colorPagination);
-                new Binnacle().load(tableBody, page, items);
+                new Binnacle().render(infoPage.offset, currentPage, infoPage.search); //new Binnacle().load(tableBody, page, items)
             });
             return button;
         }
@@ -324,15 +462,15 @@ export class Binnacle {
             button.setAttribute("id", "btnPag" + page);
             button.innerText = page;
             button.addEventListener('click', () => {
+                infoPage.offset = Config.tableRows * (page - 1);
                 currentPage = page;
-                pagesOptions(items, currentPage);
-                new Binnacle().load(tableBody, page, items);
+                new Binnacle().render(infoPage.offset, currentPage, infoPage.search);
             });
             return button;
         }
         function pagesOptions(items, currentPage) {
             paginationWrapper.innerHTML = '';
-            let pages = pageNumbers(items, Config.maxLimitPage, currentPage);
+            let pages = pageNumbers(pageCount, Config.maxLimitPage, currentPage);
             const prevButton = document.createElement('button');
             prevButton.classList.add('pagination_button');
             prevButton.innerText = "<<";
@@ -341,7 +479,7 @@ export class Binnacle {
             nextButton.classList.add('pagination_button');
             nextButton.innerText = ">>";
             for (let i = 0; i < pages.length; i++) {
-                if (pages[i] <= pageCount) {
+                if (pages[i] > 0 && pages[i] <= pageCount) {
                     button = setupButtons2(pages[i]);
                     paginationWrapper.appendChild(button);
                 }
@@ -352,12 +490,11 @@ export class Binnacle {
         }
         function setupButtonsEvents(prevButton, nextButton) {
             prevButton.addEventListener('click', () => {
-                pagesOptions(items, 1);
-                new Binnacle().load(tableBody, 1, items);
+                new Binnacle().render(Config.offset, Config.currentPage, infoPage.search);
             });
             nextButton.addEventListener('click', () => {
-                pagesOptions(items, pageCount);
-                new Binnacle().load(tableBody, pageCount, items);
+                infoPage.offset = Config.tableRows * (pageCount - 1);
+                new Binnacle().render(infoPage.offset, pageCount, infoPage.search);
             });
         }
     }

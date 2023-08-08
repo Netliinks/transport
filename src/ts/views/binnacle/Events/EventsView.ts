@@ -1,7 +1,7 @@
 // @filename: EvetnsView.ts
 
 import { Config } from "../../../Configs.js"
-import { getEntityData, getFile, getFilterEntityData } from "../../../endpoints.js"
+import { getEntityData, getFile, getFilterEntityData, getFilterEntityCount } from "../../../endpoints.js"
 import { exportEventCsv, exportEventPdf, exportEventXls } from "../../../exportFiles/events.js"
 import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver, pageNumbers, fillBtnPagination } from "../../../tools.js"
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
@@ -13,6 +13,12 @@ const tableRows = Config.tableRows
 let currentPage = Config.currentPage
 const pageName = 'Eventos'
 const customerId = localStorage.getItem('customer_id');
+let infoPage = {
+    count: 0,
+    offset: Config.offset,
+    currentPage: currentPage,
+    search: ""
+}
 let dataPage: any
 const getEvents = async (): Promise<void> => {
     /*const eventsRaw = await getEntitiesData('Notification')
@@ -47,9 +53,60 @@ const getEvents = async (): Promise<void> => {
             
         }, 
         sort: "-createdDate",
+        limit: Config.tableRows,
+        offset: infoPage.offset,
         fetchPlan: 'full',
         
     })
+    if(infoPage.search != ""){
+        raw = JSON.stringify({
+            "filter": {
+                "conditions": [
+                  {
+                    "group": "OR",
+                    "conditions": [
+                      {
+                        "property": "title",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "description",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      }
+                    ]
+                  },
+                  {
+                    "property": "customer.id",
+                    "operator": "=",
+                    "value": `${customerId}`
+                  },
+                  {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `Visita`
+                  },
+                  {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `Vehicular`
+                  },
+                  {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `Nota`
+                  }
+                ]
+              },
+            sort: "-createdDate",
+            limit: Config.tableRows,
+            offset: infoPage.offset,
+            fetchPlan: 'full',
+            
+        })
+    }
+    infoPage.count = await getFilterEntityCount("Notification", raw)
     dataPage = await getFilterEntityData("Notification", raw)
     return dataPage
 }
@@ -59,7 +116,10 @@ export class Events {
     private siebarDialogContainer: InterfaceElement = document.getElementById('entity-editor-container')
     private appContainer: InterfaceElement = document.getElementById('datatable-container')
 
-    public render = async (): Promise<void> => {      
+    public render = async (offset: any, actualPage: any, search: any): Promise<void> => {     
+        infoPage.offset = offset
+        infoPage.currentPage = actualPage
+        infoPage.search = search 
         this.appContainer.innerHTML = ''
         this.appContainer.innerHTML = UIContentLayout
 
@@ -76,9 +136,9 @@ export class Events {
 
         // Exec functions
         this.load(tableBody, currentPage, eventsArray)
-        this.searchNotes(tableBody, eventsArray)
+        this.searchNotes(tableBody/*, eventsArray*/)
         new filterDataByHeaderType().filter()
-        this.pagination(eventsArray, tableRows, currentPage)
+        this.pagination(eventsArray, tableRows, infoPage.currentPage)
         this.export()
 
         // Rendering icons
@@ -127,11 +187,12 @@ export class Events {
         }
     }
 
-    private searchNotes = async (tableBody: InterfaceElement, events: any) => {
+    private searchNotes = async (tableBody: InterfaceElement /*, events: any*/) => {
         const search: InterfaceElement = document.getElementById('search')
-
+        const btnSearch: InterfaceElement = document.getElementById('btnSearch')
+        search.value = infoPage.search
         await search.addEventListener('keyup', () => {
-            const arrayEvents: any = events.filter((event: any) =>
+            /*const arrayEvents: any = events.filter((event: any) =>
                 `${event.title}
                 ${event.description}
                 ${event.creationDate}`
@@ -147,7 +208,10 @@ export class Events {
             this.load(tableBody, currentPage, result)
             this.pagination(result, tableRows, currentPage)
 
-            // Rendering icons
+            // Rendering icons*/
+        })
+        btnSearch.addEventListener('click', async () => {
+            new Events().render(Config.offset , Config.currentPage, search.value.toLowerCase().trim())
         })
     }
 
@@ -264,12 +328,52 @@ export class Events {
             const exportButton: InterfaceElement = document.getElementById('export-data');
             const _dialog: InterfaceElement = document.getElementById('dialog-content');
             exportButton.addEventListener('click', async() => {
-                const _values = {
+                const _values: any = {
                     start: document.getElementById('start-date'),
                     end: document.getElementById('end-date'),
                     exportOption: document.getElementsByName('exportOption')
                 }
-                const events: any = dataPage //await getEvents();
+                let rawExport = JSON.stringify({
+                    "filter": {
+                        "conditions": [
+                          {
+                            "property": "customer.id",
+                            "operator": "=",
+                            "value": `${customerId}`
+                          },
+                          {
+                            "property": "notificationType.name",
+                            "operator": "<>",
+                            "value": `Visita`
+                          },
+                          {
+                            "property": "notificationType.name",
+                            "operator": "<>",
+                            "value": `Vehicular`
+                          },
+                          {
+                            "property": "notificationType.name",
+                            "operator": "<>",
+                            "value": `Nota`
+                          },
+                          {
+                            "property": "creationDate",
+                            "operator": ">=",
+                            "value": `${_values.start.value}`
+                          },
+                          {
+                            "property": "creationDate",
+                            "operator": "<=",
+                            "value": `${_values.end.value}`
+                          }
+                        ],
+                        
+                    }, 
+                    sort: "-createdDate",
+                    fetchPlan: 'full',
+                    
+                })
+                const events: any = await getFilterEntityData("Notification", rawExport) //await getEvents();
                 for (let i = 0; i < _values.exportOption.length; i++) {
                     let ele: any = _values.exportOption[i]
                     if (ele.type = "radio") {
@@ -301,7 +405,7 @@ export class Events {
         paginationWrapper.innerHTML = ''
 
         let pageCount: number
-        pageCount = Math.ceil(items.length / limitRows)
+        pageCount = Math.ceil(infoPage.count / limitRows)
 
         let button: InterfaceElement
 
@@ -330,9 +434,10 @@ export class Events {
                 buttons.forEach(button => {
                     button.style.background = "#ffffff"; 
                 })
+                infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
                 fillBtnPagination(page, Config.colorPagination)
-                new Events().load(tableBody, page, items)
+                new Events().render(infoPage.offset, currentPage, infoPage.search)
             })
 
             return button
@@ -344,16 +449,16 @@ export class Events {
             button.setAttribute("id", "btnPag"+page)
             button.innerText = page
             button.addEventListener('click', (): void => {
+                infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
-                pagesOptions(items, currentPage)
-                new Events().load(tableBody, page, items)
+                new Events().render(infoPage.offset, currentPage, infoPage.search)
             })
             return button
         }
 
         function pagesOptions(items: any, currentPage: any) {
             paginationWrapper.innerHTML = ''
-            let pages = pageNumbers(items, Config.maxLimitPage, currentPage)
+            let pages = pageNumbers(pageCount, Config.maxLimitPage, currentPage)
             
             const prevButton: InterfaceElement = document.createElement('button')
             prevButton.classList.add('pagination_button')
@@ -365,7 +470,7 @@ export class Events {
             nextButton.innerText = ">>"
     
             for (let i = 0; i < pages.length; i++) {
-                if(pages[i] <= pageCount){
+                if(pages[i] > 0 && pages[i] <= pageCount){
                     button = setupButtons2(
                         pages[i]
                     )
@@ -379,13 +484,12 @@ export class Events {
 
         function setupButtonsEvents(prevButton: InterfaceElement, nextButton: InterfaceElement) {
             prevButton.addEventListener('click', (): void => {
-                pagesOptions(items, 1)
-                new Events().load(tableBody, 1, items)
+                new Events().render(Config.offset, Config.currentPage, infoPage.search)
             })
 
             nextButton.addEventListener('click', (): void => {
-                pagesOptions(items, pageCount)
-                new Events().load(tableBody, pageCount, items)
+                infoPage.offset = Config.tableRows * (pageCount - 1)
+                new Events().render(infoPage.offset, pageCount, infoPage.search)
             })
         }
     }

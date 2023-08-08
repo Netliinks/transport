@@ -8,7 +8,7 @@ export namespace NUsers {
     /**
      * Renderize interfaces, load functions and read functions
      */
-    render(): void
+    render(offset: any, actualPage: any, search: any): void
     /**
      * Load Interface
      */
@@ -44,7 +44,7 @@ export namespace NUsers {
     /**
      * Renderize interfaces, load functions and read functions
      */
-    render(): void
+    render(offset: any, actualPage: any, search: any): void
     /**
      * Load Interface
      */
@@ -75,7 +75,7 @@ export namespace NUsers {
     /**
      * Renderize interfaces, load functions and read functions
      */
-    render(): void
+    render(offset: any, actualPage: any, search: any): void
     /**
      * Load Interface
      */

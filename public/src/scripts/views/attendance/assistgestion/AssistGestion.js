@@ -460,7 +460,7 @@ export class AssistGestion {
         }
         function pagesOptions(items, currentPage) {
             paginationWrapper.innerHTML = '';
-            let pages = pageNumbers(items, Config.maxLimitPage, currentPage);
+            let pages = pageNumbers(pageCount, Config.maxLimitPage, currentPage);
             const prevButton = document.createElement('button');
             prevButton.classList.add('pagination_button');
             prevButton.innerText = "<<";
@@ -469,7 +469,7 @@ export class AssistGestion {
             nextButton.classList.add('pagination_button');
             nextButton.innerText = ">>";
             for (let i = 0; i < pages.length; i++) {
-                if (pages[i] <= pageCount) {
+                if (pages[i] > 0 && pages[i] <= pageCount) {
                     button = setupButtons2(pages[i]);
                     paginationWrapper.appendChild(button);
                 }

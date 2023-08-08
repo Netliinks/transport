@@ -12,7 +12,11 @@ export const tableLayout = `
       class="search_input"
       placeholder="Buscar"
       id="search">
-
+      <button
+          class="datatable_button add_user"
+          id="btnSearch">
+          <i class="fa-solid fa-search"></i>
+      </button>
       <button
         class="datatable_button add_user"
         id="new-entity">

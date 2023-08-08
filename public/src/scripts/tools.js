@@ -313,17 +313,52 @@ export const registryPlataform = async (id) => {
         console.log("Registrado");
     });
 };
-export const pageNumbers = (items, max, currentPage) => {
-    const half = Math.round(max / 2);
-    let to = max;
-    if (currentPage + half >= items.length) {
-        to = items.length;
+export const pageNumbers = (totalPages, max, currentPage) => {
+    let limitMin;
+    let limitMax;
+    let ranges = [];
+    if (currentPage == 1) {
+        limitMin = 1;
+        limitMax = max;
+        for (let i = limitMin; i <= limitMax; i++) {
+            ranges.push(i);
+        }
     }
-    else if (currentPage > half) {
-        to = currentPage + half;
+    /*else if(currentPage == totalPages){
+        let limit = totalPages - max
+        for(let i = limit; i <= totalPages; i++){
+                ranges.push(i)
+        }
+    }*/ else {
+        limitMin = currentPage - 4;
+        for (let i = limitMin; i < currentPage; i++) {
+            ranges.push(i);
+        }
+        limitMax = currentPage + 5;
+        for (let i = currentPage; i <= limitMax; i++) {
+            ranges.push(i);
+        }
     }
-    let from = to - max;
-    return Array.from({ length: max }, (_, i) => (i + 1) + from);
+    return ranges;
+    /*console.log(items)
+    console.log("items.length "+items.length)
+    console.log("max "+max)
+    console.log("currentPage "+currentPage)
+    const half: number = Math.round(max/2)
+    console.log("half "+half)
+    let to = max
+    console.log("to "+to)
+
+    console.log("currentPage + half "+(currentPage + half))
+    if(currentPage + half >= items.length){
+        to = items.length
+    } else if(currentPage > half){
+        to = currentPage + half
+    }
+    console.log("to resultado "+to)
+    let from = to - max
+
+    return Array.from({length: max}, (_,i) => (i+1)+from)*/
 };
 export const fillBtnPagination = (currentPage, color) => {
     let btnActive = document.getElementById("btnPag" + currentPage);

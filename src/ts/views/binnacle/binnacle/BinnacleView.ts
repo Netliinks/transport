@@ -1,7 +1,7 @@
 // @filename: EvetnsView.ts
 
 import { Config } from "../../../Configs.js"
-import { getEntityData, getFilterEntityData } from "../../../endpoints.js"
+import { getEntityData, getFilterEntityData, getFilterEntityCount } from "../../../endpoints.js"
 import { exportBinnacleCsv, exportBinnaclePdf, exportBinnacleXls } from "../../../exportFiles/binnacle.js"
 import { CloseDialog, drawTagsIntoTables, renderRightSidebar, filterDataByHeaderType, inputObserver, pageNumbers, fillBtnPagination } from "../../../tools.js"
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
@@ -13,6 +13,12 @@ const tableRows = Config.tableRows
 let currentPage = Config.currentPage
 const pageName = 'Bitácora'
 const customerId = localStorage.getItem('customer_id')
+let infoPage = {
+    count: 0,
+    offset: Config.offset,
+    currentPage: currentPage,
+    search: ""
+}
 let dataPage: any
 const getEvents = async (): Promise<void> => {
     /*const eventsRaw = await getEntitiesData('Notification')
@@ -65,9 +71,75 @@ const getEvents = async (): Promise<void> => {
             
         }, 
         sort: "-createdDate",
+        limit: Config.tableRows,
+        offset: infoPage.offset,
         fetchPlan: 'full',
         
     })
+    if(infoPage.search != ""){
+        raw = JSON.stringify({
+            "filter": {
+                "conditions": [
+                  {
+                    "group": "OR",
+                    "conditions": [
+                      {
+                        "property": "title",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "description",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      }
+                    ]
+                  },
+                  {
+                    "property": "customer.id",
+                    "operator": "=",
+                    "value": `${customerId}`
+                  },
+                  {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `Otro`
+                  },
+                  {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `🔥 Fuego`
+                  },
+                  {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `🚨 Hombre Caído`
+                  },
+                  {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `🚪 Intrusión`
+                  },
+                  {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `🏚 Robo`
+                  },
+                  {
+                    "property": "notificationType.name",
+                    "operator": "<>",
+                    "value": `Botón Pánico`
+                  },
+                ]
+              },
+            sort: "-createdDate",
+            limit: Config.tableRows,
+            offset: infoPage.offset,
+            fetchPlan: 'full',
+            
+        })
+    }
+    infoPage.count = await getFilterEntityCount("Notification", raw)
     dataPage = await getFilterEntityData("Notification", raw)
     return dataPage
 }
@@ -77,7 +149,10 @@ export class Binnacle {
     private siebarDialogContainer: InterfaceElement = document.getElementById('entity-editor-container')
     private appContainer: InterfaceElement = document.getElementById('datatable-container')
 
-    public render = async (): Promise<void> => {
+    public render = async (offset: any, actualPage: any, search: any): Promise<void> => {
+        infoPage.offset = offset
+        infoPage.currentPage = actualPage
+        infoPage.search = search
         this.appContainer.innerHTML = ''
         this.appContainer.innerHTML = UIContentLayout
 
@@ -94,9 +169,9 @@ export class Binnacle {
 
         // Exec functions
         this.load(tableBody, currentPage, eventsArray)
-        this.searchNotes(tableBody, eventsArray)
+        this.searchNotes(tableBody/*, eventsArray*/)
         new filterDataByHeaderType().filter()
-        this.pagination(eventsArray, tableRows, currentPage)
+        this.pagination(eventsArray, tableRows, infoPage.currentPage)
         this.export()
 
         // Rendering icons
@@ -145,11 +220,12 @@ export class Binnacle {
         }
     }
 
-    private searchNotes = async (tableBody: InterfaceElement, events: any) => {
+    private searchNotes = async (tableBody: InterfaceElement/*, events: any*/) => {
         const search: InterfaceElement = document.getElementById('search')
-
+        const btnSearch: InterfaceElement = document.getElementById('btnSearch')
+        search.value = infoPage.search
         await search.addEventListener('keyup', () => {
-            const arrayEvents: any = events.filter((event: any) =>
+            /*const arrayEvents: any = events.filter((event: any) =>
                 `${event.title}
                 ${event.description}
                 ${event.creationDate}`
@@ -164,8 +240,11 @@ export class Binnacle {
 
             this.load(tableBody, currentPage, result)
             this.pagination(result, tableRows, currentPage)
-
+            */
             // Rendering icons
+        })
+        btnSearch.addEventListener('click', async () => {
+            new Binnacle().render(Config.offset , Config.currentPage, search.value.toLowerCase().trim())
         })
     }
 
@@ -276,12 +355,67 @@ export class Binnacle {
             const exportButton: InterfaceElement = document.getElementById('export-data');
             const _dialog: InterfaceElement = document.getElementById('dialog-content');
             exportButton.addEventListener('click', async() => {
-                const _values = {
+                const _values: any = {
                     start: document.getElementById('start-date'),
                     end: document.getElementById('end-date'),
                     exportOption: document.getElementsByName('exportOption')
                 }
-                const events: any = dataPage //await getEvents();
+                let rawExport = JSON.stringify({
+                    "filter": {
+                        "conditions": [
+                          {
+                            "property": "customer.id",
+                            "operator": "=",
+                            "value": `${customerId}`
+                          },
+                          {
+                            "property": "notificationType.name",
+                            "operator": "<>",
+                            "value": `Otro`
+                          },
+                          {
+                            "property": "notificationType.name",
+                            "operator": "<>",
+                            "value": `🔥 Fuego`
+                          },
+                          {
+                            "property": "notificationType.name",
+                            "operator": "<>",
+                            "value": `🚨 Hombre Caído`
+                          },
+                          {
+                            "property": "notificationType.name",
+                            "operator": "<>",
+                            "value": `🚪 Intrusión`
+                          },
+                          {
+                            "property": "notificationType.name",
+                            "operator": "<>",
+                            "value": `🏚 Robo`
+                          },
+                          {
+                            "property": "notificationType.name",
+                            "operator": "<>",
+                            "value": `Botón Pánico`
+                          },
+                          {
+                            "property": "creationDate",
+                            "operator": ">=",
+                            "value": `${_values.start.value}`
+                          },
+                          {
+                            "property": "creationDate",
+                            "operator": "<=",
+                            "value": `${_values.end.value}`
+                          }
+                        ],
+                        
+                    }, 
+                    sort: "-createdDate",
+                    fetchPlan: 'full',
+                    
+                })
+                const events: any = await getFilterEntityData("Notification", rawExport) //await getEvents();
                 for (let i = 0; i < _values.exportOption.length; i++) {
                     let ele: any = _values.exportOption[i]
                     if (ele.type = "radio") {
@@ -315,7 +449,7 @@ export class Binnacle {
         paginationWrapper.innerHTML = ''
 
         let pageCount: number
-        pageCount = Math.ceil(items.length / limitRows)
+        pageCount = Math.ceil(infoPage.count / limitRows)
 
         let button: InterfaceElement
 
@@ -344,9 +478,10 @@ export class Binnacle {
                 buttons.forEach(button => {
                     button.style.background = "#ffffff"; 
                 })
+                infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
                 fillBtnPagination(page, Config.colorPagination)
-                new Binnacle().load(tableBody, page, items)
+                new Binnacle().render(infoPage.offset, currentPage, infoPage.search) //new Binnacle().load(tableBody, page, items)
             })
 
             return button
@@ -358,16 +493,16 @@ export class Binnacle {
             button.setAttribute("id", "btnPag"+page)
             button.innerText = page
             button.addEventListener('click', (): void => {
+                infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
-                pagesOptions(items, currentPage)
-                new Binnacle().load(tableBody, page, items)
+                new Binnacle().render(infoPage.offset, currentPage, infoPage.search)
             })
             return button
         }
 
         function pagesOptions(items: any, currentPage: any) {
             paginationWrapper.innerHTML = ''
-            let pages = pageNumbers(items, Config.maxLimitPage, currentPage)
+            let pages = pageNumbers(pageCount, Config.maxLimitPage, currentPage)
             
             const prevButton: InterfaceElement = document.createElement('button')
             prevButton.classList.add('pagination_button')
@@ -379,7 +514,7 @@ export class Binnacle {
             nextButton.innerText = ">>"
     
             for (let i = 0; i < pages.length; i++) {
-                if(pages[i] <= pageCount){
+                if(pages[i] > 0 && pages[i] <= pageCount){
                     button = setupButtons2(
                         pages[i]
                     )
@@ -393,13 +528,12 @@ export class Binnacle {
 
         function setupButtonsEvents(prevButton: InterfaceElement, nextButton: InterfaceElement) {
             prevButton.addEventListener('click', (): void => {
-                pagesOptions(items, 1)
-                new Binnacle().load(tableBody, 1, items)
+                new Binnacle().render(Config.offset, Config.currentPage, infoPage.search)
             })
 
             nextButton.addEventListener('click', (): void => {
-                pagesOptions(items, pageCount)
-                new Binnacle().load(tableBody, pageCount, items)
+                infoPage.offset = Config.tableRows * (pageCount - 1)
+                new Binnacle().render(infoPage.offset, pageCount, infoPage.search)
             })
         }
     }

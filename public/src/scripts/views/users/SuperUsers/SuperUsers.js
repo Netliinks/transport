@@ -1,5 +1,5 @@
 // @filename: SuperUsers.ts
-import { deleteEntity, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, sendMail, getFilterEntityData } from "../../../endpoints.js";
+import { deleteEntity, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, sendMail, getFilterEntityData, getFilterEntityCount } from "../../../endpoints.js";
 import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, filterDataByHeaderType, getVerifyUsername, pageNumbers, fillBtnPagination } from "../../../tools.js";
 import { Config } from "../../../Configs.js";
 import { tableLayout, UIConvertToSU } from "./Layout.js";
@@ -11,6 +11,12 @@ const currentPage = Config.currentPage;
 const SUser = true;
 let currentUserInfo;
 const customerId = localStorage.getItem('customer_id');
+let infoPage = {
+    count: 0,
+    offset: Config.offset,
+    currentPage: currentPage,
+    search: ""
+};
 let dataPage;
 const getUsers = async (superUser) => {
     const currentUser = await getUserInfo();
@@ -41,8 +47,73 @@ const getUsers = async (superUser) => {
             ],
         },
         sort: "-createdDate",
+        limit: Config.tableRows,
+        offset: infoPage.offset,
         fetchPlan: 'full',
     });
+    if (infoPage.search != "") {
+        raw = JSON.stringify({
+            "filter": {
+                "conditions": [
+                    {
+                        "group": "OR",
+                        "conditions": [
+                            {
+                                "property": "dni",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            },
+                            {
+                                "property": "firstName",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            },
+                            {
+                                "property": "lastName",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            },
+                            {
+                                "property": "secondLastName",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            },
+                            {
+                                "property": "username",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            },
+                            {
+                                "property": "email",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            }
+                        ]
+                    },
+                    {
+                        "property": "customer.id",
+                        "operator": "=",
+                        "value": `${customerId}`
+                    },
+                    {
+                        "property": "isSuper",
+                        "operator": "=",
+                        "value": `${superUser}`
+                    },
+                    {
+                        "property": "userType",
+                        "operator": "=",
+                        "value": `CUSTOMER`
+                    }
+                ]
+            },
+            sort: "-createdDate",
+            limit: Config.tableRows,
+            offset: infoPage.offset,
+            fetchPlan: 'full',
+        });
+    }
+    infoPage.count = await getFilterEntityCount("User", raw);
     dataPage = await getFilterEntityData("User", raw);
     return dataPage;
 };
@@ -51,19 +122,27 @@ export class SuperUsers {
         this.dialogContainer = document.getElementById('app-dialogs');
         this.entityDialogContainer = document.getElementById('entity-editor-container');
         this.content = document.getElementById('datatable-container');
-        this.searchEntity = async (tableBody, data) => {
+        this.searchEntity = async (tableBody /*, data: any*/) => {
             const search = document.getElementById('search');
+            const btnSearch = document.getElementById('btnSearch');
+            search.value = infoPage.search;
             await search.addEventListener('keyup', () => {
-                const arrayData = data.filter((user) => `${user.firstName}
-                 ${user.lastName}
-                 ${user.username}`
-                    .toLowerCase()
-                    .includes(search.value.toLowerCase()));
-                let filteredResult = arrayData.length;
-                let result = arrayData;
-                if (filteredResult >= tableRows)
-                    filteredResult = tableRows;
-                this.load(tableBody, currentPage, result);
+                /*const arrayData: any = data.filter((user: any) =>
+                    `${user.firstName}
+                     ${user.lastName}
+                     ${user.username}`
+                        .toLowerCase()
+                        .includes(search.value.toLowerCase())
+                )
+    
+                let filteredResult = arrayData.length
+                let result = arrayData
+                if (filteredResult >= tableRows) filteredResult = tableRows
+    
+                this.load(tableBody, currentPage, result)*/
+            });
+            btnSearch.addEventListener('click', async () => {
+                new SuperUsers().render(Config.offset, Config.currentPage, search.value.toLowerCase().trim());
             });
         };
         this.generateUserName = async () => {
@@ -139,7 +218,30 @@ export class SuperUsers {
                     const _values = {
                         exportOption: document.getElementsByName('exportOption')
                     };
-                    const users = dataPage; //await getUsers(SUser)
+                    let rawExport = JSON.stringify({
+                        "filter": {
+                            "conditions": [
+                                {
+                                    "property": "customer.id",
+                                    "operator": "=",
+                                    "value": `${customerId}`
+                                },
+                                {
+                                    "property": "isSuper",
+                                    "operator": "=",
+                                    "value": `${SUser}`
+                                },
+                                {
+                                    "property": "userType",
+                                    "operator": "=",
+                                    "value": `CUSTOMER`
+                                }
+                            ],
+                        },
+                        sort: "-createdDate",
+                        fetchPlan: 'full',
+                    });
+                    const users = await getFilterEntityData("User", rawExport); //await getUsers(SUser)
                     for (let i = 0; i < _values.exportOption.length; i++) {
                         let ele = _values.exportOption[i];
                         if (ele.type = "radio") {
@@ -166,7 +268,10 @@ export class SuperUsers {
             });
         };
     }
-    async render() {
+    async render(offset, actualPage, search) {
+        infoPage.offset = offset;
+        infoPage.currentPage = actualPage;
+        infoPage.search = search;
         this.content.innerHTML = '';
         this.content.innerHTML = tableLayout;
         const tableBody = document.getElementById('datatable-body');
@@ -175,8 +280,8 @@ export class SuperUsers {
         let data = await getUsers(SUser);
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows);
         this.load(tableBody, currentPage, data);
-        this.searchEntity(tableBody, data);
-        this.pagination(data, tableRows, currentPage);
+        this.searchEntity(tableBody /*, data*/);
+        this.pagination(data, tableRows, infoPage.currentPage);
     }
     load(table, currentPage, data) {
         setUserPassword(SUser);
@@ -516,11 +621,12 @@ export class SuperUsers {
                 .then((res) => {
                 sendMail(mailRaw);
                 setTimeout(async () => {
-                    let data = await getUsers(SUser);
+                    //let data = await getUsers(SUser)
                     const tableBody = document.getElementById('datatable-body');
                     const container = document.getElementById('entity-editor-container');
                     new CloseDialog().x(container);
-                    new SuperUsers().load(tableBody, currentPage, data);
+                    new SuperUsers().render(Config.offset, Config.currentPage, infoPage.search);
+                    //new SuperUsers().load(tableBody, currentPage, data)
                 }, 1000);
             });
         };
@@ -751,9 +857,10 @@ export class SuperUsers {
                     setTimeout(async () => {
                         const tableBody = document.getElementById('datatable-body');
                         const container = document.getElementById('entity-editor-container');
-                        let data = await getUsers(SUser);
+                        //let data = await getUsers(SUser);
                         new CloseDialog().x(container);
-                        new SuperUsers().load(tableBody, currentPage, data);
+                        new SuperUsers().render(infoPage.offset, infoPage.currentPage, infoPage.search);
+                        //new SuperUsers().load(tableBody, currentPage, data);
                     }, 100);
                 });
             };
@@ -795,16 +902,17 @@ export class SuperUsers {
                     deleteEntity('User', entityId)
                         .then((res) => {
                         setTimeout(async () => {
-                            let data = await getUsers(SUser);
+                            //let data = await getUsers(SUser);
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
-                            new SuperUsers().load(tableBody, currentPage, data);
+                            new SuperUsers().render(infoPage.offset, infoPage.currentPage, infoPage.search);
+                            //new SuperUsers().load(tableBody, currentPage, data);
                         }, 1000);
                     });
                 };
                 cancelButton.onclick = () => {
                     new CloseDialog().x(dialogContent);
-                    this.render();
+                    //this.render()
                 };
             });
         });
@@ -814,7 +922,7 @@ export class SuperUsers {
         const paginationWrapper = document.getElementById('pagination-container');
         paginationWrapper.innerHTML = '';
         let pageCount;
-        pageCount = Math.ceil(items.length / limitRows);
+        pageCount = Math.ceil(infoPage.count / limitRows);
         let button;
         if (pageCount <= Config.maxLimitPage) {
             for (let i = 1; i < pageCount + 1; i++) {
@@ -837,9 +945,10 @@ export class SuperUsers {
                 buttons.forEach(button => {
                     button.style.background = "#ffffff";
                 });
+                infoPage.offset = Config.tableRows * (page - 1);
                 currentPage = page;
                 fillBtnPagination(page, Config.colorPagination);
-                new SuperUsers().load(tableBody, page, items);
+                new SuperUsers().render(infoPage.offset, currentPage, infoPage.search);
             });
             return button;
         }
@@ -849,15 +958,15 @@ export class SuperUsers {
             button.setAttribute("id", "btnPag" + page);
             button.innerText = page;
             button.addEventListener('click', () => {
+                infoPage.offset = Config.tableRows * (page - 1);
                 currentPage = page;
-                pagesOptions(items, currentPage);
-                new SuperUsers().load(tableBody, page, items);
+                new SuperUsers().render(infoPage.offset, currentPage, infoPage.search);
             });
             return button;
         }
         function pagesOptions(items, currentPage) {
             paginationWrapper.innerHTML = '';
-            let pages = pageNumbers(items, Config.maxLimitPage, currentPage);
+            let pages = pageNumbers(pageCount, Config.maxLimitPage, currentPage);
             const prevButton = document.createElement('button');
             prevButton.classList.add('pagination_button');
             prevButton.innerText = "<<";
@@ -866,7 +975,7 @@ export class SuperUsers {
             nextButton.classList.add('pagination_button');
             nextButton.innerText = ">>";
             for (let i = 0; i < pages.length; i++) {
-                if (pages[i] <= pageCount) {
+                if (pages[i] > 0 && pages[i] <= pageCount) {
                     button = setupButtons2(pages[i]);
                     paginationWrapper.appendChild(button);
                 }
@@ -877,12 +986,11 @@ export class SuperUsers {
         }
         function setupButtonsEvents(prevButton, nextButton) {
             prevButton.addEventListener('click', () => {
-                pagesOptions(items, 1);
-                new SuperUsers().load(tableBody, 1, items);
+                new SuperUsers().render(Config.offset, Config.currentPage, infoPage.search);
             });
             nextButton.addEventListener('click', () => {
-                pagesOptions(items, pageCount);
-                new SuperUsers().load(tableBody, pageCount, items);
+                infoPage.offset = Config.tableRows * (pageCount - 1);
+                new SuperUsers().render(infoPage.offset, pageCount, infoPage.search);
             });
         }
     }
@@ -951,10 +1059,10 @@ export class SuperUsers {
                             updateEntity('User', entityId, updateRaw);
                             //setUserRole(roleRaw);
                             setTimeout(async () => {
-                                let data = await getUsers(SUser);
+                                //let data = await getUsers(SUser);
                                 const tableBody = document.getElementById('datatable-body');
                                 new CloseDialog().x(modalContainer);
-                                this.load(tableBody, currentPage, data);
+                                //this.load(tableBody, currentPage, data);
                             }, 100);
                         }
                     });
@@ -1008,6 +1116,11 @@ export const setUserPassword = async (SUser) => {
                     "property": "userType",
                     "operator": "=",
                     "value": `CUSTOMER`
+                },
+                {
+                    "property": "newUser",
+                    "operator": "=",
+                    "value": `${true}`
                 }
             ]
         }

@@ -1,6 +1,6 @@
 // @filename: Departments.ts
 
-import { deleteEntity, registerEntity, updateEntity, getEntityData, getFilterEntityData } from "../../../endpoints.js"
+import { deleteEntity, registerEntity, updateEntity, getEntityData, getFilterEntityData, getFilterEntityCount } from "../../../endpoints.js"
 import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination } from "../../../tools.js"
 import { InterfaceElement } from "../../../types.js"
 import { Config } from "../../../Configs.js"
@@ -11,6 +11,12 @@ import { exportBlackListCsv, exportBlackListPdf, exportBlackListXls } from "../.
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
 const customerId = localStorage.getItem('customer_id');
+let infoPage = {
+    count: 0,
+    offset: Config.offset,
+    currentPage: currentPage,
+    search: ""
+}
 let dataPage: any
 const getUsers = async () => {
     //const users = await getEntitiesData('BlacklistedUser');
@@ -27,9 +33,55 @@ const getUsers = async () => {
             
         }, 
         sort: "-createdDate",
+        limit: Config.tableRows,
+        offset: infoPage.offset,
         fetchPlan: 'full',
         
     })
+    if(infoPage.search != ""){
+        raw = JSON.stringify({
+            "filter": {
+                "conditions": [
+                  {
+                    "group": "OR",
+                    "conditions": [
+                      {
+                        "property": "dni",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "firstName",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "firstLastName",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "secondLastName",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      }
+                    ]
+                  },
+                  {
+                    "property": "customer.id",
+                    "operator": "=",
+                    "value": `${customerId}`
+                  }
+                ]
+              },
+            sort: "-createdDate",
+            limit: Config.tableRows,
+            offset: infoPage.offset,
+            fetchPlan: 'full',
+            
+        })
+    }
+    infoPage.count = await getFilterEntityCount("BlacklistedUser", raw)
     dataPage = await getFilterEntityData("BlacklistedUser", raw)
     return dataPage;
 };
@@ -44,7 +96,10 @@ export class Blacklist {
     private content: InterfaceElement =
         document.getElementById('datatable-container')
 
-    public async render(): Promise<void> {
+    public async render(offset: any, actualPage: any, search: any): Promise<void> {
+        infoPage.offset = offset
+        infoPage.currentPage = actualPage
+        infoPage.search = search 
         this.content.innerHTML = ''
         this.content.innerHTML = tableLayout
         const tableBody: InterfaceElement = document.getElementById('datatable-body')
@@ -54,8 +109,8 @@ export class Blacklist {
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows)
         this.load(tableBody, currentPage, data)
         new filterDataByHeaderType().filter()
-        this.searchEntity(tableBody, data)
-        this.pagination(data, tableRows, currentPage)
+        this.searchEntity(tableBody/*, data*/)
+        this.pagination(data, tableRows, infoPage.currentPage)
     }
 
     public load(table: InterfaceElement, currentPage: number, data?: any) {
@@ -103,11 +158,12 @@ export class Blacklist {
         this.remove();
     }
 
-    public searchEntity = async (tableBody: InterfaceElement, data: any) => {
+    public searchEntity = async (tableBody: InterfaceElement/*, data: any*/) => {
         const search: InterfaceElement = document.getElementById('search')
-
+        const btnSearch: InterfaceElement = document.getElementById('btnSearch')
+        search.value = infoPage.search
         await search.addEventListener('keyup', () => {
-            const arrayData: any = data.filter((user: any) =>
+            /*const arrayData: any = data.filter((user: any) =>
                 `${user.dni}
                 ${user.firstName}
                 ${user.firstLastName}
@@ -120,10 +176,12 @@ export class Blacklist {
             let result = arrayData
             if (filteredResult >= tableRows) filteredResult = tableRows
 
-            this.load(tableBody, currentPage, result)
+            this.load(tableBody, currentPage, result)*/
 
         })
-
+        btnSearch.addEventListener('click', async () => {
+            new Blacklist().render(Config.offset , Config.currentPage, search.value.toLowerCase().trim())
+        })
     }
 
     public register() {
@@ -232,7 +290,8 @@ export class Blacklist {
                     const tableBody = document.getElementById('datatable-body');
                     const container = document.getElementById('entity-editor-container');
                     new CloseDialog().x(container);
-                    new Blacklist().load(tableBody, currentPage, data);
+                    //new Blacklist().load(tableBody, currentPage, data);
+                    new Blacklist().render(Config.offset, Config.currentPage, infoPage.search)
                 }, 1000);
             });
         }
@@ -334,7 +393,8 @@ export class Blacklist {
                         container = document.getElementById('entity-editor-container');
                         data = await getUsers();
                         new CloseDialog().x(container);
-                        new Blacklist().load(tableBody, currentPage, data);
+                        //new Blacklist().load(tableBody, currentPage, data);
+                        new Blacklist().render(infoPage.offset, infoPage.currentPage, infoPage.search)
                     }, 100);
                 });
             };
@@ -379,13 +439,14 @@ export class Blacklist {
                             let data = await getUsers();
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
-                            new Blacklist().load(tableBody, currentPage, data);
+                            new Blacklist().render(infoPage.offset, infoPage.currentPage, infoPage.search)
+                            //new Blacklist().load(tableBody, currentPage, data);
                         }, 1000);
                     });
                 };
                 cancelButton.onclick = () => {
                     new CloseDialog().x(dialogContent);
-                    this.render();
+                    //this.render();
                 };
             });
         });
@@ -469,7 +530,8 @@ export class Blacklist {
                                     const tableBody = document.getElementById('datatable-body');
                                     const container = document.getElementById('entity-editor-container');
                                     new CloseDialog().x(container);
-                                    new Blacklist().load(tableBody, currentPage, data);
+                                    new Blacklist().render(Config.offset, Config.currentPage, '')
+                                    //new Blacklist().load(tableBody, currentPage, data);
                                 }, 1000);
                             });
                         });
@@ -522,7 +584,22 @@ export class Blacklist {
                     const _values = {
                         exportOption: document.getElementsByName('exportOption')
                     };
-                    const users = dataPage //await getUsers();
+                    let rawExport = JSON.stringify({
+                        "filter": {
+                            "conditions": [
+                              {
+                                "property": "customer.id",
+                                "operator": "=",
+                                "value": `${customerId}`
+                              }
+                            ],
+                            
+                        }, 
+                        sort: "-createdDate",
+                        fetchPlan: 'full',
+                        
+                    })
+                    const users = await getFilterEntityData("BlacklistedUser", rawExport) //await getUsers();
                     for (let i = 0; i < _values.exportOption.length; i++) {
                         let ele: any = _values.exportOption[i];
                         if (ele.type = "radio") {
@@ -554,7 +631,7 @@ export class Blacklist {
         paginationWrapper.innerHTML = ''
 
         let pageCount: number
-        pageCount = Math.ceil(items.length / limitRows)
+        pageCount = Math.ceil(infoPage.count / limitRows)
 
         let button: InterfaceElement
 
@@ -583,9 +660,10 @@ export class Blacklist {
                 buttons.forEach(button => {
                     button.style.background = "#ffffff"; 
                 })
+                infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
                 fillBtnPagination(page, Config.colorPagination)
-                new Blacklist().load(tableBody, page, items)
+                new Blacklist().render(infoPage.offset, currentPage, infoPage.search)
             })
 
             return button
@@ -597,16 +675,16 @@ export class Blacklist {
             button.setAttribute("id", "btnPag"+page)
             button.innerText = page
             button.addEventListener('click', (): void => {
+                infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
-                pagesOptions(items, currentPage)
-                new Blacklist().load(tableBody, page, items)
+                new Blacklist().render(infoPage.offset, currentPage, infoPage.search)
             })
             return button
         }
 
         function pagesOptions(items: any, currentPage: any) {
             paginationWrapper.innerHTML = ''
-            let pages = pageNumbers(items, Config.maxLimitPage, currentPage)
+            let pages = pageNumbers(pageCount, Config.maxLimitPage, currentPage)
             
             const prevButton: InterfaceElement = document.createElement('button')
             prevButton.classList.add('pagination_button')
@@ -618,7 +696,7 @@ export class Blacklist {
             nextButton.innerText = ">>"
     
             for (let i = 0; i < pages.length; i++) {
-                if(pages[i] <= pageCount){
+                if(pages[i] > 0 && pages[i] <= pageCount){
                     button = setupButtons2(
                         pages[i]
                     )
@@ -632,13 +710,12 @@ export class Blacklist {
 
         function setupButtonsEvents(prevButton: InterfaceElement, nextButton: InterfaceElement) {
             prevButton.addEventListener('click', (): void => {
-                pagesOptions(items, 1)
-                new Blacklist().load(tableBody, 1, items)
+                new Blacklist().render(Config.offset, Config.currentPage, infoPage.search)
             })
 
             nextButton.addEventListener('click', (): void => {
-                pagesOptions(items, pageCount)
-                new Blacklist().load(tableBody, pageCount, items)
+                infoPage.offset = Config.tableRows * (pageCount - 1)
+                new Blacklist().render(infoPage.offset, pageCount, infoPage.search)
             })
         }
     }

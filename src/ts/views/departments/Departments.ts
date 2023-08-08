@@ -1,6 +1,6 @@
 // @filename: Departments.ts
 
-import { deleteEntity, registerEntity, getFilterEntityData } from "../../endpoints.js"
+import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount } from "../../endpoints.js"
 import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination } from "../../tools.js"
 import { InterfaceElement } from "../../types.js"
 import { Config } from "../../Configs.js"
@@ -10,6 +10,12 @@ import { tableLayoutTemplate } from "./Template.js"
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
 const customerId = localStorage.getItem('customer_id');
+let infoPage = {
+    count: 0,
+    offset: Config.offset,
+    currentPage: currentPage,
+    search: ""
+}
 let dataPage: any
 const getDepartments = async (): Promise<void> => {
     //const departmentRaw: any = await getEntitiesData('Department')
@@ -26,7 +32,37 @@ const getDepartments = async (): Promise<void> => {
             
         }, 
         sort: "-createdDate",     
+        limit: Config.tableRows,
+        offset: infoPage.offset,
     })
+    if(infoPage.search != ""){
+        raw = JSON.stringify({
+            "filter": {
+                "conditions": [
+                  {
+                    "group": "OR",
+                    "conditions": [
+                      {
+                        "property": "name",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      }
+                    ]
+                  },
+                  {
+                    "property": "customer.id",
+                    "operator": "=",
+                    "value": `${customerId}`
+                  }
+                ]
+              },
+            sort: "-createdDate",
+            limit: Config.tableRows,
+            offset: infoPage.offset
+            
+        })
+    }
+    infoPage.count = await getFilterEntityCount("Department", raw)
     dataPage = await getFilterEntityData("Department", raw)
     return dataPage
 
@@ -42,7 +78,10 @@ export class Departments {
     private content: InterfaceElement =
         document.getElementById('datatable-container')
 
-    public async render(): Promise<void> {
+    public async render(offset: any, actualPage: any, search: any): Promise<void> {
+        infoPage.offset = offset
+        infoPage.currentPage = actualPage
+        infoPage.search = search   
         this.content.innerHTML = ''
         this.content.innerHTML = tableLayout
         const tableBody: InterfaceElement = document.getElementById('datatable-body')
@@ -52,8 +91,8 @@ export class Departments {
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows)
         this.load(tableBody, currentPage, data)
         new filterDataByHeaderType().filter()
-        this.searchEntity(tableBody, data)
-        this.pagination(data, tableRows, currentPage)
+        this.searchEntity(tableBody/*, data*/)
+        this.pagination(data, tableRows, infoPage.currentPage)
     }
 
     public load(table: InterfaceElement, currentPage: number, data?: any) {
@@ -92,11 +131,12 @@ export class Departments {
         this.remove()
     }
 
-    public searchEntity = async (tableBody: InterfaceElement, data: any) => {
+    public searchEntity = async (tableBody: InterfaceElement /*, data: any*/) => {
         const search: InterfaceElement = document.getElementById('search')
-
+        const btnSearch: InterfaceElement = document.getElementById('btnSearch')
+        search.value = infoPage.search
         await search.addEventListener('keyup', () => {
-            const arrayData: any = data.filter((user: any) =>
+            /*const arrayData: any = data.filter((user: any) =>
                 `${user.firstName}
                  ${user.lastName}
                  ${user.username}`
@@ -109,9 +149,11 @@ export class Departments {
             if (filteredResult >= tableRows) filteredResult = tableRows
 
             this.load(tableBody, currentPage, result)
-
+            */
         })
-
+        btnSearch.addEventListener('click', async () => {
+            new Departments().render(Config.offset , Config.currentPage, search.value.toLowerCase().trim())
+        })
     }
 
     public register() {
@@ -183,7 +225,7 @@ export class Departments {
                     const container: InterfaceElement = document.getElementById('entity-editor-container')
 
                     new CloseDialog().x(container)
-                    new Departments().render()
+                    new Departments().render(Config.offset, Config.currentPage, infoPage.search)
                 }, 1000)
             })
 
@@ -231,7 +273,7 @@ export class Departments {
 
                 deleteButton.onclick = () => {
                     deleteEntity('Department', entityId)
-                        .then(res => new Departments().render())
+                        .then(res => new Departments().render(infoPage.offset, infoPage.currentPage, infoPage.search))
 
                     new CloseDialog().x(dialogContent)
                 }
@@ -249,7 +291,7 @@ export class Departments {
         const editor: InterfaceElement = document.getElementById('entity-editor-container')
 
         closeButton.addEventListener('click', () => {
-            console.log('close')
+            //console.log('close')
             new CloseDialog().x(editor)
         })
     }
@@ -260,7 +302,7 @@ export class Departments {
         paginationWrapper.innerHTML = ''
 
         let pageCount: number
-        pageCount = Math.ceil(items.length / limitRows)
+        pageCount = Math.ceil(infoPage.count / limitRows)
 
         let button: InterfaceElement
 
@@ -289,9 +331,10 @@ export class Departments {
                 buttons.forEach(button => {
                     button.style.background = "#ffffff"; 
                 })
+                infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
                 fillBtnPagination(page, Config.colorPagination)
-                new Departments().load(tableBody, page, items)
+                new Departments().render(infoPage.offset, currentPage, infoPage.search)
             })
 
             return button
@@ -303,9 +346,9 @@ export class Departments {
           button.setAttribute("id", "btnPag"+page)
           button.innerText = page
           button.addEventListener('click', (): void => {
+              infoPage.offset = Config.tableRows * (page - 1)
               currentPage = page
-              pagesOptions(items, currentPage)
-              new Departments().load(tableBody, page, items)
+              new Departments().render(infoPage.offset, currentPage, infoPage.search)
           })
           return button
       }
@@ -324,7 +367,7 @@ export class Departments {
           nextButton.innerText = ">>"
   
           for (let i = 0; i < pages.length; i++) {
-              if(pages[i] <= pageCount){
+              if(pages[i] > 0 && pages[i] <= pageCount){
                   button = setupButtons2(
                       pages[i]
                   )
@@ -338,13 +381,12 @@ export class Departments {
 
       function setupButtonsEvents(prevButton: InterfaceElement, nextButton: InterfaceElement) {
           prevButton.addEventListener('click', (): void => {
-              pagesOptions(items, 1)
-              new Departments().load(tableBody, 1, items)
+            new Departments().render(Config.offset, Config.currentPage, infoPage.search)
           })
 
           nextButton.addEventListener('click', (): void => {
-              pagesOptions(items, pageCount)
-              new Departments().load(tableBody, pageCount, items)
+            infoPage.offset = Config.tableRows * (pageCount - 1)
+            new Departments().render(infoPage.offset, pageCount, infoPage.search)
           })
       }
     }

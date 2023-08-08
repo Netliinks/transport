@@ -109,6 +109,21 @@ export const getEntityData = async (entities, entity) => {
     const URL = `${NetliinksUrl}${entities}/${entity}?fetchPlan=full&sort=-createdDate`;
     return getData(URL);
 };
+export const getFilterEntityCount = async (entities, raw) => {
+    const req = {
+        url: `${NetliinksUrl}${entities}/search/count`,
+        method: 'POST'
+    };
+    const requestOptions = {
+        method: req.method,
+        headers: headers,
+        body: raw,
+        redirect: 'follow'
+    };
+    const res = await fetch(req.url, requestOptions);
+    return await res.json()
+        .catch(err => new SignIn().signOut());
+};
 export const getFilterEntityData = async (entities, raw) => {
     const req = {
         url: `${NetliinksUrl}${entities}/search`,

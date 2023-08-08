@@ -39,7 +39,7 @@ export const exportVisitPdf = (ar: any, start: any, end: any) => {
     for (let i = 0; i < ar.length; i++) {
         let visit = ar[i]
         // @ts-ignore
-        if(visit.creationDate >= start && visit.creationDate <= end){
+        //if(visit.creationDate >= start && visit.creationDate <= end){
             doc.setFontSize(9)
             doc.setFont(undefined, 'normal')
             doc.setTextColor(0,0,0)
@@ -83,7 +83,7 @@ export const exportVisitPdf = (ar: any, start: any, end: any) => {
                 doc.text(10, 200, `Página ${pagina}`)
             }
             lineas++
-        }
+        //}
 
     }
     // Save the PDF
@@ -98,7 +98,7 @@ export const exportVisitCsv = (ar: any, start: any, end: any) => {
     for(let i=0; i < ar.length; i++){
         let visit = ar[i]
         // @ts-ignore
-        if(visit.creationDate >= start && visit.creationDate <= end){
+        //if(visit.creationDate >= start && visit.creationDate <= end){
             let obj = {
                 "Nombre": `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`,
                 "DNI": `${visit.dni}`,
@@ -110,8 +110,8 @@ export const exportVisitCsv = (ar: any, start: any, end: any) => {
                 "Estado": `${visit.visitState?.name ?? ''}`,
                 "Verificado": `${visit.verifiedDocument ? 'Si' : 'No'}`,
                 "Favorita": `${visit.favorite ? 'Si' : 'No'}`,
-                "Teléfono": `${visit.phoneNumber}`,
-                "Autorizado": `${visit.authorizer}`,
+                "Teléfono": `${visit?.phoneNumber ?? ''}`,
+                "Autorizado": `${visit?.authorizer ?? ''}`,
                 "Fecha Ingreso": `${visit.ingressDate}`,
                 "Hora Ingreso": `${visit.ingressTime}`,
                 "Emitido Ingreso": `${visit.ingressIssuedId?.firstName ?? ''} ${visit.ingressIssuedId?.lastName ?? ''}`,
@@ -121,7 +121,7 @@ export const exportVisitCsv = (ar: any, start: any, end: any) => {
                 "Asunto": `${visit.reason.split("\n").join("(salto)")}`,
               }
               rows.push(obj);
-        }
+        //}
         
     }
     generateFile(rows, "Visitas", "csv");
@@ -132,7 +132,7 @@ export const exportVisitXls = (ar: any, start: any, end: any) => {
     for(let i=0; i < ar.length; i++){
         let visit = ar[i]
         // @ts-ignore
-        if(visit.creationDate >= start && visit.creationDate <= end){
+        //if(visit.creationDate >= start && visit.creationDate <= end){
             let obj = {
                 "Nombre": `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`,
                 "DNI": `${visit.dni}`,
@@ -144,8 +144,8 @@ export const exportVisitXls = (ar: any, start: any, end: any) => {
                 "Estado": `${visit.visitState?.name ?? ''}`,
                 "Verificado": `${visit.verifiedDocument ? 'Si' : 'No'}`,
                 "Favorita": `${visit.favorite ? 'Si' : 'No'}`,
-                "Teléfono": `${visit.phoneNumber}`,
-                "Autorizado": `${visit.authorizer}`,
+                "Teléfono": `${visit?.phoneNumber ?? ''}`,
+                "Autorizado": `${visit?.authorizer ?? ''}`,
                 "Fecha Ingreso": `${visit.ingressDate}`,
                 "Hora Ingreso": `${visit.ingressTime}`,
                 "Emitido Ingreso": `${visit.ingressIssuedId?.firstName ?? ''} ${visit.ingressIssuedId?.lastName ?? ''}`,
@@ -155,7 +155,7 @@ export const exportVisitXls = (ar: any, start: any, end: any) => {
                 "Asunto": `${visit.reason.split("\n").join("(salto)")}`,
               }
               rows.push(obj);
-        }
+        //}
         
     }
     generateFile(rows, "Visitas", "xls");

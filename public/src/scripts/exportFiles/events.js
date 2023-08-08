@@ -34,41 +34,41 @@ export const exportEventPdf = (ar, start, end) => {
     for (let i = 0; i < ar.length; i++) {
         let event = ar[i];
         // @ts-ignore
-        if (event.creationDate >= start && event.creationDate <= end) {
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(0, 0, 0);
-            doc.text(10, row, `${event.creationDate}`);
-            doc.text(30, row, `${event.creationTime}`);
-            doc.text(50, row, `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`);
-            doc.text(90, row, `${event.title.split("\n").join("(salto)")}`);
-            doc.text(140, row, `${event.description.split("\n").join("(salto)")}`);
-            row += 5;
-            let limitLineas = 33;
-            if (pagina == 1)
-                limitLineas = 26;
-            if (lineas >= limitLineas) {
-                doc.addPage();
-                lineas = 0;
-                row = 30;
-                pagina += 1;
-                doc.setFont(undefined, 'bold');
-                doc.setFontSize(10);
-                //construimos cabecera del csv
-                doc.line(5, 15, 290, 15);
-                doc.setFillColor(210, 210, 210);
-                doc.rect(5, 15, 285, 10, 'F');
-                doc.text(10, 20, "Fecha");
-                doc.text(30, 20, "Hora");
-                doc.text(50, 20, "Usuario");
-                doc.text(90, 20, "Título");
-                doc.text(140, 20, "Descripción");
-                doc.line(5, 25, 290, 25);
-                doc.setTextColor(0, 0, 128);
-                doc.text(10, 200, `Página ${pagina}`);
-            }
-            lineas++;
+        //if(event.creationDate >= start && event.creationDate <= end){
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        doc.setTextColor(0, 0, 0);
+        doc.text(10, row, `${event.creationDate}`);
+        doc.text(30, row, `${event.creationTime}`);
+        doc.text(50, row, `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`);
+        doc.text(90, row, `${event.title.split("\n").join("(salto)")}`);
+        doc.text(140, row, `${event.description.split("\n").join("(salto)")}`);
+        row += 5;
+        let limitLineas = 33;
+        if (pagina == 1)
+            limitLineas = 26;
+        if (lineas >= limitLineas) {
+            doc.addPage();
+            lineas = 0;
+            row = 30;
+            pagina += 1;
+            doc.setFont(undefined, 'bold');
+            doc.setFontSize(10);
+            //construimos cabecera del csv
+            doc.line(5, 15, 290, 15);
+            doc.setFillColor(210, 210, 210);
+            doc.rect(5, 15, 285, 10, 'F');
+            doc.text(10, 20, "Fecha");
+            doc.text(30, 20, "Hora");
+            doc.text(50, 20, "Usuario");
+            doc.text(90, 20, "Título");
+            doc.text(140, 20, "Descripción");
+            doc.line(5, 25, 290, 25);
+            doc.setTextColor(0, 0, 128);
+            doc.text(10, 200, `Página ${pagina}`);
         }
+        lineas++;
+        //}
     }
     // Save the PDF
     var d = new Date();
@@ -80,16 +80,16 @@ export const exportEventCsv = (ar, start, end) => {
     for (let i = 0; i < ar.length; i++) {
         let event = ar[i];
         // @ts-ignore
-        if (event.creationDate >= start && event.creationDate <= end) {
-            let obj = {
-                "Título": `${event.title.split("\n").join("(salto)")}`,
-                "Fecha": `${event.creationDate}`,
-                "Hora": `${event.creationTime}`,
-                "Usuario": `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`,
-                "Descripción": `${event.description.split("\n").join("(salto)")}`
-            };
-            rows.push(obj);
-        }
+        //if(event.creationDate >= start && event.creationDate <= end){
+        let obj = {
+            "Título": `${event.title.split("\n").join("(salto)")}`,
+            "Fecha": `${event.creationDate}`,
+            "Hora": `${event.creationTime}`,
+            "Usuario": `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`,
+            "Descripción": `${event.description.split("\n").join("(salto)")}`
+        };
+        rows.push(obj);
+        //}
     }
     generateFile(rows, "Eventos", "csv");
 };
@@ -98,16 +98,16 @@ export const exportEventXls = (ar, start, end) => {
     for (let i = 0; i < ar.length; i++) {
         let event = ar[i];
         // @ts-ignore
-        if (event.creationDate >= start && event.creationDate <= end) {
-            let obj = {
-                "Título": `${event.title.split("\n").join("(salto)")}`,
-                "Fecha": `${event.creationDate}`,
-                "Hora": `${event.creationTime}`,
-                "Usuario": `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`,
-                "Descripción": `${event.description.split("\n").join("(salto)")}`
-            };
-            rows.push(obj);
-        }
+        //if(event.creationDate >= start && event.creationDate <= end){
+        let obj = {
+            "Título": `${event.title.split("\n").join("(salto)")}`,
+            "Fecha": `${event.creationDate}`,
+            "Hora": `${event.creationTime}`,
+            "Usuario": `${event.user?.firstName ?? ''} ${event.user?.lastName ?? ''}`,
+            "Descripción": `${event.description.split("\n").join("(salto)")}`
+        };
+        rows.push(obj);
+        //}
     }
     generateFile(rows, "Eventos", "xls");
 };

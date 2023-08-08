@@ -1,6 +1,6 @@
 // @filename: Contractors.ts
 
-import { deleteEntity, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, getFilterEntityData } from "../../../endpoints.js"
+import { deleteEntity, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, getFilterEntityData, getFilterEntityCount } from "../../../endpoints.js"
 import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, getVerifyUsername, pageNumbers, fillBtnPagination } from "../../../tools.js"
 import { InterfaceElement, InterfaceElementCollection } from "../../../types.js"
 import { Config } from "../../../Configs.js"
@@ -12,6 +12,12 @@ const tableRows = Config.tableRows
 const currentPage = Config.currentPage
 const customerId = localStorage.getItem('customer_id')
 let currentUserInfo : any
+let infoPage = {
+    count: 0,
+    offset: Config.offset,
+    currentPage: currentPage,
+    search: ""
+}
 let dataPage: any
 const getUsers = async (): Promise<void> => {
     const currentUser = await getUserInfo()
@@ -43,9 +49,75 @@ const getUsers = async (): Promise<void> => {
             
         }, 
         sort: "-createdDate",
+        limit: Config.tableRows,
+        offset: infoPage.offset,
         fetchPlan: 'full',
         
     })
+    if(infoPage.search != ""){
+        raw = JSON.stringify({
+            "filter": {
+                "conditions": [
+                  {
+                    "group": "OR",
+                    "conditions": [
+                      {
+                        "property": "dni",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "firstName",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "lastName",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "secondLastName",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "username",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "email",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      }
+                    ]
+                  },
+                  {
+                    "property": "customer.id",
+                    "operator": "=",
+                    "value": `${customerId}`
+                  },
+                  {
+                    "property": "isSuper",
+                    "operator": "=",
+                    "value": `${false}`
+                  },
+                  {
+                    "property": "userType",
+                    "operator": "=",
+                    "value": `CONTRACTOR`
+                  }
+                ]
+              },
+            sort: "-createdDate",
+            limit: Config.tableRows,
+            offset: infoPage.offset,
+            fetchPlan: 'full',
+            
+        })
+    }
+    infoPage.count = await getFilterEntityCount("User", raw)
     dataPage = await getFilterEntityData("User", raw)
     return dataPage
 }
@@ -60,7 +132,10 @@ export class Contractors {
     private content: InterfaceElement =
         document.getElementById('datatable-container')
 
-    public async render(): Promise<void> {
+    public async render(offset: any, actualPage: any, search: any): Promise<void> {
+        infoPage.offset = offset
+        infoPage.currentPage = actualPage
+        infoPage.search = search
         this.content.innerHTML = ''
         this.content.innerHTML = tableLayout
         const tableBody: InterfaceElement = document.getElementById('datatable-body')
@@ -70,8 +145,8 @@ export class Contractors {
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows)
         this.load(tableBody, currentPage, data)
 
-        this.searchEntity(tableBody, data)
-        this.pagination(data, tableRows, currentPage)
+        this.searchEntity(tableBody/*, data*/)
+        this.pagination(data, tableRows, infoPage.currentPage)
     }
 
     public load(table: InterfaceElement, currentPage: number, data: any) {
@@ -125,11 +200,12 @@ export class Contractors {
         this.changeUserPassword()
     }
 
-    public searchEntity = async (tableBody: InterfaceElement, data: any) => {
+    public searchEntity = async (tableBody: InterfaceElement/*, data: any*/) => {
         const search: InterfaceElement = document.getElementById('search')
-
+        const btnSearch: InterfaceElement = document.getElementById('btnSearch')
+        search.value = infoPage.search
         await search.addEventListener('keyup', () => {
-            const arrayData: any = data.filter((user: any) =>
+            /*const arrayData: any = data.filter((user: any) =>
                 `${user.firstName}
                  ${user.lastName}
                  ${user.username}
@@ -142,10 +218,12 @@ export class Contractors {
             let result = arrayData
             if (filteredResult >= tableRows) filteredResult = tableRows
 
-            this.load(tableBody, currentPage, result)
+            this.load(tableBody, currentPage, result)*/
 
         })
-
+        btnSearch.addEventListener('click', async () => {
+            new Contractors().render(Config.offset , Config.currentPage, search.value.toLowerCase().trim())
+        })
     }
 
     private changeUserPassword(): void {
@@ -430,9 +508,9 @@ export class Contractors {
                     alert("¡Primer apellido vacío!")
                 }else if(_values.secondLastName.value === '' || _values.secondLastName.value === undefined){
                     alert("¡Segundo apellido vacío!")
-                }else if(_values.email.value === '' || _values.email.value === undefined){
+                }/*else if(_values.email.value === '' || _values.email.value === undefined){
                     alert("¡Correo vacío!")
-                }else if(_values.dni.value === '' || _values.dni.value === undefined){
+                }*/else if(_values.dni.value === '' || _values.dni.value === undefined){
                     alert("DNI vacío!")
                 }else if(_values.temporalPass.value === '' || _values.temporalPass.value === undefined){
                     alert("Clave vacío!")
@@ -452,7 +530,8 @@ export class Contractors {
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
                         new CloseDialog().x(container)
-                        new Contractors().load(tableBody, currentPage, data)
+                        new Contractors().render(Config.offset, Config.currentPage, infoPage.search)
+                        //new Contractors().load(tableBody, currentPage, data)
                     }, 1000)
                 })
         }
@@ -619,7 +698,8 @@ export class Contractors {
                                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
                                         new CloseDialog().x(container)
-                                        new Contractors().load(tableBody, currentPage, data)
+                                        //new Contractors().load(tableBody, currentPage, data)
+                                        new Contractors().render(Config.offset, Config.currentPage, '')
                                     }, 1000)
                                 })
                         })
@@ -853,7 +933,8 @@ export class Contractors {
                             data = await getUsers()
 
                             new CloseDialog().x(container)
-                            new Contractors().load(tableBody, currentPage, data)
+                            new Contractors().render(infoPage.offset, infoPage.currentPage, infoPage.search)
+                            //new Contractors().load(tableBody, currentPage, data)
                         }, 100)
                     })
             }
@@ -903,14 +984,15 @@ export class Contractors {
                             let data = await getUsers();
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
-                            new Contractors().load(tableBody, currentPage, data);
+                            new Contractors().render(infoPage.offset, infoPage.currentPage, infoPage.search)
+                            //new Contractors().load(tableBody, currentPage, data);
                         }, 1000)
                     })
                 }
 
                 cancelButton.onclick = () => {
                     new CloseDialog().x(dialogContent)
-                    this.render()
+                    //this.render()
                 }
             })
         })
@@ -958,10 +1040,35 @@ export class Contractors {
             const exportButton: InterfaceElement = document.getElementById('export-data');
             const _dialog: InterfaceElement = document.getElementById('dialog-content');
             exportButton.addEventListener('click', async() => {
-                const _values = {
+                const _values: any = {
                     exportOption: document.getElementsByName('exportOption')
                 }
-                const users: any = dataPage //await getUsers()
+                let rawExport = JSON.stringify({
+                    "filter": {
+                        "conditions": [
+                          {
+                            "property": "customer.id",
+                            "operator": "=",
+                            "value": `${customerId}`
+                          },
+                          {
+                            "property": "isSuper",
+                            "operator": "=",
+                            "value": `${false}`
+                          },
+                          {
+                            "property": "userType",
+                            "operator": "=",
+                            "value": `CONTRACTOR`
+                          }
+                        ],
+                        
+                    }, 
+                    sort: "-createdDate",
+                    fetchPlan: 'full',
+                    
+                })
+                const users: any = await getFilterEntityData("User", rawExport) //await getUsers()
                 for (let i = 0; i < _values.exportOption.length; i++) {
                     let ele: any = _values.exportOption[i]
                     if (ele.type = "radio") {
@@ -993,7 +1100,7 @@ export class Contractors {
         paginationWrapper.innerHTML = ''
 
         let pageCount: number
-        pageCount = Math.ceil(items.length / limitRows)
+        pageCount = Math.ceil(infoPage.count / limitRows)
 
         let button: InterfaceElement
 
@@ -1022,9 +1129,11 @@ export class Contractors {
                 buttons.forEach(button => {
                     button.style.background = "#ffffff"; 
                 })
+                infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
                 fillBtnPagination(page, Config.colorPagination)
-                new Contractors().load(tableBody, page, items)
+                //new Contractors().load(tableBody, page, items)
+                new Contractors().render(infoPage.offset, currentPage, infoPage.search)
             })
 
             return button
@@ -1036,16 +1145,16 @@ export class Contractors {
             button.setAttribute("id", "btnPag"+page)
             button.innerText = page
             button.addEventListener('click', (): void => {
+                infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
-                pagesOptions(items, currentPage)
-                new Contractors().load(tableBody, page, items)
+                new Contractors().render(infoPage.offset, currentPage, infoPage.search)
             })
             return button
         }
 
         function pagesOptions(items: any, currentPage: any) {
             paginationWrapper.innerHTML = ''
-            let pages = pageNumbers(items, Config.maxLimitPage, currentPage)
+            let pages = pageNumbers(pageCount, Config.maxLimitPage, currentPage)
             
             const prevButton: InterfaceElement = document.createElement('button')
             prevButton.classList.add('pagination_button')
@@ -1057,7 +1166,7 @@ export class Contractors {
             nextButton.innerText = ">>"
     
             for (let i = 0; i < pages.length; i++) {
-                if(pages[i] <= pageCount){
+                if(pages[i] > 0 && pages[i] <= pageCount){
                     button = setupButtons2(
                         pages[i]
                     )
@@ -1071,13 +1180,12 @@ export class Contractors {
 
         function setupButtonsEvents(prevButton: InterfaceElement, nextButton: InterfaceElement) {
             prevButton.addEventListener('click', (): void => {
-                pagesOptions(items, 1)
-                new Contractors().load(tableBody, 1, items)
+                new Contractors().render(Config.offset, Config.currentPage, infoPage.search)
             })
 
             nextButton.addEventListener('click', (): void => {
-                pagesOptions(items, pageCount)
-                new Contractors().load(tableBody, pageCount, items)
+                infoPage.offset = Config.tableRows * (pageCount - 1)
+                new Contractors().render(infoPage.offset, pageCount, infoPage.search)
             })
         }
     }
@@ -1116,6 +1224,11 @@ export async function setUserPassword(): Promise<any> {
                 "property": "userType",
                 "operator": "=",
                 "value": `CONTRACTOR`
+              },
+              {
+                "property": "newUser",
+                "operator": "=",
+                "value": `${true}`
               }
             ]
         }
@@ -1169,7 +1282,7 @@ export async function setRole(): Promise<void> {
     data.forEach((newUser: any) => {
         let raw: string = JSON.stringify({
             "id": `${newUser.id}`,
-            "roleCode": 'app_clientes'
+            "roleCode": 'app_contratistas'
         })
 
         let updateNewUser: string = JSON.stringify({

@@ -1,6 +1,6 @@
 // @filename: SuperUsers.ts
 
-import { deleteEntity, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, sendMail, getFilterEntityData } from "../../../endpoints.js"
+import { deleteEntity, getEntityData, registerEntity, setPassword, setUserRole, updateEntity, getUserInfo, sendMail, getFilterEntityData, getFilterEntityCount } from "../../../endpoints.js"
 import { NUsers } from "../../../namespaces.js"
 import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, getVerifyEmail, filterDataByHeaderType, getVerifyUsername, pageNumbers, fillBtnPagination } from "../../../tools.js"
 import { InterfaceElement } from "../../../types.js"
@@ -15,6 +15,12 @@ const currentPage = Config.currentPage
 const SUser = true
 let currentUserInfo: any; 
 const customerId = localStorage.getItem('customer_id');
+let infoPage = {
+    count: 0,
+    offset: Config.offset,
+    currentPage: currentPage,
+    search: ""
+}
 let dataPage: any
 const getUsers = async (superUser: boolean): Promise<void> => {
     const currentUser = await getUserInfo();
@@ -47,9 +53,75 @@ const getUsers = async (superUser: boolean): Promise<void> => {
             
         }, 
         sort: "-createdDate",
+        limit: Config.tableRows,
+        offset: infoPage.offset,
         fetchPlan: 'full',
         
     })
+    if(infoPage.search != ""){
+        raw = JSON.stringify({
+            "filter": {
+                "conditions": [
+                  {
+                    "group": "OR",
+                    "conditions": [
+                      {
+                        "property": "dni",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "firstName",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "lastName",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "secondLastName",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "username",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "email",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      }
+                    ]
+                  },
+                  {
+                    "property": "customer.id",
+                    "operator": "=",
+                    "value": `${customerId}`
+                  },
+                  {
+                    "property": "isSuper",
+                    "operator": "=",
+                    "value": `${superUser}`
+                  },
+                  {
+                    "property": "userType",
+                    "operator": "=",
+                    "value": `CUSTOMER`
+                  }
+                ]
+              },
+            sort: "-createdDate",
+            limit: Config.tableRows,
+            offset: infoPage.offset,
+            fetchPlan: 'full',
+            
+        })
+    }
+    infoPage.count = await getFilterEntityCount("User", raw)
     dataPage = await getFilterEntityData("User", raw)
     return dataPage
 }
@@ -64,7 +136,10 @@ export class SuperUsers {
     private content: InterfaceElement =
         document.getElementById('datatable-container')
 
-    public async render(): Promise<void> {
+    public async render(offset: any, actualPage: any, search: any): Promise<void> {
+        infoPage.offset = offset
+        infoPage.currentPage = actualPage
+        infoPage.search = search
         this.content.innerHTML = ''
         this.content.innerHTML = tableLayout
         const tableBody: InterfaceElement = document.getElementById('datatable-body')
@@ -74,8 +149,8 @@ export class SuperUsers {
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows)
         this.load(tableBody, currentPage, data)
 
-        this.searchEntity(tableBody, data)
-        this.pagination(data, tableRows, currentPage)
+        this.searchEntity(tableBody/*, data*/)
+        this.pagination(data, tableRows, infoPage.currentPage)
     }
 
     public load(table: InterfaceElement, currentPage: number, data: any) {
@@ -135,11 +210,12 @@ export class SuperUsers {
         this.changeUserPassword()
     }
 
-    public searchEntity = async (tableBody: InterfaceElement, data: any) => {
+    public searchEntity = async (tableBody: InterfaceElement/*, data: any*/) => {
         const search: InterfaceElement = document.getElementById('search')
-
+        const btnSearch: InterfaceElement = document.getElementById('btnSearch')
+        search.value = infoPage.search
         await search.addEventListener('keyup', () => {
-            const arrayData: any = data.filter((user: any) =>
+            /*const arrayData: any = data.filter((user: any) =>
                 `${user.firstName}
                  ${user.lastName}
                  ${user.username}`
@@ -151,10 +227,12 @@ export class SuperUsers {
             let result = arrayData
             if (filteredResult >= tableRows) filteredResult = tableRows
 
-            this.load(tableBody, currentPage, result)
+            this.load(tableBody, currentPage, result)*/
 
         })
-
+        btnSearch.addEventListener('click', async () => {
+            new SuperUsers().render(Config.offset , Config.currentPage, search.value.toLowerCase().trim())
+        })
     }
 
     private changeUserPassword(): void {
@@ -443,11 +521,12 @@ export class SuperUsers {
                 .then((res) => {
                     sendMail(mailRaw)
                     setTimeout(async () => {
-                        let data = await getUsers(SUser)
+                        //let data = await getUsers(SUser)
                         const tableBody: InterfaceElement = document.getElementById('datatable-body')
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
                         new CloseDialog().x(container)
-                        new SuperUsers().load(tableBody, currentPage, data)
+                        new SuperUsers().render(Config.offset, Config.currentPage, infoPage.search)
+                        //new SuperUsers().load(tableBody, currentPage, data)
                     }, 1000)
                 })
         }
@@ -725,9 +804,10 @@ export class SuperUsers {
                   setTimeout(async () => {
                       const tableBody = document.getElementById('datatable-body');
                       const container = document.getElementById('entity-editor-container');
-                      let data = await getUsers(SUser);
+                      //let data = await getUsers(SUser);
                       new CloseDialog().x(container);
-                      new SuperUsers().load(tableBody, currentPage, data);
+                      new SuperUsers().render(infoPage.offset, infoPage.currentPage, infoPage.search)
+                      //new SuperUsers().load(tableBody, currentPage, data);
                   }, 100);
               });
           };
@@ -774,17 +854,18 @@ export class SuperUsers {
                     deleteEntity('User', entityId)
                     .then((res) => {
                         setTimeout(async () => {
-                            let data = await getUsers(SUser);
+                            //let data = await getUsers(SUser);
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
-                            new SuperUsers().load(tableBody, currentPage, data);
+                            new SuperUsers().render(infoPage.offset, infoPage.currentPage, infoPage.search)
+                            //new SuperUsers().load(tableBody, currentPage, data);
                         }, 1000)
                     })
                 }
 
                 cancelButton.onclick = () => {
                     new CloseDialog().x(dialogContent)
-                    this.render()
+                    //this.render()
                 }
             })
         })
@@ -832,10 +913,35 @@ export class SuperUsers {
             const exportButton: InterfaceElement = document.getElementById('export-data');
             const _dialog: InterfaceElement = document.getElementById('dialog-content');
             exportButton.addEventListener('click', async() => {
-                const _values = {
+                const _values: any = {
                     exportOption: document.getElementsByName('exportOption')
                 }
-                const users: any = dataPage //await getUsers(SUser)
+                let rawExport = JSON.stringify({
+                    "filter": {
+                        "conditions": [
+                          {
+                            "property": "customer.id",
+                            "operator": "=",
+                            "value": `${customerId}`
+                          },
+                          {
+                            "property": "isSuper",
+                            "operator": "=",
+                            "value": `${SUser}`
+                          },
+                          {
+                            "property": "userType",
+                            "operator": "=",
+                            "value": `CUSTOMER`
+                          }
+                        ],
+                        
+                    }, 
+                    sort: "-createdDate",
+                    fetchPlan: 'full',
+                    
+                })
+                const users: any = await getFilterEntityData("User", rawExport) //await getUsers(SUser)
                 for (let i = 0; i < _values.exportOption.length; i++) {
                     let ele: any = _values.exportOption[i]
                     if (ele.type = "radio") {
@@ -867,7 +973,7 @@ export class SuperUsers {
         paginationWrapper.innerHTML = ''
 
         let pageCount: number
-        pageCount = Math.ceil(items.length / limitRows)
+        pageCount = Math.ceil(infoPage.count / limitRows)
 
         let button: InterfaceElement
 
@@ -896,9 +1002,10 @@ export class SuperUsers {
                 buttons.forEach(button => {
                     button.style.background = "#ffffff"; 
                 })
+                infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
                 fillBtnPagination(page, Config.colorPagination)
-                new SuperUsers().load(tableBody, page, items)
+                new SuperUsers().render(infoPage.offset, currentPage, infoPage.search)
             })
 
             return button
@@ -910,16 +1017,16 @@ export class SuperUsers {
             button.setAttribute("id", "btnPag"+page)
             button.innerText = page
             button.addEventListener('click', (): void => {
+                infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
-                pagesOptions(items, currentPage)
-                new SuperUsers().load(tableBody, page, items)
+                new SuperUsers().render(infoPage.offset, currentPage, infoPage.search)
             })
             return button
         }
 
         function pagesOptions(items: any, currentPage: any) {
             paginationWrapper.innerHTML = ''
-            let pages = pageNumbers(items, Config.maxLimitPage, currentPage)
+            let pages = pageNumbers(pageCount, Config.maxLimitPage, currentPage)
             
             const prevButton: InterfaceElement = document.createElement('button')
             prevButton.classList.add('pagination_button')
@@ -931,7 +1038,7 @@ export class SuperUsers {
             nextButton.innerText = ">>"
     
             for (let i = 0; i < pages.length; i++) {
-                if(pages[i] <= pageCount){
+                if(pages[i] > 0 && pages[i] <= pageCount){
                     button = setupButtons2(
                         pages[i]
                     )
@@ -945,13 +1052,12 @@ export class SuperUsers {
 
         function setupButtonsEvents(prevButton: InterfaceElement, nextButton: InterfaceElement) {
             prevButton.addEventListener('click', (): void => {
-                pagesOptions(items, 1)
-                new SuperUsers().load(tableBody, 1, items)
+                new SuperUsers().render(Config.offset, Config.currentPage, infoPage.search)
             })
 
             nextButton.addEventListener('click', (): void => {
-                pagesOptions(items, pageCount)
-                new SuperUsers().load(tableBody, pageCount, items)
+                infoPage.offset = Config.tableRows * (pageCount - 1)
+                new SuperUsers().render(infoPage.offset, pageCount, infoPage.search)
             })
         }
     }
@@ -1031,10 +1137,10 @@ export class SuperUsers {
                             updateEntity('User', entityId, updateRaw);
                             //setUserRole(roleRaw);
                             setTimeout(async () => {
-                                let data = await getUsers(SUser);
+                                //let data = await getUsers(SUser);
                                 const tableBody = document.getElementById('datatable-body');
                                 new CloseDialog().x(modalContainer);
-                                this.load(tableBody, currentPage, data);
+                                //this.load(tableBody, currentPage, data);
                             },100);
                         }
                     })
@@ -1093,6 +1199,11 @@ export const setUserPassword = async (SUser: boolean) => {
                 "property": "userType",
                 "operator": "=",
                 "value": `CUSTOMER`
+              },
+              {
+                "property": "newUser",
+                "operator": "=",
+                "value": `${true}`
               }
             ]
         }

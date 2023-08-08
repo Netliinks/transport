@@ -96,7 +96,7 @@ export const exportReportCsv = (ar: any, start: any, end: any) => {
       let noteCreationDate = noteCreationDateAndTime[0];
       let noteCreationTime = noteCreationDateAndTime[1];
       // @ts-ignore
-      if(noteCreationDate >= start && noteCreationDate <= end){
+      //if(noteCreationDate >= start && noteCreationDate <= end){
           let obj = {
               "Título": `${note.title.split("\n").join("(salto)")}`,
               "Fecha": `${noteCreationDate}`,
@@ -106,7 +106,7 @@ export const exportReportCsv = (ar: any, start: any, end: any) => {
 
           }
           rows.push(obj);
-      }
+      //}
       
     }
     generateFile(rows, "Reportes", "csv");
@@ -120,7 +120,7 @@ export const exportReportXls = (ar: any, start: any, end: any) => {
       let noteCreationDate = noteCreationDateAndTime[0];
       let noteCreationTime = noteCreationDateAndTime[1];
       // @ts-ignore
-      if(noteCreationDate >= start && noteCreationDate <= end){
+      //if(noteCreationDate >= start && noteCreationDate <= end){
           let obj = {
               "Título": `${note.title.split("\n").join("(salto)")}`,
               "Fecha": `${noteCreationDate}`,
@@ -130,7 +130,7 @@ export const exportReportXls = (ar: any, start: any, end: any) => {
 
           }
           rows.push(obj);
-      }
+      //}
       
     }
     generateFile(rows, "Reportes", "xls");
