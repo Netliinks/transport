@@ -1182,7 +1182,7 @@ export class Clients {
         if(pageCount <= Config.maxLimitPage){
             for (let i = 1; i < pageCount + 1; i++) {
                 button = setupButtons(
-                    i, items, currentPage, tableBody, limitRows
+                    i /*, items, currentPage, tableBody, limitRows*/
                 )
 
                 paginationWrapper.appendChild(button)
@@ -1192,7 +1192,7 @@ export class Clients {
             pagesOptions(items, currentPage)  
         }
 
-        function setupButtons(page: any, items: any, currentPage: number, tableBody: InterfaceElement, limitRows: number) {
+        function setupButtons(page: any /*, items: any, currentPage: number, tableBody: InterfaceElement, limitRows: number*/) {
             const button: InterfaceElement = document.createElement('button')
             button.classList.add('pagination_button')
             button.setAttribute("name", "pagination-button")
@@ -1214,19 +1214,6 @@ export class Clients {
             return button
         }
 
-        function setupButtons2(page: any) {
-            const button: InterfaceElement = document.createElement('button')
-            button.classList.add('pagination_button')
-            button.setAttribute("id", "btnPag"+page)
-            button.innerText = page
-            button.addEventListener('click', (): void => {
-                infoPage.offset = Config.tableRows * (page - 1)
-                currentPage = page
-                new Clients().render(infoPage.offset, currentPage, infoPage.search)
-            })
-            return button
-        }
-
         function pagesOptions(items: any, currentPage: any) {
             paginationWrapper.innerHTML = ''
             let pages = pageNumbers(pageCount, Config.maxLimitPage, currentPage)
@@ -1242,7 +1229,7 @@ export class Clients {
     
             for (let i = 0; i < pages.length; i++) {
                 if(pages[i] > 0 && pages[i] <= pageCount){
-                    button = setupButtons2(
+                    button = setupButtons(
                         pages[i]
                     )
                     paginationWrapper.appendChild(button)

@@ -376,7 +376,7 @@ export class Vehiculars {
         let button;
         if (pageCount <= Config.maxLimitPage) {
             for (let i = 1; i < pageCount + 1; i++) {
-                button = setupButtons(i, items, currentPage, tableBody, limitRows);
+                button = setupButtons(i /*, items, currentPage, tableBody, limitRows*/);
                 paginationWrapper.appendChild(button);
             }
             fillBtnPagination(currentPage, Config.colorPagination);
@@ -384,7 +384,7 @@ export class Vehiculars {
         else {
             pagesOptions(items, currentPage);
         }
-        function setupButtons(page, items, currentPage, tableBody, limitRows) {
+        function setupButtons(page /*, items: any, currentPage: number, tableBody: InterfaceElement, limitRows: number*/) {
             const button = document.createElement('button');
             button.classList.add('pagination_button');
             button.setAttribute("name", "pagination-button");
@@ -402,18 +402,6 @@ export class Vehiculars {
             });
             return button;
         }
-        function setupButtons2(page) {
-            const button = document.createElement('button');
-            button.classList.add('pagination_button');
-            button.setAttribute("id", "btnPag" + page);
-            button.innerText = page;
-            button.addEventListener('click', () => {
-                infoPage.offset = Config.tableRows * (page - 1);
-                currentPage = page;
-                new Vehiculars().render(infoPage.offset, currentPage, infoPage.search);
-            });
-            return button;
-        }
         function pagesOptions(items, currentPage) {
             paginationWrapper.innerHTML = '';
             let pages = pageNumbers(pageCount, Config.maxLimitPage, currentPage);
@@ -426,7 +414,7 @@ export class Vehiculars {
             nextButton.innerText = ">>";
             for (let i = 0; i < pages.length; i++) {
                 if (pages[i] > 0 && pages[i] <= pageCount) {
-                    button = setupButtons2(pages[i]);
+                    button = setupButtons(pages[i]);
                     paginationWrapper.appendChild(button);
                 }
             }

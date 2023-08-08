@@ -412,7 +412,7 @@ export class Events {
         if(pageCount <= Config.maxLimitPage){
             for (let i = 1; i < pageCount + 1; i++) {
                 button = setupButtons(
-                    i, items, currentPage, tableBody, limitRows
+                    i /*, items, currentPage, tableBody, limitRows*/
                 )
 
                 paginationWrapper.appendChild(button)
@@ -422,7 +422,7 @@ export class Events {
             pagesOptions(items, currentPage)  
         }
 
-        function setupButtons(page: any, items: any, currentPage: number, tableBody: InterfaceElement, limitRows: number) {
+        function setupButtons(page: any /*, items: any, currentPage: number, tableBody: InterfaceElement, limitRows: number*/) {
             const button: InterfaceElement = document.createElement('button')
             button.classList.add('pagination_button')
             button.setAttribute("name", "pagination-button")
@@ -430,29 +430,11 @@ export class Events {
             button.innerText = page
 
             button.addEventListener('click', (): void => {
-                const buttons = document.getElementsByName("pagination-button");
-                buttons.forEach(button => {
-                    button.style.background = "#ffffff"; 
-                })
-                infoPage.offset = Config.tableRows * (page - 1)
-                currentPage = page
-                fillBtnPagination(page, Config.colorPagination)
-                new Events().render(infoPage.offset, currentPage, infoPage.search)
-            })
-
-            return button
-        }
-
-        function setupButtons2(page: any) {
-            const button: InterfaceElement = document.createElement('button')
-            button.classList.add('pagination_button')
-            button.setAttribute("id", "btnPag"+page)
-            button.innerText = page
-            button.addEventListener('click', (): void => {
                 infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
                 new Events().render(infoPage.offset, currentPage, infoPage.search)
             })
+
             return button
         }
 
@@ -471,7 +453,7 @@ export class Events {
     
             for (let i = 0; i < pages.length; i++) {
                 if(pages[i] > 0 && pages[i] <= pageCount){
-                    button = setupButtons2(
+                    button = setupButtons(
                         pages[i]
                     )
                     paginationWrapper.appendChild(button)

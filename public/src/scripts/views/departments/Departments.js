@@ -268,7 +268,7 @@ export class Departments {
         let button;
         if (pageCount <= Config.maxLimitPage) {
             for (let i = 1; i < pageCount + 1; i++) {
-                button = setupButtons(i, items, currentPage, tableBody, limitRows);
+                button = setupButtons(i /*, items, currentPage, tableBody, limitRows*/);
                 paginationWrapper.appendChild(button);
             }
             fillBtnPagination(currentPage, Config.colorPagination);
@@ -276,27 +276,10 @@ export class Departments {
         else {
             pagesOptions(items, currentPage);
         }
-        function setupButtons(page, items, currentPage, tableBody, limitRows) {
+        function setupButtons(page /*, items: any, currentPage: number, tableBody: InterfaceElement, limitRows: number*/) {
             const button = document.createElement('button');
             button.classList.add('pagination_button');
             button.setAttribute("name", "pagination-button");
-            button.setAttribute("id", "btnPag" + page);
-            button.innerText = page;
-            button.addEventListener('click', () => {
-                const buttons = document.getElementsByName("pagination-button");
-                buttons.forEach(button => {
-                    button.style.background = "#ffffff";
-                });
-                infoPage.offset = Config.tableRows * (page - 1);
-                currentPage = page;
-                fillBtnPagination(page, Config.colorPagination);
-                new Departments().render(infoPage.offset, currentPage, infoPage.search);
-            });
-            return button;
-        }
-        function setupButtons2(page) {
-            const button = document.createElement('button');
-            button.classList.add('pagination_button');
             button.setAttribute("id", "btnPag" + page);
             button.innerText = page;
             button.addEventListener('click', () => {
@@ -318,7 +301,7 @@ export class Departments {
             nextButton.innerText = ">>";
             for (let i = 0; i < pages.length; i++) {
                 if (pages[i] > 0 && pages[i] <= pageCount) {
-                    button = setupButtons2(pages[i]);
+                    button = setupButtons(pages[i]);
                     paginationWrapper.appendChild(button);
                 }
             }
