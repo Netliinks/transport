@@ -628,7 +628,7 @@ export class Contractors {
             registerEntity(raw, 'User')
                 .then((res) => {
                 setTimeout(async () => {
-                    let data = await getUsers();
+                    //let data = await getUsers()
                     const tableBody = document.getElementById('datatable-body');
                     const container = document.getElementById('entity-editor-container');
                     new CloseDialog().x(container);
@@ -742,7 +742,7 @@ export class Contractors {
                             registerEntity(user, 'User')
                                 .then((res) => {
                                 setTimeout(async () => {
-                                    let data = await getUsers();
+                                    //let data = await getUsers()
                                     const tableBody = document.getElementById('datatable-body');
                                     const container = document.getElementById('entity-editor-container');
                                     new CloseDialog().x(container);
@@ -972,7 +972,7 @@ export class Contractors {
                         let data;
                         tableBody = document.getElementById('datatable-body');
                         container = document.getElementById('entity-editor-container');
-                        data = await getUsers();
+                        //data = await getUsers()
                         new CloseDialog().x(container);
                         new Contractors().render(infoPage.offset, infoPage.currentPage, infoPage.search);
                         //new Contractors().load(tableBody, currentPage, data)
@@ -1017,7 +1017,7 @@ export class Contractors {
                     deleteEntity('User', entityId)
                         .then((res) => {
                         setTimeout(async () => {
-                            let data = await getUsers();
+                            //let data = await getUsers();
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
                             new Contractors().render(infoPage.offset, infoPage.currentPage, infoPage.search);

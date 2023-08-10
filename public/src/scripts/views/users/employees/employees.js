@@ -638,7 +638,7 @@ export class Employees {
             registerEntity(raw, 'User')
                 .then((res) => {
                 setTimeout(async () => {
-                    let data = await getUsers();
+                    //let data = await getUsers()
                     const tableBody = document.getElementById('datatable-body');
                     const container = document.getElementById('entity-editor-container');
                     new CloseDialog().x(container);
@@ -759,7 +759,7 @@ export class Employees {
                             registerEntity(el, 'User')
                                 .then((res) => {
                                 setTimeout(async () => {
-                                    let data = await getUsers();
+                                    //let data = await getUsers()
                                     const tableBody = document.getElementById('datatable-body');
                                     const container = document.getElementById('entity-editor-container');
                                     new CloseDialog().x(container);
@@ -1000,7 +1000,7 @@ export class Employees {
                         let data;
                         tableBody = document.getElementById('datatable-body');
                         container = document.getElementById('entity-editor-container');
-                        data = await getUsers();
+                        //data = await getUsers()
                         new CloseDialog().x(container);
                         new Employees().render(infoPage.offset, infoPage.currentPage, infoPage.search);
                         //new Employees().load(tableBody, currentPage, data)
@@ -1045,7 +1045,7 @@ export class Employees {
                     deleteEntity('User', entityId)
                         .then((res) => {
                         setTimeout(async () => {
-                            let data = await getUsers();
+                            //let data = await getUsers();
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
                             new Employees().render(infoPage.offset, infoPage.currentPage, infoPage.search);

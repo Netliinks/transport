@@ -543,7 +543,7 @@ export class Clients {
             registerEntity(raw, 'User')
                 .then((res) => {
                 setTimeout(async () => {
-                    let data = await getUsers();
+                    //let data = await getUsers()
                     const tableBody = document.getElementById('datatable-body');
                     const container = document.getElementById('entity-editor-container');
                     new CloseDialog().x(container);
@@ -663,7 +663,7 @@ export class Clients {
                             registerEntity(el, 'User')
                                 .then((res) => {
                                 setTimeout(async () => {
-                                    let data = await getUsers();
+                                    //let data = await getUsers()
                                     const tableBody = document.getElementById('datatable-body');
                                     const container = document.getElementById('entity-editor-container');
                                     new CloseDialog().x(container);
@@ -891,7 +891,7 @@ export class Clients {
                         let tableBody;
                         let container;
                         let data;
-                        data = await getUsers();
+                        //data = await getUsers()
                         new CloseDialog()
                             .x(container =
                             document.getElementById('entity-editor-container'));
@@ -1010,7 +1010,7 @@ export class Clients {
                     deleteEntity('User', entityId)
                         .then((res) => {
                         setTimeout(async () => {
-                            let data = await getUsers();
+                            //let data = await getUsers();
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
                             new Clients().render(infoPage.offset, infoPage.currentPage, infoPage.search);
@@ -1091,10 +1091,10 @@ export class Clients {
                         updateEntity('User', entityId, updateRaw);
                         setUserRole(roleRaw);
                         setTimeout(async () => {
-                            let data = await getUsers();
+                            //let data = await getUsers();
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(modalContainer);
-                            this.load(tableBody, currentPage, data);
+                            new Clients().render(infoPage.offset, infoPage.currentPage, infoPage.search);
                         }, 100);
                     }
                 });
@@ -1128,13 +1128,8 @@ export class Clients {
             button.setAttribute("id", "btnPag" + page);
             button.innerText = page;
             button.addEventListener('click', () => {
-                const buttons = document.getElementsByName("pagination-button");
-                buttons.forEach(button => {
-                    button.style.background = "#ffffff";
-                });
                 infoPage.offset = Config.tableRows * (page - 1);
                 currentPage = page;
-                fillBtnPagination(page, Config.colorPagination);
                 new Clients().render(infoPage.offset, currentPage, infoPage.search);
                 //new Clients().load(tableBody, page, items)
             });

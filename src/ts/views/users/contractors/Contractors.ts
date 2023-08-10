@@ -525,7 +525,7 @@ export class Contractors {
             registerEntity(raw, 'User')
                 .then((res) => {
                     setTimeout(async () => {
-                        let data = await getUsers()
+                        //let data = await getUsers()
                         const tableBody: InterfaceElement = document.getElementById('datatable-body')
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
@@ -693,7 +693,7 @@ export class Contractors {
                             registerEntity(user, 'User')
                                 .then((res) => {
                                     setTimeout(async () => {
-                                        let data = await getUsers()
+                                        //let data = await getUsers()
                                         const tableBody: InterfaceElement = document.getElementById('datatable-body')
                                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
@@ -930,7 +930,7 @@ export class Contractors {
 
                             tableBody = document.getElementById('datatable-body')
                             container = document.getElementById('entity-editor-container')
-                            data = await getUsers()
+                            //data = await getUsers()
 
                             new CloseDialog().x(container)
                             new Contractors().render(infoPage.offset, infoPage.currentPage, infoPage.search)
@@ -981,7 +981,7 @@ export class Contractors {
                     deleteEntity('User', entityId)
                     .then((res) => {
                         setTimeout(async () => {
-                            let data = await getUsers();
+                            //let data = await getUsers();
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
                             new Contractors().render(infoPage.offset, infoPage.currentPage, infoPage.search)

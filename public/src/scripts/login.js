@@ -43,7 +43,22 @@ export class SignIn {
                                 "property": "email",
                                 "operator": "=",
                                 "value": `${email}`
-                            }
+                            },
+                            {
+                                "property": "state.name",
+                                "operator": "=",
+                                "value": `Enabled`
+                            },
+                            {
+                                "property": "business.state.name",
+                                "operator": "=",
+                                "value": `Enabled`
+                            },
+                            {
+                                "property": "customer.state.name",
+                                "operator": "=",
+                                "value": `Enabled`
+                            },
                         ]
                     }
                 });
@@ -100,7 +115,15 @@ export class SignIn {
                     alert('Usuario no es tipo cliente.');
                 }
                 if (currentUser.attributes.verifiedSuper === true) {
-                    new RenderApplicationUI().render();
+                    let user = await getEntityData('User', currentUser.attributes.id);
+                    let customer = await getEntityData('Customer', customerId);
+                    let business = await getEntityData('Business', user?.business?.id);
+                    if (user?.state?.name == 'Enabled' && customer?.state?.name == 'Enabled' && business?.state?.name == 'Enabled') {
+                        new RenderApplicationUI().render();
+                    }
+                    else {
+                        this.signOut();
+                    }
                 }
                 else {
                     this.showVerified(currentUser.attributes.id, currentUser.attributes?.hashSuper);

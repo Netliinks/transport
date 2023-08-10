@@ -173,7 +173,7 @@ export class Blacklist {
                                 registerEntity(user, 'BlacklistedUser')
                                     .then((res) => {
                                     setTimeout(async () => {
-                                        let data = await getUsers();
+                                        //let data = await getUsers();
                                         const tableBody = document.getElementById('datatable-body');
                                         const container = document.getElementById('entity-editor-container');
                                         new CloseDialog().x(container);
@@ -424,7 +424,7 @@ export class Blacklist {
             registerEntity(raw, 'BlacklistedUser')
                 .then((res) => {
                 setTimeout(async () => {
-                    let data = await getUsers();
+                    //let data = await getUsers();
                     const tableBody = document.getElementById('datatable-body');
                     const container = document.getElementById('entity-editor-container');
                     new CloseDialog().x(container);
@@ -527,7 +527,7 @@ export class Blacklist {
                         let data;
                         tableBody = document.getElementById('datatable-body');
                         container = document.getElementById('entity-editor-container');
-                        data = await getUsers();
+                        //data = await getUsers();
                         new CloseDialog().x(container);
                         //new Blacklist().load(tableBody, currentPage, data);
                         new Blacklist().render(infoPage.offset, infoPage.currentPage, infoPage.search);
@@ -572,7 +572,7 @@ export class Blacklist {
                     deleteEntity('BlacklistedUser', entityId)
                         .then((res) => {
                         setTimeout(async () => {
-                            let data = await getUsers();
+                            //let data = await getUsers();
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
                             new Blacklist().render(infoPage.offset, infoPage.currentPage, infoPage.search);
@@ -619,13 +619,8 @@ export class Blacklist {
             button.setAttribute("id", "btnPag" + page);
             button.innerText = page;
             button.addEventListener('click', () => {
-                const buttons = document.getElementsByName("pagination-button");
-                buttons.forEach(button => {
-                    button.style.background = "#ffffff";
-                });
                 infoPage.offset = Config.tableRows * (page - 1);
                 currentPage = page;
-                fillBtnPagination(page, Config.colorPagination);
                 new Blacklist().render(infoPage.offset, currentPage, infoPage.search);
             });
             return button;
