@@ -7,7 +7,7 @@
 import { getUserInfo, _userAgent, getEntityData, getEntitiesData, updateEntity, getFilterEntityData } from "./endpoints.js"
 import { RenderApplicationUI } from "./layout/interface.js"
 import { InterfaceElement, Request } from "./types.js"
-import { registryPlataform } from "./tools.js"
+//import { registryPlataform } from "./tools.js"
 
 const loginContainer: InterfaceElement = document.getElementById('login-container')
 const app: InterfaceElement = document.getElementById('app')
@@ -23,7 +23,7 @@ const connectionHeader = {
 const platformSystem: string = 'clients'
 
 const reqOP: Request = {
-    url: 'https://backend.netliinks.com:443/oauth/token',
+    url: 'http://localhost:8080/oauth/token', //'https://backend.netliinks.com:443/oauth/token',
     method: 'POST'
 }
 
@@ -33,104 +33,27 @@ export class SignIn {
 
         const checkUser = async (): Promise<void> => {
             let currentUser = await getUserInfo()
-            const customerId: any = localStorage.getItem('customer_id')
+            const businessId: any = localStorage.getItem('business_id')
             if (currentUser.error === 'invalid_token') {
                 this.signOut()
             }
-            if(currentUser.username === "consulta"){
-                const email = localStorage.getItem('email')
-                const password = localStorage.getItem('password')
-                //const users = await getEntitiesData('User');
-                //const type = users.filter((data) => `${data.userType}`.includes('CUSTOMER'))
-                //const FSuper = type.filter((data) => data.isSuper === true)
-                //const data = FSuper.filter((data) => `${data.email}`.includes(`${email}`));
-                let raw = JSON.stringify({
-                    "filter": {
-                        "conditions": [
-                            {
-                                "property": "email",
-                                "operator": "=",
-                                "value": `${email}`
-                            },
-                            {
-                                "property": "state.name",
-                                "operator": "=",
-                                "value": `Enabled`
-                            },
-                            {
-                                "property": "business.state.name",
-                                "operator": "=",
-                                "value": `Enabled`
-                            },
-                            {
-                                "property": "customer.state.name",
-                                "operator": "=",
-                                "value": `Enabled`
-                            },
-                        ]
-                    }
-                })
-                let user = await getFilterEntityData("User", raw)
-                const reqOptions = {
-                    method: reqOP.method,
-                    body: `grant_type=password&username=${user[0]?.username}&password=${password}`,
-                    headers: connectionHeader
-                };
-                fetch(reqOP.url, reqOptions)
-                    .then((res) => res.json())
-                    .then(async(res) => {
-                    if (res.error == 'Bad credentials') {
-                        console.error('error en las credenciales')
-                    }
-                    else {
-                        const connectionData = {
-                            token: res.access_token,
-                            expiresIn: res.expires_in,
-                            refreshToken: res.refresh_token,
-                            scope: res.scope,
-                            tokenType: res.token_type
-                        };   
-                        await registryPlataform(user[0]?.id)
-                        localStorage.removeItem('email')
-                        localStorage.removeItem('password')
-                        localStorage.removeItem('access_token')
-                        localStorage.setItem('access_token', connectionData.token)
-                        window.location.reload()
-                    }
-                }).catch((e: any) => {
-                    console.log(e)
-                    this.signOut()
-                })
-            }else{
-                if(customerId == null){
-                    let user = await getEntityData('User', currentUser.attributes.id)
-                    if(user.customer?.id != null || user.customer?.id != undefined){
-                        localStorage.setItem('customer_id', user.customer?.id)
-                        window.location.reload()
-                    }else{
-                        this.signOut()
-                        alert('Usuario no tiene asignado empresa.')
-                    }    
-                }
-                if (currentUser.attributes.isSuper !== true) {
-                    this.signOut();
-                    alert('Usuario no es superusuario.')
-                }
-                if (currentUser.attributes.userType !== 'CUSTOMER') {
-                    this.signOut();
-                    alert('Usuario no es tipo cliente.')
-                }
-                if (currentUser.attributes.verifiedSuper === true) {
-                    let user = await getEntityData('User', currentUser.attributes.id);
-                    let customer = await getEntityData('Customer', customerId);
-                    let business = await getEntityData('Business', user?.business?.id);
-                    if(user?.state?.name == 'Enabled' && customer?.state?.name == 'Enabled' && business?.state?.name == 'Enabled'){
-                        new RenderApplicationUI().render();
-                    }else{
-                        this.signOut();
-                    }
+            if(businessId == null){
+                let user = await getEntityData('User', currentUser.attributes.id)
+                if(user.business?.id != null || user.business?.id != undefined){
+                    localStorage.setItem('business_id', user.business?.id)
+                    window.location.reload()
                 }else{
-                    this.showVerified(currentUser.attributes.id, currentUser.attributes?.hashSuper)
+                    this.signOut()
+                    alert('Usuario no tiene asignado empresa.')
+                }    
+            }else{
+                let user = await getEntityData('User', currentUser.attributes.id);
+                let business = await getEntityData('Business', user?.business?.id);
+                if(user?.state?.name == 'Enabled' && business?.state?.name == 'Enabled' && user.isSuper == true && (user.userType == 'ADMIN' || user.userType == 'OPERATOR')){
+                    localStorage.setItem('user_type', currentUser.attributes.userType)   
+                    new RenderApplicationUI().render();
+                }else{
+                    this.signOut();
                 }
             }
         }
@@ -220,7 +143,7 @@ export class SignIn {
         async function connect(user: string, password: string): Promise<void> {
             const reqOptions: {} = {
                 method: reqOP.method,
-                body: `grant_type=password&username=consulta&password=consulta`,
+                body: `grant_type=password&username=${user}&password=${password}`,
                 headers: connectionHeader
             }
 
@@ -238,8 +161,6 @@ export class SignIn {
                             scope: res.scope,
                             tokenType: res.token_type
                         }
-                        localStorage.setItem('email', user)
-                        localStorage.setItem('password', password)
                         localStorage.setItem('access_token', connectionData.token)
                         window.location.reload()
                     }
@@ -250,88 +171,10 @@ export class SignIn {
 
     public signOut(): void {
         localStorage.removeItem('access_token')
-        localStorage.removeItem('customer_id')
-        localStorage.removeItem('email')
-        localStorage.removeItem('password')
+        localStorage.removeItem('business_id')
+        localStorage.removeItem('user_type')
         this.checkSignIn()
         window.location.reload()
     }
 
-    public showVerified(id: string, hash: string): void {
-        loginContainer.style.display = 'flex !important';
-        loginContainer.innerHTML = `
-        <div class="login_window">
-        <div class="login_header">
-          <img src="./public/src/assets/pictures/app_logo.png">
-          <h1 class="login_title">Verificación de usuario</h1>
-          <p>Ingrese el código de verificación enviado al correo.</p>
-        </div>
-        <div class="login_content">
-          <form id="login-form">
-
-            <div class="input">
-              <label for="password">
-                <i class="fa-regular fa-key"></i>
-              </label>
-              <input type="password" id="password"
-                placeholder="••••••••••••">
-            </div>
-            <button class="btn btn_close_editor" id="cancel"><i class="fa-regular fa-x"></i></button>
-            <button class="btn btn_primary" id="login">Verificar</button>
-          </form>
-        </div>
-
-        <div class="login_footer">
-          <div class="login_icons">
-            <i class="fa-regular fa-house"></i>
-            <i class="fa-regular fa-user"></i>
-            <i class="fa-regular fa-inbox"></i>
-            <i class="fa-regular fa-file"></i>
-            <i class="fa-regular fa-computer"></i>
-            <i class="fa-regular fa-mobile"></i>
-          </div>
-          <p>Accede a todas nuestras herramientas</p>
-
-          <div class="foot_brief">
-            <p>Desarrollado por</p>
-            <img src="./public/src/assets/pictures/login_logo.png">
-          </div>
-        </div>
-      </div>
-        `
-        this.verified(id, hash)
-    }
-    private verified(id: string, hash: string): void {
-        const form: InterfaceElement = document.querySelector('#login-form')
-        const password: InterfaceElement = form.querySelector('#password')
-        const btnCancel: InterfaceElement = form.querySelector('#cancel')
-        const btnVerify: InterfaceElement = form.querySelector('#login')
-        btnVerify.addEventListener('click', async(e: any) => {
-            e.preventDefault();
-            if (password.value.trim() == '' || password.value.trim() == null) {
-                console.log('El campo clave no puede estar vacío.')
-                alert('El campo clave no puede estar vacío.')
-            }
-            else {
-                if(`${hash}` === `${password.value}`){
-                    let updateRaw = JSON.stringify({
-                        "verifiedSuper": true
-                    });
-                    await updateEntity('User', id, updateRaw)
-                    .then((res) => {
-                        setTimeout(async () => {
-                            new RenderApplicationUI().render()
-                        }, 100)
-                    })
-                }else{
-                    alert('Código de verificación incorrecto.')
-                    this.signOut()
-                }
-            }
-        });
-        btnCancel.addEventListener('click', (e: any) => {
-            e.preventDefault()
-            this.signOut()
-        })
-    }
 }

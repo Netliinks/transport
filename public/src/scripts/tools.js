@@ -1,4 +1,4 @@
-import { getEntitiesData, getUserInfo, getFilterEntityData, getEntityData, registerEntity, _userAgent } from "./endpoints.js";
+import { getEntitiesData, getUserInfo, getFilterEntityData, registerEntity } from "./endpoints.js";
 //
 export const inputObserver = () => {
     const inputs = document.querySelectorAll('input');
@@ -275,22 +275,22 @@ export const verifyUserType = (userType) => {
         return userType;
     }
 };
-export const registryPlataform = async (id) => {
-    let platUser = await getEntityData('User', id);
-    const _date = new Date();
+/*export const registryPlataform = async(id: any) => {
+    let platUser = await getEntityData('User', id)
+    const _date = new Date()
     // TIME
-    const _hours = _date.getHours();
-    const _minutes = _date.getMinutes();
-    const _seconds = _date.getSeconds();
-    const _fixedHours = ('0' + _hours).slice(-2);
-    const _fixedMinutes = ('0' + _minutes).slice(-2);
-    const _fixedSeconds = ('0' + _seconds).slice(-2);
-    const currentTime = `${_fixedHours}:${_fixedMinutes}:${_fixedSeconds}`;
+    const _hours: number = _date.getHours()
+    const _minutes: number = _date.getMinutes()
+    const _seconds: number = _date.getSeconds()
+    const _fixedHours: string = ('0' + _hours).slice(-2)
+    const _fixedMinutes: string = ('0' + _minutes).slice(-2)
+    const _fixedSeconds: string = ('0' + _seconds).slice(-2)
+    const currentTime = `${_fixedHours}:${_fixedMinutes}:${_fixedSeconds}`
     // DATE
-    const _day = _date.getDate();
-    const _month = _date.getMonth() + 1;
-    const _year = _date.getFullYear();
-    const date = `${_year}-${('0' + _month).slice(-2)}-${('0' + _day).slice(-2)}`;
+    const _day: number = _date.getDate()
+    const _month: number = _date.getMonth() + 1
+    const _year: number = _date.getFullYear()
+    const date: string = `${_year}-${('0' + _month).slice(-2)}-${('0' + _day).slice(-2)}`
     let plataformRaw = JSON.stringify({
         // @ts-ignore
         "userAgent": `${_userAgent}`,
@@ -307,12 +307,12 @@ export const registryPlataform = async (id) => {
         "creationDate": `${date}`,
         // @ts-ignore
         "creationTime": `${currentTime}`,
-    });
+    })
     await registerEntity(plataformRaw, 'WebAccess')
-        .then(res => {
-        console.log("Registrado");
-    });
-};
+    .then(res => {
+        console.log("Registrado")
+    })
+}*/
 export const pageNumbers = (totalPages, max, currentPage) => {
     let limitMin;
     let limitMax;
@@ -365,4 +365,150 @@ export const fillBtnPagination = (currentPage, color) => {
     if (btnActive)
         btnActive.style.backgroundColor = color;
     //btnActive.focus();
+};
+export const userPermissions = () => {
+    const userType = localStorage.getItem('user_type');
+    if (userType == 'ADMIN') {
+        return {
+            style: "relative"
+        };
+    }
+    else {
+        return {
+            style: "none"
+        };
+    }
+};
+export const currentDateTime = () => {
+    const _date = new Date();
+    // TIME
+    const _hours = _date.getHours();
+    const _minutes = _date.getMinutes();
+    const _seconds = _date.getSeconds();
+    const _fixedHours = ('0' + _hours).slice(-2);
+    const _fixedMinutes = ('0' + _minutes).slice(-2);
+    const _fixedSeconds = ('0' + _seconds).slice(-2);
+    const currentTime = `${_fixedHours}:${_fixedMinutes}:${_fixedSeconds}`;
+    // DATE
+    const _day = _date.getDate();
+    const _month = _date.getMonth() + 1;
+    const _year = _date.getFullYear();
+    const date = `${_year}-${('0' + _month).slice(-2)}-${('0' + _day).slice(-2)}`;
+    return {
+        date: date,
+        time: currentTime
+    };
+};
+export const eventLog = async (mode, table, message, service) => {
+    let logConfing = {
+        name: '',
+        word: '',
+        raw: ''
+    };
+    const currentUser = await getUserInfo();
+    const businessId = localStorage.getItem('business_id');
+    if (mode == 'INS') {
+        logConfing.name = 'INGRESO';
+        logConfing.word = 'ingresado';
+    }
+    else if (mode == 'UPD') {
+        logConfing.name = 'ACTUALIZACION';
+        logConfing.word = 'actualizado';
+    }
+    else if (mode == 'DLT') {
+        logConfing.name = 'ELIMINACION';
+        logConfing.word = 'eliminado';
+    }
+    if (service == '' || service == undefined || service == null) {
+        logConfing.raw = JSON.stringify({
+            "name": `${logConfing.name}`,
+            "description": `Se ha ${logConfing.word} un ${table}: ${message}.`,
+            "user": {
+                "id": `${currentUser.attributes.id}`
+            },
+            "business": {
+                "id": `${businessId}`
+            },
+            'creationDate': `${currentDateTime().date}`,
+            'creationTime': `${currentDateTime().time}`,
+        });
+    }
+    else {
+        logConfing.raw = JSON.stringify({
+            "name": `${logConfing.name}`,
+            "description": `Se ha ${logConfing.word} un ${table}: ${message}.`,
+            "user": {
+                "id": `${currentUser.attributes.id}`
+            },
+            "business": {
+                "id": `${businessId}`
+            },
+            "customer": {
+                "id": `${service?.customer?.id}`
+            },
+            "service": {
+                "id": `${service?.id}`
+            },
+            'creationDate': `${currentDateTime().date}`,
+            'creationTime': `${currentDateTime().time}`,
+        });
+    }
+    registerEntity(logConfing.raw, 'Log');
+};
+export const inputSelectType = async (selectId, table, currentType) => {
+    let data;
+    if (table == "VEHICULAR") {
+        data = [
+            { id: 'CAMIONETA', name: 'CAMIONETA' },
+            { id: 'AUTO', name: 'AUTO' },
+            { id: 'MOTO', name: 'MOTO' },
+            { id: 'LANCHA', name: 'LANCHA' },
+        ];
+    }
+    const type = await currentType;
+    const select = document.querySelector(`#${selectId}`);
+    const inputParent = select.parentNode;
+    const optionsContent = inputParent.querySelector('#input-options');
+    const optionsContainer = document.createElement('div');
+    optionsContainer.classList.add('input_options_container');
+    optionsContent.appendChild(optionsContainer);
+    for (let i = 0; i < data.length; i++) {
+        const inputOption = document.createElement('div');
+        select.setAttribute('data-optionid', data[0].id);
+        select.setAttribute('value', data[0].name);
+        inputOption.classList.add('input_option');
+        inputOption.setAttribute('id', data[i].id);
+        let nameData = data[i].name;
+        if (nameData === 'Enabled') {
+            nameData = 'Activo';
+        }
+        else if (nameData === 'Disabled') {
+            nameData = 'Inactivo';
+        }
+        inputOption.innerHTML = nameData;
+        optionsContainer.appendChild(inputOption);
+    }
+    const options = optionsContainer.querySelectorAll('.input_option');
+    /*if (type === "CUSTOMER") {
+        select.value = "Cliente";
+        select.setAttribute('data-optionid', type);
+    }
+    else if (type === 'GUARD') {
+        select.value = "Guardia";
+        select.setAttribute('data-optionid', type);
+    }
+    else {
+        select.value = data[0].name;
+    }*/
+    select.addEventListener('click', () => {
+        inputParent.classList.toggle('select_active');
+    });
+    options.forEach((option) => {
+        option.addEventListener('click', () => {
+            select.value = option.innerText;
+            select.removeAttribute('data-optionid');
+            select.setAttribute('data-optionid', option.getAttribute('id'));
+            inputParent.classList.remove('select_active');
+        });
+    });
 };

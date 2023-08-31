@@ -5,21 +5,16 @@
 //
 import { Config } from ".././Configs.js";
 // Views
-import { Dashboard } from "../views/dashboard/dashboard.js";
-import { Notes } from "../views/binnacle/notes/NotesView.js";
-import { Clients } from "../views/users/clients/clients.js";
-import { Visits } from "../views/binnacle/visits/VisitsView.js";
-import { Employees } from "../views/users/employees/employees.js";
-// @ts-ignore
-import { Contractors } from "../views/users/contractors/Contractors.js";
-import { AssistControl } from "../views/attendance/assistcontrol/AssistControl.js";
-import { AssistGestion } from "../views/attendance/assistgestion/AssistGestion.js";
-import { Departments } from "../views/departments/Departments.js";
-import { SuperUsers } from "../views/users/SuperUsers/SuperUsers.js";
-import { Events } from "../views/binnacle/Events/EventsView.js";
-import { Binnacle } from "../views/binnacle/binnacle/BinnacleView.js";
-import { Blacklist } from "../views/users/blacklist/blacklist.js";
-import { Vehiculars } from "../views/binnacle/vehiculars/Vehiculars.js";
+import { Services } from "../views/services/Services.js";
+import { Guards } from "../views/users/guards/guards.js";
+//import { Vehiculars } from "../views/binnacle/vehiculars/Vehiculars.js"
+import { Admins } from "../views/users/admins/admins.js";
+import { Operators } from "../views/users/operators/operators.js";
+import { Customers } from "../views/customers/customers.js";
+import { Vehiculars } from "../views/vehiculars/vehiculars.js";
+import { Weapons } from "../views/weapons/weapons.js";
+import { Logs } from "../views/logs/logs.js";
+import { Cities } from "../views/cities/cities.js";
 export class Sidebar {
     constructor() {
         this.sidebarContainer = document.getElementById('app-sidebar');
@@ -49,8 +44,8 @@ export class Sidebar {
 
           <div class="sidebar_items"  style="overflow-y:scroll; height: 100%; max-height: 45rem;">
             <div class="sidebar_item">
-              <span class="sidebar_item_label" id="render-dashboard">
-                <i class="fa-regular fa-chart-simple"></i> <div class="label">Dashboard</div>
+              <span class="sidebar_item_label" id="render-services">
+                <i class="fa-regular fa-desktop"></i> <div class="label">Servicios</div>
               </span>
             </div>
 
@@ -60,104 +55,58 @@ export class Sidebar {
               </span>
 
               <div class="sidebar_subitems">
-                <div class="sidebar_subitem" id="render-clients">
-                  <span class="sidebar_subitem_label">
-                    <i class="fa-regular fa-user-group"></i> <div class="label">Clientes</div>
+
+                <div class="sidebar_subitem">
+                  <span class="sidebar_subitem_label" id="render-guards">
+                    <i class="fa-regular fa-user-police"></i> <div class="label">Guardias</div>
                   </span>
                 </div>
 
                 <div class="sidebar_subitem">
-                  <span class="sidebar_subitem_label" id="render-employees">
-                    <i class="fa-regular fa-users"></i> <div class="label">Empleados</div>
+                  <span class="sidebar_subitem_label" id="render-admins">
+                    <i class="fa-regular fa-user-tie"></i> <div class="label">Admins</div>
                   </span>
                 </div>
 
                 <div class="sidebar_subitem">
-                  <span class="sidebar_subitem_label" id="render-contractors">
-                    <i class="fa-regular fa-briefcase"></i> <div class="label">Contratistas</div>
-                  </span>
-                </div>
-
-                <div class="sidebar_subitem">
-                  <span class="sidebar_subitem_label" id="render-blacklist">
-                    <i class="fa-regular fa-exclamation-triangle"></i> <div class="label">Lista Negra</div>
+                  <span class="sidebar_subitem_label" id="render-operators">
+                    <i class="fa-regular fa-user-headset"></i> <div class="label">Operadores</div>
                   </span>
                 </div>
 
               </div>
             </div>
 
-            <div class="sidebar_item">
+            <div class="sidebar_item" id="render-customers">
               <span class="sidebar_item_label">
-              <i class="fa-regular fa-cabinet-filing"></i></i> <div class="label">Registros</div>
-              </span>
-
-              <div class="sidebar_subitems">
-                <div class="sidebar_subitem" id="render-notes">
-                  <span class="sidebar_subitem_label">
-                    <i class="fa-regular fa-notes"></i> <div class="label">Reportes</div>
-                  </span>
-                </div>
-
-                <div class="sidebar_subitem" id="render-visits">
-                  <span class="sidebar_subitem_label">
-                    <i class="fa-regular fa-user"></i> <div class="label">Visitas</div>
-                  </span>
-                </div>
-
-                <div class="sidebar_subitem" id="render-events">
-                  <span class="sidebar_subitem_label">
-                    <i class="fa-regular fa-megaphone"></i> <div class="label">Eventos</div>
-                  </span>
-                </div>
-
-                <div class="sidebar_subitem" id="render-binnacle">
-                  <span class="sidebar_subitem_label">
-                    <i class="fa-regular fa-book"></i> <div class="label">Bitácora</div>
-                  </span>
-                </div>
-
-                <div class="sidebar_subitem" id="render-vehiculars">
-                  <span class="sidebar_subitem_label">
-                    <i class="fa-regular fa-car"></i> <div class="label">Ingreso Vehicular</div>
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="sidebar_item" id="render-deparments">
-              <span class="sidebar_item_label">
-                <i class="fa-regular fa-building"></i> <div class="label">Departamentos</div>
+                <i class="fa-regular fa-buildings"></i> <div class="label">Empresas</div>
               </span>
             </div>
 
-            <div class="sidebar_item" id="render-superusers">
+            <div class="sidebar_item" id="render-vehiculars">
               <span class="sidebar_item_label">
-                <i class="fa-regular fa-shield"></i> <div class="label">Superusuarios</div>
+                <i class="fa-regular fa-car"></i> <div class="label">Vehículos</div>
               </span>
             </div>
 
-            <div class="sidebar_item">
+            <div class="sidebar_item" id="render-weapons">
               <span class="sidebar_item_label">
-              <i class="fa-regular fa-calendar"></i></i> <div class="label">Asistencia</div>
+                <i class="fa-regular fa-gun"></i> <div class="label">Armas</div>
               </span>
-
-              <div class="sidebar_subitems">
-
-                <div class="sidebar_subitem" id="render-assistControl">
-                  <span class="sidebar_subitem_label">
-                    <i class="fa-regular fa-marker"></i> <div class="label">Control</div>
-                  </span>
-                </div>
-
-                <div class="sidebar_subitem" id="render-assistGestion">
-                  <span class="sidebar_subitem_label">
-                    <i class="fa-regular fa-list-alt"></i> <div class="label">Gestión</div>
-                  </span>
-                </div>
-
-              </div>
             </div>
+
+            <div class="sidebar_item" id="render-city">
+              <span class="sidebar_item_label">
+                <i class="fa-regular fa-earth-americas"></i> <div class="label">Ciudades</div>
+              </span>
+            </div>
+            
+            <div class="sidebar_item" id="render-logs">
+              <span class="sidebar_item_label">
+                <i class="fa-regular fa-clipboard-list"></i> <div class="label">Logs</div>
+              </span>
+            </div>
+
           </div>
         </div>
       </div>
@@ -167,54 +116,33 @@ export class Sidebar {
         this.renders();
     }
     renders() {
-        document.getElementById('render-dashboard')?.addEventListener('click', () => {
-            new Dashboard().render();
+        document.getElementById('render-services')?.addEventListener('click', () => {
+            new Services().render(Config.offset, Config.currentPage, "");
         });
-        document.getElementById('render-clients')?.addEventListener('click', () => {
-            new Clients().render(Config.offset, Config.currentPage, "");
+        document.getElementById('render-guards')?.addEventListener('click', () => {
+            new Guards().render(Config.offset, Config.currentPage, "");
         });
-        document.getElementById('render-employees')?.addEventListener('click', () => {
-            new Employees().render(Config.offset, Config.currentPage, "");
+        document.getElementById('render-admins')?.addEventListener('click', () => {
+            new Admins().render(Config.offset, Config.currentPage, "");
         });
-        document.getElementById('render-contractors')?.addEventListener('click', () => {
-            new Contractors().render(Config.offset, Config.currentPage, "");
-        });
-        document.getElementById('render-blacklist')?.addEventListener('click', () => {
-            new Blacklist().render(Config.offset, Config.currentPage, "");
-        });
-        // render notes
-        document.getElementById('render-notes')?.addEventListener('click', () => {
-            new Notes().render(Config.offset, Config.currentPage, "");
-        });
-        // render visits
-        document.getElementById('render-visits')?.addEventListener('click', () => {
-            new Visits().render(Config.offset, Config.currentPage, "");
-        });
-        document.getElementById('render-binnacle')?.addEventListener('click', () => {
-            new Binnacle().render(Config.offset, Config.currentPage, "");
-        });
-        // render AssistControl
         document.getElementById('render-vehiculars')?.addEventListener('click', () => {
             new Vehiculars().render(Config.offset, Config.currentPage, "");
         });
-        // render AssistControl
-        document.getElementById('render-assistControl')?.addEventListener('click', () => {
-            new AssistControl().render(Config.offset, Config.currentPage, "");
+        document.getElementById('render-weapons')?.addEventListener('click', () => {
+            new Weapons().render(Config.offset, Config.currentPage, "");
         });
-        document.getElementById('render-assistGestion')?.addEventListener('click', () => {
-            new AssistGestion().render();
+        document.getElementById('render-operators')?.addEventListener('click', () => {
+            new Operators().render(Config.offset, Config.currentPage, "");
         });
-        // render AssistControl
-        document.getElementById('render-events')?.addEventListener('click', () => {
-            new Events().render(Config.offset, Config.currentPage, "");
+        // render Customers
+        document.getElementById('render-customers')?.addEventListener('click', () => {
+            new Customers().render(Config.offset, Config.currentPage, "");
         });
-        // render Deparments
-        document.getElementById('render-deparments')?.addEventListener('click', () => {
-            new Departments().render(Config.offset, Config.currentPage, "");
+        document.getElementById('render-logs')?.addEventListener('click', () => {
+            new Logs().render(Config.offset, Config.currentPage, "");
         });
-        // render Superusers
-        document.getElementById('render-superusers')?.addEventListener('click', () => {
-            new SuperUsers().render(Config.offset, Config.currentPage, "");
+        document.getElementById('render-city')?.addEventListener('click', () => {
+            new Cities().render(Config.offset, Config.currentPage, "");
         });
     }
 }

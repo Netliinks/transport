@@ -5,7 +5,7 @@
 //
 import { Config } from "../../Configs.js"
 import { setPassword, getUserInfo } from "../../endpoints.js"
-import { Dashboard } from "../../views/dashboard/dashboard.js"
+import { Services } from "../../views/services/Services.js"
 import { inputObserver } from "../../tools.js"
 import { InterfaceElement } from "../../types.js"
 import { tableLayout } from "./Layout.js"

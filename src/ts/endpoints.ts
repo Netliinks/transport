@@ -6,7 +6,8 @@ import { Endpoint, Request } from "./types.js"
 
 // GENERAL URL
 // ===================================================
-const NetliinksUrl: string = 'https://backend.netliinks.com:443/rest/entities/'
+const NetliinksUrl: string = 'http://localhost:8080/rest/entities/' //'https://backend.netliinks.com:443/rest/entities/'
+const url = 'http://localhost:8080' //'https://backend.netliinks.com:443/
 // ===================================================
 
 // TOOLS
@@ -33,7 +34,7 @@ headers.append('Cookie', "JSESSIONID=CDD208A868EAABD1F523BB6F3C8946AF")
  */
 export const getToken = async (mail: string, password: string): Endpoint => {
     const URL: string =
-        'https://backend.netliinks.com:443/oauth/token'
+        `${url}/oauth/token` //'https://backend.netliinks.com:443/oauth/token'
 
     const ReqOptions: {} = {
         method: 'POST',
@@ -60,7 +61,7 @@ export const getToken = async (mail: string, password: string): Endpoint => {
  */
 export const getUserInfo = async (): Endpoint => {
     const userInfo: Request = {
-        url: 'https://backend.netliinks.com:443/rest/userInfo?fetchPlan=full',
+        url: `${url}/rest/userInfo?fetchPlan=full`,
         method: 'GET'
     }
 
@@ -185,7 +186,7 @@ export const deleteEntity = async (entities: string, entity: string): Endpoint =
 
 export const registerEntity = async (raw: any, type: string): Endpoint => {
     const req: Request = {
-        url: 'https://backend.netliinks.com:443/rest/entities/',
+        url: `${NetliinksUrl}`,
         method: 'POST'
     }
 
@@ -205,7 +206,7 @@ export const filterEntities = async (user: any): Endpoint => { }
 
 export const setPassword = async (raw: string): Endpoint => {
     const req: Request = {
-        url: 'https://backend.netliinks.com:443/rest/services/UserServiceBean/updatePassword',
+        url: `${url}/rest/services/UserServiceBean/updatePassword`,
         method: 'POST'
     }
 
@@ -224,7 +225,7 @@ export const setPassword = async (raw: string): Endpoint => {
 
 export const setUserRole = async (raw: string): Endpoint => {
     const req: Request = {
-        url: 'https://backend.netliinks.com:443/rest/services/UserServiceBean/assignRol',
+        url: `${url}/rest/services/UserServiceBean/assignRol`,
         method: 'POST'
     }
 
@@ -243,7 +244,7 @@ export const setUserRole = async (raw: string): Endpoint => {
 
 export const sendMail = async (raw: string): Endpoint => {
     const req = {
-        url: 'https://backend.netliinks.com:443/rest/services/UserServiceBean/sendByEmailInfo',
+        url: `${url}/rest/services/UserServiceBean/sendByEmailInfo`,
         method: 'POST'
     }
 
@@ -261,7 +262,7 @@ export const sendMail = async (raw: string): Endpoint => {
 }
 
 export const getFile = async (fileUrl: string): Endpoint => {
-    const url: string = 'https://backend.netliinks.com:443/rest/files?fileRef='
+    const urlBack: string = `${url}/rest/files?fileRef=`
 
     const requestOptions: {} = {
         method: 'GET',
@@ -269,7 +270,7 @@ export const getFile = async (fileUrl: string): Endpoint => {
         redirect: 'follow'
     };
 
-    const file = await fetch(url + fileUrl, requestOptions)
+    const file = await fetch(urlBack + fileUrl, requestOptions)
         .then((res) => res.blob())
         .then(blob => {
             let file = window.URL.createObjectURL(blob)
@@ -280,7 +281,7 @@ export const getFile = async (fileUrl: string): Endpoint => {
 }
 
 export const setFile = async (file: File): Endpoint => {
-    const url: string = `https://backend.netliinks.com:443/rest/files?name=${file.name}`
+    const urlBack: string = `${url}/rest/files?name=${file.name}`
 
     const requestOptions: {} = {
         method: 'POST',
@@ -293,7 +294,7 @@ export const setFile = async (file: File): Endpoint => {
         body: file
     };
 
-    const res = await fetch(url, requestOptions)
+    const res = await fetch(urlBack, requestOptions)
         .then(response => response.json())
         .catch(err => alert(`Error subiendo archivo ${err}`));
     return res
