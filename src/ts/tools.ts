@@ -23,7 +23,9 @@ export const inputObserver = (): void => {
 
 export const inputSelect = async (entity: string, selectId: string, currentStatus?: string): Promise<void> => {
     const data = await getEntitiesData(entity)
-    const state = await currentStatus
+    const Fdata1: Data = data.filter((data: any) => data?.name != "Asignado")
+    const Fdata2: Data = Fdata1.filter((data: any) => data?.name != "En servicio")
+    const state: any = await currentStatus
     const select: InterfaceElement = document.querySelector(`#${selectId}`)
     const inputParent = select.parentNode
     const optionsContent = inputParent.querySelector('#input-options')
@@ -32,13 +34,17 @@ export const inputSelect = async (entity: string, selectId: string, currentStatu
 
     optionsContent.appendChild(optionsContainer)
 
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < Fdata2.length; i++) {
         const inputOption: InterfaceElement = document.createElement('div')
-        select.setAttribute('data-optionid', data[0].id)
-        select.setAttribute('value', data[0].name)
+        select.setAttribute('data-optionid', Fdata2[0].id)
+        select.setAttribute('value', Fdata2[0].name)
+        if(Fdata2[i].id == state || `${Fdata2[i].name}`.includes(state)){
+            select.setAttribute('data-optionid', Fdata2[i].id)
+            select.value = Fdata2[i].name
+        }
         inputOption.classList.add('input_option')
-        inputOption.setAttribute('id', data[i].id)
-        let nameData: Data = data[i].name
+        inputOption.setAttribute('id', Fdata2[i].id)
+        let nameData: Data = Fdata2[i].name
         if (nameData === 'Enabled') {
             nameData = 'Activo'
         } else if (nameData === 'Disabled') {
@@ -56,9 +62,8 @@ export const inputSelect = async (entity: string, selectId: string, currentStatu
     } else if (state === 'Disabled') {
         select.value = "Inactivo"
         select.setAttribute('data-optionid', '225b5e5d-9bb1-469a-b2d9-ca85d53db47b')
-    } else {
-        select.value = data[0].name
     }
+    
 
     select.addEventListener('click', (): void => {
         inputParent.classList.toggle('select_active')

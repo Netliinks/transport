@@ -16,6 +16,7 @@ import { Vehiculars } from "../views/vehiculars/vehiculars.js"
 import { Weapons } from "../views/weapons/weapons.js"
 import { Logs } from "../views/logs/logs.js"
 import { Cities } from "../views/cities/cities.js"
+import { Crews } from "../views/crews/crews.js"
 
 export class Sidebar {
     private sidebarContainer: InterfaceElement = document.getElementById('app-sidebar')
@@ -30,6 +31,12 @@ export class Sidebar {
             <div class="sidebar_item">
               <span class="sidebar_item_label" id="render-services">
                 <i class="fa-regular fa-desktop"></i> <div class="label">Servicios</div>
+              </span>
+            </div>
+
+            <div class="sidebar_item" id="render-crews">
+              <span class="sidebar_item_label">
+                <i class="fa-regular fa-users"></i> <div class="label">Patrullas</div>
               </span>
             </div>
 
@@ -159,6 +166,10 @@ export class Sidebar {
 
         document.getElementById('render-city')?.addEventListener('click', () => {
           new Cities().render(Config.offset, Config.currentPage, "");
+        });
+
+        document.getElementById('render-crews')?.addEventListener('click', () => {
+          new Crews().render(Config.offset, Config.currentPage, "");
         });
     }
 }

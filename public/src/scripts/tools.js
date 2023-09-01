@@ -14,6 +14,8 @@ export const inputObserver = () => {
 };
 export const inputSelect = async (entity, selectId, currentStatus) => {
     const data = await getEntitiesData(entity);
+    const Fdata1 = data.filter((data) => data?.name != "Asignado");
+    const Fdata2 = Fdata1.filter((data) => data?.name != "En servicio");
     const state = await currentStatus;
     const select = document.querySelector(`#${selectId}`);
     const inputParent = select.parentNode;
@@ -21,13 +23,17 @@ export const inputSelect = async (entity, selectId, currentStatus) => {
     const optionsContainer = document.createElement('div');
     optionsContainer.classList.add('input_options_container');
     optionsContent.appendChild(optionsContainer);
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < Fdata2.length; i++) {
         const inputOption = document.createElement('div');
-        select.setAttribute('data-optionid', data[0].id);
-        select.setAttribute('value', data[0].name);
+        select.setAttribute('data-optionid', Fdata2[0].id);
+        select.setAttribute('value', Fdata2[0].name);
+        if (Fdata2[i].id == state || `${Fdata2[i].name}`.includes(state)) {
+            select.setAttribute('data-optionid', Fdata2[i].id);
+            select.value = Fdata2[i].name;
+        }
         inputOption.classList.add('input_option');
-        inputOption.setAttribute('id', data[i].id);
-        let nameData = data[i].name;
+        inputOption.setAttribute('id', Fdata2[i].id);
+        let nameData = Fdata2[i].name;
         if (nameData === 'Enabled') {
             nameData = 'Activo';
         }
@@ -45,9 +51,6 @@ export const inputSelect = async (entity, selectId, currentStatus) => {
     else if (state === 'Disabled') {
         select.value = "Inactivo";
         select.setAttribute('data-optionid', '225b5e5d-9bb1-469a-b2d9-ca85d53db47b');
-    }
-    else {
-        select.value = data[0].name;
     }
     select.addEventListener('click', () => {
         inputParent.classList.toggle('select_active');

@@ -5,6 +5,7 @@
 //
 export const Config = {
     tableRows: 50,
+    modalRows: 10,
     currentPage: 1,
     offset: 0,
     maxLimitPage: 10,

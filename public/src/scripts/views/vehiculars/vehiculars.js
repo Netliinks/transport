@@ -480,6 +480,10 @@ export class Vehiculars {
         });
         const RInterface = async (entities, entityID) => {
             const data = await getEntityData(entities, entityID);
+            let disabled = false;
+            if (data.vehicularState.name == "Asignado" || data.vehicularState.name == "En servicio") {
+                disabled = true;
+            }
             this.entityDialogContainer.innerHTML = '';
             this.entityDialogContainer.style.display = 'flex';
             this.entityDialogContainer.innerHTML = `
@@ -505,12 +509,7 @@ export class Vehiculars {
                     <label for="entity-type">Tipo</label>
                     </div>
 
-                    <div class="material_input_select">
-                    <label for="entity-state">Estado</label>
-                    <input type="text" id="entity-state" class="input_select" readonly placeholder="cargando...">
-                    <div id="input-options" class="input_options">
-                    </div>
-                    </div>
+                    <div id="state"></div>
 
                     <div class="input_detail">
                         <label for="creation-date"><i class="fa-solid fa-calendar"></i></label>
@@ -536,9 +535,29 @@ export class Vehiculars {
                 </div>
             `;
             inputObserver();
+            const state = document.getElementById('state');
+            if (disabled) {
+                state.innerHTML = `
+                    <div class="material_input">
+                    <input type="text" id="entity-state" class="input_filled" data-optionid="${data.vehicularState.id}" value="${data.vehicularState.name}" readonly>
+                    <label for="entity-state">Estado</label>
+                    </div>
+
+                `;
+            }
+            else {
+                state.innerHTML = `
+                    <div class="material_input_select">
+                    <label for="entity-state">Estado</label>
+                    <input type="text" id="entity-state" class="input_select" readonly placeholder="cargando...">
+                    <div id="input-options" class="input_options">
+                    </div>
+                    </div>
+                `;
+                inputSelect('VehicularState', 'entity-state', data.vehicularState.id);
+            }
             //inputSelect('Business', 'entity-citadel')
             //inputSelect('Vehicular', 'entity-customer')
-            inputSelect('VehicularState', 'entity-state', data.vehicularState.name);
             //inputSelect('Department', 'entity-department')
             //inputSelect('Business', 'entity-business')
             this.close();

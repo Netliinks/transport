@@ -149,7 +149,7 @@ export class Services {
             this.entityDialogContainer.innerHTML = '';
             this.entityDialogContainer.style.display = 'flex';
             this.entityDialogContainer.innerHTML = `
-        <div class="entity_editor" id="entity-editor">
+        <div class="entity_editor" id="entity-editor" style="max-width:90%">
           <div class="entity_editor_header">
             <div class="user_info">
               <div class="avatar"><i class="fa-solid fa-building"></i></div>

@@ -179,7 +179,7 @@ export class Guards {
                 row.innerHTML += `
                     <td>${client.firstName} ${client.lastName}</dt>
                     <td>${client.username}</dt>
-                    <td class="tag"><span>${client.state.name}</span></td>
+                    <td class="tag"><span>${client.userState.name}</span></td>
                     <td class="entity_options">
                         <button class="button" id="edit-entity" data-entityId="${client.id}">
                             <i class="fa-solid fa-pen"></i>
@@ -351,7 +351,7 @@ export class Guards {
             inputObserver()
             //inputSelect('Citadel', 'entity-citadel')
             //inputSelect('Customer', 'entity-customer')
-            inputSelect('State', 'entity-state', 'Enabled')
+            inputSelect('UserState', 'entity-state')
             //inputSelect('Department', 'entity-department')
             //inputSelect('Business', 'entity-business')
             this.close()
@@ -386,6 +386,9 @@ export class Guards {
                     "userType": "GUARD",
                     "firstName": `${inputsCollection.firstName.value}`,
                     "state": {
+                        "id": "60885987-1b61-4247-94c7-dff348347f93"
+                    },
+                    "userState": {
                         "id": `${inputsCollection.state.dataset.optionid}`
                     },
                     "business":{
@@ -605,6 +608,10 @@ export class Guards {
 
         const RInterface = async (entities: string, entityID: string): Promise<void> => {
             const data: any = await getEntityData(entities, entityID)
+            let disabled = false
+            if(data.userState.name == "Asignado" || data.userState.name == "En servicio"){
+                disabled = true
+            }
             this.entityDialogContainer.innerHTML = ''
             this.entityDialogContainer.style.display = 'flex'
             this.entityDialogContainer.innerHTML = `
@@ -659,13 +666,8 @@ export class Guards {
                     <label for="entity-email">Email</label>
                     </div>
 
-                    <div class="material_input_select">
-                    <label for="entity-state">Estado</label>
-                    <input type="text" id="entity-state" class="input_select" readonly placeholder="cargando...">
-                    <div id="input-options" class="input_options">
-                    </div>
-                    </div>
-
+                    <div id="state"></div>
+                    
                     <div class="input_detail">
                         <label for="creation-date"><i class="fa-solid fa-calendar"></i></label>
                         <input type="date" id="creation-date" class="input_filled" value="${data.creationDate}" readonly>
@@ -727,9 +729,30 @@ export class Guards {
             `
 
             inputObserver()
+            const state: InterfaceElement = document.getElementById('state')
+            if(disabled){
+                state.innerHTML = `
+                    <div class="material_input">
+                    <input type="text" id="entity-state" class="input_filled" data-optionid="${data.userState.id}" value="${data.userState.name}" readonly>
+                    <label for="entity-state">Estado</label>
+                    </div>
+
+                `
+            }else{
+                state.innerHTML = `
+                    <div class="material_input_select">
+                    <label for="entity-state">Estado</label>
+                    <input type="text" id="entity-state" class="input_select" readonly placeholder="cargando...">
+                    <div id="input-options" class="input_options">
+                    </div>
+                    </div>
+                `
+                inputSelect('UserState', 'entity-state', data.userState.id)
+            }
+            
             //inputSelect('Business', 'entity-citadel')
             //inputSelect('Customer', 'entity-customer')
-            inputSelect('State', 'entity-state', data.state.name)
+            
             //inputSelect('Department', 'entity-department')
             //inputSelect('Business', 'entity-business')
             this.close()
@@ -772,7 +795,7 @@ export class Guards {
                     "active": true,
                     // @ts-ignore
                     //"firstName": `${$value.firstName?.value}`,
-                    "state": {
+                    "userState": {
                         "id": `${$value.status?.dataset.optionid}`
                     },
                     //"customer": {

@@ -156,10 +156,6 @@ export class Logs {
                         <button class="button" id="edit-entity" data-entityId="${client.id}">
                             <i class="fa-solid fa-arrow-right-to-arc"></i>
                         </button>
-
-                        <button class="button" id="remove-entity" data-entityId="${client.id}" style="display:${userPermissions().style};">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
                     </td>
                 `
                 table.appendChild(row)

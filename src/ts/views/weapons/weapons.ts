@@ -429,6 +429,10 @@ export class Weapons {
 
         const RInterface = async (entities: string, entityID: string): Promise<void> => {
             const data: any = await getEntityData(entities, entityID)
+            let disabled = false
+            if(data.weaponState.name == "Asignado" || data.weaponState.name == "En servicio"){
+                disabled = true
+            }
             this.entityDialogContainer.innerHTML = ''
             this.entityDialogContainer.style.display = 'flex'
             this.entityDialogContainer.innerHTML = `
@@ -459,12 +463,7 @@ export class Weapons {
                     <label for="entity-serie">Serie</label>
                     </div>
 
-                    <div class="material_input_select">
-                    <label for="entity-state">Estado</label>
-                    <input type="text" id="entity-state" class="input_select" readonly placeholder="cargando...">
-                    <div id="input-options" class="input_options">
-                    </div>
-                    </div>
+                    <div id="state"></div>
 
                     <div class="input_detail">
                         <label for="creation-date"><i class="fa-solid fa-calendar"></i></label>
@@ -491,9 +490,29 @@ export class Weapons {
             `
 
             inputObserver()
+            const state: InterfaceElement = document.getElementById('state')
+            if(disabled){
+                state.innerHTML = `
+                    <div class="material_input">
+                    <input type="text" id="entity-state" class="input_filled" data-optionid="${data.weaponState.id}" value="${data.weaponState.name}" readonly>
+                    <label for="entity-state">Estado</label>
+                    </div>
+
+                `
+            }else{
+                state.innerHTML = `
+                    <div class="material_input_select">
+                    <label for="entity-state">Estado</label>
+                    <input type="text" id="entity-state" class="input_select" readonly placeholder="cargando...">
+                    <div id="input-options" class="input_options">
+                    </div>
+                    </div>
+                `
+                inputSelect('WeaponState', 'entity-state', data.weaponState.id)
+            }
             //inputSelect('Business', 'entity-citadel')
             //inputSelect('Weapon', 'entity-customer')
-            inputSelect('WeaponState', 'entity-state', data.weaponState.name)
+            //inputSelect('WeaponState', 'entity-state', data.weaponState.id)
             //inputSelect('Department', 'entity-department')
             //inputSelect('Business', 'entity-business')
             this.close()
