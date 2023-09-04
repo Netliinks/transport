@@ -57,11 +57,6 @@ const getVehiculars = async (): Promise<void> => {
                         "value": `${infoPage.search.toLowerCase()}`
                       },
                       {
-                        "property": "type",
-                        "operator": "contains",
-                        "value": `${infoPage.search.toLowerCase()}`
-                      },
-                      {
                         "property": "vehicularState.name",
                         "operator": "contains",
                         "value": `${infoPage.search.toLowerCase()}`

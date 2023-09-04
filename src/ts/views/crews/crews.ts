@@ -212,13 +212,13 @@ export class Crews {
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-plate" autocomplete="none">
-                    <label for="entity-plate"><i class="fa-solid fa-id-card"></i> Placa</label>
+                    <input type="text" id="entity-vehicle" autocomplete="none" readonly>
+                    <label for="entity-vehicule"><i class="fa-solid fa-car" readonly></i> Vehículo</label>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-serie" autocomplete="none">
-                    <label for="entity-serie"><i class="fa-solid fa-id-card"></i> Nro. Serie</label>
+                    <input type="text" id="entity-supervisor" autocomplete="none" readonly>
+                    <label for="entity-supervisor"><i class="fa-solid fa-person-military-pointing"></i> Supervisor</label>
                     </div>
 
                     <div class="material_input_select">
@@ -232,7 +232,6 @@ export class Crews {
                 <!-- END EDITOR BODY -->
                     
                 <div class="entity_editor_footer">
-                    <button class="btn btn_primary btn_widder" id="open-vehicular">Abrir</button>
                     <button class="btn btn_primary btn_widder" id="register-entity">Guardar</button>
                 </div>
                 </div>
@@ -241,7 +240,8 @@ export class Crews {
             inputObserver()
             //inputSelect('Citadel', 'entity-citadel')
             //inputSelect('Crew', 'entity-customer')
-            this.test(0)
+            this.selectVehicle()
+            this.selectUser()
             inputSelect('WeaponState', 'entity-state', 'Disponible')
             //inputSelect('Department', 'entity-department')
             //inputSelect('Business', 'entity-business')
@@ -685,19 +685,18 @@ export class Crews {
         }, false)
     }
 
-    private test(offsetInitial: any): void {
+    private selectVehicle(): void {
         
-        const buttonKey: InterfaceElement = document.getElementById('open-vehicular')
+        const element: InterfaceElement = document.getElementById('entity-vehicle')
         //let offset = 0
 
-            buttonKey.addEventListener('click', async (): Promise<void> => {
-                modalTable(0)
+            element.addEventListener('click', async (): Promise<void> => {
+                modalTable(0, "", "CAMIONETA")
             })
 
-            async function modalTable(offset: any){
+            async function modalTable(offset: any, search: any, type: any){
                 const dialogContainer: InterfaceElement =
                 document.getElementById('app-dialogs')
-                let userId: string = buttonKey.dataset.userid
                 let raw = JSON.stringify({
                     "filter": {
                         "conditions": [
@@ -705,6 +704,16 @@ export class Crews {
                             "property": "business.id",
                             "operator": "=",
                             "value": `${businessId}`
+                          },
+                          {
+                            "property": "vehicularState.name",
+                            "operator": "=",
+                            "value": `Disponible`
+                          },
+                          {
+                            "property": "type",
+                            "operator": "=",
+                            "value": `${type}`
                           }
                         ],
                         
@@ -715,8 +724,46 @@ export class Crews {
                     fetchPlan: 'full',
                     
                 })
+                if(search != ""){
+                    raw = JSON.stringify({
+                        "filter": {
+                            "conditions": [
+                              {
+                                "group": "OR",
+                                "conditions": [
+                                    {
+                                    "property": "licensePlate",
+                                    "operator": "contains",
+                                    "value": `${search.toLowerCase()}`
+                                    }
+                                ]
+                              },
+                              {
+                                "property": "business.id",
+                                "operator": "=",
+                                "value": `${businessId}`
+                              },
+                              {
+                                "property": "vehicularState.name",
+                                "operator": "=",
+                                "value": `Disponible`
+                              },
+                              {
+                                "property": "type",
+                                "operator": "=",
+                                "value": `${type}`
+                              }
+                            ],
+                            
+                        }, 
+                        sort: "-createdDate",
+                        limit: Config.modalRows,
+                        offset: offset,
+                        fetchPlan: 'full',
+                        
+                    })
+                }
                 let dataModal = await getFilterEntityData("Vehicular", raw)
-                console.log(dataModal)
                 dialogContainer.style.display = 'block'
                 dialogContainer.innerHTML = `
                     <div class="dialog_content" id="dialog-content">
@@ -727,6 +774,23 @@ export class Crews {
                                 </div>
 
                                 <div class="dialog_message padding_8">
+                                    <div class="datatable_tools">
+                                        <input type="search"
+                                        class="search_input"
+                                        placeholder="Buscar"
+                                        id="search-modal">
+                                        <select id="select">
+                                            <option value="CAMIONETA" selected>CAMIONETA</option>
+                                            <option value="AUTO">AUTO</option>
+                                            <option value="MOTO">MOTO</option>
+                                            <option value="LANCHA">LANCHA</option>
+                                        </select>
+                                        <button
+                                            class="datatable_button add_user"
+                                            id="btnSearchModal">
+                                            <i class="fa-solid fa-search"></i>
+                                        </button>
+                                    </div>
                                     <div class="dashboard_datatable">
                                         <table class="datatable_content margin_t_16">
                                         <thead>
@@ -741,13 +805,12 @@ export class Crews {
                                         </table>
                                     </div>
                                     <br>
-                                    <button class="btn btn_primary" id="prevModal"><i class="fa-solid fa-arrow-left"></i></button>
-                                    <button class="btn btn_primary" id="nextModal"><i class="fa-solid fa-arrow-right"></i></button>
                                 </div>
 
                                 <div class="dialog_footer">
-                                    <button class="btn btn_primary" id="cancel">Cancelar</button>
-                                    <button class="btn btn_danger" id="update-password">Actualizar</button>
+                                    <button class="btn btn_primary" id="prevModal"><i class="fa-solid fa-arrow-left"></i></button>
+                                    <button class="btn btn_primary" id="nextModal"><i class="fa-solid fa-arrow-right"></i></button>
+                                    <button class="btn btn_danger" id="cancel">Cancelar</button>
                                 </div>
                             </div>
                         </div>
@@ -773,7 +836,7 @@ export class Crews {
                             <td>${client.licensePlate}</dt>
                             <td>${client?.type ?? ''}</dt>
                             <td class="entity_options">
-                                <button class="button" id="edit-entity" data-entityId="${client.id}">
+                                <button class="button" id="edit-entity" data-entityId="${client.id}" data-entityName="${client.licensePlate}" data-entityType="${client.type}">
                                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                 </button>
                             </td>
@@ -782,40 +845,37 @@ export class Crews {
                         drawTagsIntoTables()
                     }
                 }
-                const _password: InterfaceElement = document.getElementById('password')
-                const _repassword: InterfaceElement = document.getElementById('re-password')
-                const _updatePasswordButton: InterfaceElement = document.getElementById('update-password')
+                const txtSearch: InterfaceElement = document.getElementById('search-modal')
+                const _selectType: InterfaceElement = document.getElementById('select')
+                const btnSearchModal: InterfaceElement = document.getElementById('btnSearchModal')
+                const _selectVehicle: InterfaceElement = document.querySelectorAll('#edit-entity')
                 const _closeButton: InterfaceElement = document.getElementById('cancel')
                 const _dialog: InterfaceElement = document.getElementById('dialog-content')
                 const prevModalButton: InterfaceElement = document.getElementById('prevModal')
                 const nextModalButton: InterfaceElement = document.getElementById('nextModal')
 
-                _updatePasswordButton.addEventListener('click', () => {
-                    if (_password.value === '') {
-                        alert('El campo "Contraseña" no puede estar vacío.')
-                    }
-                    else if (_repassword.value === ' ') {
-                        alert('Debe repetir la contraseña para continuar')
-                    }
-                    else if (_password.value === _repassword.value) {
-                        let raw: string = JSON.stringify({
-                            "id": `${userId}`,
-                            "newPassword": `${_password.value}`
-                        })
+                txtSearch.value = search ?? ''
+                _selectType.value = type
 
-                        setPassword(raw)
-                            .then((): void => {
-                                setTimeout((): void => {
-                                    alert('Se ha cambiado la contraseña')
-                                    new CloseDialog().x(_dialog)
-                                }, 1000)
-                            })
-                    }
-                    else {
-                        console.log('Las contraseñas no coinciden')
-                        alert('Las contraseñas no coinciden')
-                    }
+
+                _selectVehicle.forEach((edit: InterfaceElement) => {
+                    const entityId = edit.dataset.entityid
+                    const entityName = edit.dataset.entityname
+                    const entityType = edit.dataset.entitytype
+                    edit.addEventListener('click', (): void => {
+                        element.setAttribute('data-optionid', entityId)
+                        element.setAttribute('value', `${entityType} [${entityName}]`)
+                        element.classList.add('input_filled')
+                        new CloseDialog().x(_dialog)
+                    })
+                
                 })
+
+                btnSearchModal.onclick = () => {
+                    console.log(txtSearch.value)
+                    console.log(_selectType.value)
+                    modalTable(0, txtSearch.value, _selectType.value)
+                }
 
                 _closeButton.onclick = () => {
                     new CloseDialog().x(_dialog)
@@ -823,12 +883,227 @@ export class Crews {
 
                 nextModalButton.onclick = () => {
                     offset = Config.modalRows + (offset)
-                    modalTable(offset)
+                    modalTable(offset, search, _selectType.value)
                 }
 
                 prevModalButton.onclick = () => {
                     offset = Config.modalRows - (offset)
-                    modalTable(offset)
+                    modalTable(offset, search, _selectType.value)
+                }
+            }
+
+    }
+
+    private selectUser(): void {
+        
+        const supervisor: InterfaceElement = document.getElementById('entity-supervisor')
+
+
+            supervisor.addEventListener('click', async (): Promise<void> => {
+                modalTable(0, "", "SUPERVISOR")
+            })
+
+            async function modalTable(offset: any, search: any, type: any){
+                const dialogContainer: InterfaceElement =
+                document.getElementById('app-dialogs')
+                let raw = JSON.stringify({
+                    "filter": {
+                        "conditions": [
+                          {
+                            "property": "business.id",
+                            "operator": "=",
+                            "value": `${businessId}`
+                          },
+                          {
+                            "property": "userState.name",
+                            "operator": "=",
+                            "value": `Disponible`
+                          },
+                          {
+                            "property": "userType",
+                            "operator": "=",
+                            "value": `GUARD`
+                          }
+                        ],
+                        
+                    }, 
+                    sort: "-createdDate",
+                    limit: Config.modalRows,
+                    offset: offset,
+                    fetchPlan: 'full',
+                    
+                })
+                if(search != ""){
+                    raw = JSON.stringify({
+                        "filter": {
+                            "conditions": [
+                              {
+                                "group": "OR",
+                                "conditions": [
+                                    {
+                                    "property": "firstName",
+                                    "operator": "contains",
+                                    "value": `${search.toLowerCase()}`
+                                    },
+                                    {
+                                    "property": "lastName",
+                                    "operator": "contains",
+                                    "value": `${search.toLowerCase()}`
+                                    },
+                                    {
+                                    "property": "secondLastName",
+                                    "operator": "contains",
+                                    "value": `${search.toLowerCase()}`
+                                    },
+                                    {
+                                    "property": "username",
+                                    "operator": "contains",
+                                    "value": `${search.toLowerCase()}`
+                                    }
+                                ]
+                              },
+                              {
+                                "property": "business.id",
+                                "operator": "=",
+                                "value": `${businessId}`
+                              },
+                              {
+                                "property": "userState.name",
+                                "operator": "=",
+                                "value": `Disponible`
+                              },
+                              {
+                                "property": "userType",
+                                "operator": "=",
+                                "value": `GUARD`
+                              }
+                            ],
+                            
+                        }, 
+                        sort: "-createdDate",
+                        limit: Config.modalRows,
+                        offset: offset,
+                        fetchPlan: 'full',
+                        
+                    })
+                }
+                let dataModal = await getFilterEntityData("User", raw)
+                dialogContainer.style.display = 'block'
+                dialogContainer.innerHTML = `
+                    <div class="dialog_content" id="dialog-content">
+                        <div class="dialog">
+                            <div class="dialog_container padding_8">
+                                <div class="dialog_header">
+                                    <h2>Guardias disponibles</h2>
+                                </div>
+
+                                <div class="dialog_message padding_8">
+                                    <div class="datatable_tools">
+                                        <input type="search"
+                                        class="search_input"
+                                        placeholder="Buscar"
+                                        id="search-modal">
+                                        <button
+                                            class="datatable_button add_user"
+                                            id="btnSearchModal">
+                                            <i class="fa-solid fa-search"></i>
+                                        </button>
+                                    </div>
+                                    <div class="dashboard_datatable">
+                                        <table class="datatable_content margin_t_16">
+                                        <thead>
+                                            <tr>
+                                            <th>Nombre</th>
+                                            <th>Usuario</th>
+                                            <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="datatable-modal-body">
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                    <br>
+                                </div>
+
+                                <div class="dialog_footer">
+                                    <button class="btn btn_primary" id="prevModal"><i class="fa-solid fa-arrow-left"></i></button>
+                                    <button class="btn btn_primary" id="nextModal"><i class="fa-solid fa-arrow-right"></i></button>
+                                    <button class="btn btn_danger" id="cancel">Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+                inputObserver()
+                const datetableBody: InterfaceElement = document.getElementById('datatable-modal-body')
+                if (dataModal.length === 0) {
+                    let row: InterfaceElement = document.createElement('tr')
+                    row.innerHTML = `
+                        <td>No hay datos</td>
+                        <td></td>
+                        <td></td>
+                    `
+                    datetableBody.appendChild(row)
+                }
+                else {
+                    for (let i = 0; i < dataModal.length; i++) {
+                        let client = dataModal[i]
+                        let row: InterfaceElement =
+                            document.createElement('tr')
+                        row.innerHTML += `
+                            <td>${client?.firstName ?? ''} ${client?.lastName ?? ''} ${client?.secondLastName ?? ''}</dt>
+                            <td>${client?.username ?? ''}</dt>
+                            <td class="entity_options">
+                                <button class="button" id="edit-entity" data-entityId="${client.id}" data-entityName="${client.username}">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </button>
+                            </td>
+                        `
+                        datetableBody.appendChild(row)
+                        drawTagsIntoTables()
+                    }
+                }
+                const txtSearch: InterfaceElement = document.getElementById('search-modal')
+                const btnSearchModal: InterfaceElement = document.getElementById('btnSearchModal')
+                const _selectUser: InterfaceElement = document.querySelectorAll('#edit-entity')
+                const _closeButton: InterfaceElement = document.getElementById('cancel')
+                const _dialog: InterfaceElement = document.getElementById('dialog-content')
+                const prevModalButton: InterfaceElement = document.getElementById('prevModal')
+                const nextModalButton: InterfaceElement = document.getElementById('nextModal')
+
+                const vehicle: InterfaceElement = supervisor
+                txtSearch.value = search ?? ''
+
+
+                _selectUser.forEach((edit: InterfaceElement) => {
+                    const entityId = edit.dataset.entityid
+                    const entityName = edit.dataset.entityname
+                    edit.addEventListener('click', (): void => {
+                        vehicle.setAttribute('data-optionid', entityId)
+                        vehicle.setAttribute('value', `${entityName}`)
+                        vehicle.classList.add('input_filled')
+                        new CloseDialog().x(_dialog)
+                    })
+                
+                })
+
+                btnSearchModal.onclick = () => {
+                    console.log(txtSearch.value)
+                    modalTable(0, txtSearch.value, type)
+                }
+
+                _closeButton.onclick = () => {
+                    new CloseDialog().x(_dialog)
+                }
+
+                nextModalButton.onclick = () => {
+                    offset = Config.modalRows + (offset)
+                    modalTable(offset, search, type)
+                }
+
+                prevModalButton.onclick = () => {
+                    offset = Config.modalRows - (offset)
+                    modalTable(offset, search, type)
                 }
             }
 

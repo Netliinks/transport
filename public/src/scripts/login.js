@@ -26,13 +26,15 @@ export class SignIn {
         const checkUser = async () => {
             let currentUser = await getUserInfo();
             const businessId = localStorage.getItem('business_id');
+            const userType = localStorage.getItem('user_type');
             if (currentUser.error === 'invalid_token') {
                 this.signOut();
             }
-            if (businessId == null) {
+            if (businessId == null || userType == null) {
                 let user = await getEntityData('User', currentUser.attributes.id);
                 if (user.business?.id != null || user.business?.id != undefined) {
                     localStorage.setItem('business_id', user.business?.id);
+                    localStorage.setItem('user_type', currentUser.attributes.userType);
                     window.location.reload();
                 }
                 else {
@@ -44,7 +46,6 @@ export class SignIn {
                 let user = await getEntityData('User', currentUser.attributes.id);
                 let business = await getEntityData('Business', user?.business?.id);
                 if (user?.state?.name == 'Enabled' && business?.state?.name == 'Enabled' && user.isSuper == true && (user.userType == 'ADMIN' || user.userType == 'OPERATOR')) {
-                    localStorage.setItem('user_type', currentUser.attributes.userType);
                     new RenderApplicationUI().render();
                 }
                 else {
