@@ -261,6 +261,23 @@ export const getVerifyUsername = async (username) => {
     }
     return value;
 };
+export const getNothing = async (param, value, table) => {
+    let raw = JSON.stringify({
+        "filter": {
+            "conditions": [
+                {
+                    "property": `${param}`,
+                    "operator": "=",
+                    "value": `${value}`
+                }
+            ]
+        }
+    });
+    let data = await getFilterEntityData(`${table}`, raw);
+    if (data.length != 0) {
+        return data[0];
+    }
+};
 export const verifyUserType = (userType) => {
     if (userType == 'CUSTOMER') {
         return 'Cliente';

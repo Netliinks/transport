@@ -294,6 +294,25 @@ export const getVerifyUsername = async (username: string) => {
 }
 
 
+export const getNothing = async (param: string, value: string, table: string) => {
+    let raw = JSON.stringify({
+        "filter": {
+            "conditions": [
+                {
+                "property": `${param}`,
+                "operator": "=",
+                "value": `${value}`
+                }
+            ]
+        }
+    });
+    let data = await getFilterEntityData(`${table}`, raw);
+    if(data.length != 0){
+        return data[0]
+    }
+}
+
+
 export const verifyUserType = (userType: string) =>{
     if(userType == 'CUSTOMER'){
       return 'Cliente'
