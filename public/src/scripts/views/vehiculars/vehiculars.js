@@ -244,7 +244,7 @@ export class Vehiculars {
                             <i class="fa-solid fa-pen"></i>
                         </button>
 
-                        <button class="button" id="remove-entity" data-entityId="${client.id}" data-entityName="${client.licensePlate}" style="display:${userPermissions().style};">
+                        <button class="button" id="remove-entity" data-entityId="${client.id}" data-entityName="${client.licensePlate}" data-entityType="${client.type}" style="display:${userPermissions().style};">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </td>
@@ -350,7 +350,7 @@ export class Vehiculars {
                 setTimeout(async () => {
                     //let data = await getVehiculars()
                     let parse = JSON.parse(raw);
-                    eventLog('INS', 'VEHÍCULO', `${parse.licensePlate}`, '');
+                    eventLog('INS', 'VEHÍCULO', `${parse.type} [${parse.licensePlate}]`, '');
                     const tableBody = document.getElementById('datatable-body');
                     const container = document.getElementById('entity-editor-container');
                     new CloseDialog().x(container);
@@ -449,7 +449,7 @@ export class Vehiculars {
                                 setTimeout(async () => {
                                     //let data = await getVehiculars()
                                     let parse = JSON.parse(el);
-                                    eventLog('INS', 'VEHÍCULO', `${parse.name}, importación`, '');
+                                    eventLog('INS', 'VEHÍCULO', `${parse.type} [${parse.name}], importación`, '');
                                     const tableBody = document.getElementById('datatable-body');
                                     const container = document.getElementById('entity-editor-container');
                                     new CloseDialog().x(container);
@@ -556,7 +556,7 @@ export class Vehiculars {
             //inputSelect('Department', 'entity-department')
             //inputSelect('Business', 'entity-business')
             this.close();
-            UUpdate(entityID, data.licensePlate);
+            UUpdate(entityID, `${data.type} [${data.licensePlate}]`);
         };
         const UUpdate = async (entityId, user) => {
             const updateButton = document.getElementById('update-changes');
@@ -614,6 +614,7 @@ export class Vehiculars {
         remove.forEach((remove) => {
             const entityId = remove.dataset.entityid;
             const entityName = remove.dataset.entityname;
+            const entityType = remove.dataset.entitytype;
             // BOOKMARK: MODAL
             remove.addEventListener('click', () => {
                 this.dialogContainer.style.display = 'block';
@@ -644,7 +645,7 @@ export class Vehiculars {
                         .then((res) => {
                         setTimeout(async () => {
                             //let data = await getVehiculars();
-                            eventLog('DLT', 'VEHÍCULO', `${entityName}`, '');
+                            eventLog('DLT', 'VEHÍCULO', `${entityType} [${entityName}]`, '');
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
                             new Vehiculars().render(infoPage.offset, infoPage.currentPage, infoPage.search);

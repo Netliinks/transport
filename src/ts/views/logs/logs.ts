@@ -65,16 +65,6 @@ const getLogs = async (): Promise<void> => {
                         "property": "user.username",
                         "operator": "contains",
                         "value": `${infoPage.search.toLowerCase()}`
-                      },
-                      {
-                        "property": "customer.name",
-                        "operator": "contains",
-                        "value": `${infoPage.search.toLowerCase()}`
-                      },
-                      {
-                        "property": "service.name",
-                        "operator": "contains",
-                        "value": `${infoPage.search.toLowerCase()}`
                       }
                     ]
                   },

@@ -151,7 +151,7 @@ export class Weapons {
                             <i class="fa-solid fa-pen"></i>
                         </button>
 
-                        <button class="button" id="remove-entity" data-entityId="${client.id}" data-entityName="${client.name}" style="display:${userPermissions().style};">
+                        <button class="button" id="remove-entity" data-entityId="${client.id}" data-entityName="${client.name}" data-entityType="${client.licensePlate}" style="display:${userPermissions().style};">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </td>
@@ -299,7 +299,7 @@ export class Weapons {
                     setTimeout(async () => {
                         //let data = await getWeapons()
                         let parse = JSON.parse(raw);
-                        eventLog('INS', 'ARMA', `${parse.name}`, '')
+                        eventLog('INS', 'ARMA', `${parse.name} [${parse.licensePlate}]`, '')
                         const tableBody: InterfaceElement = document.getElementById('datatable-body')
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
@@ -401,7 +401,7 @@ export class Weapons {
                                 setTimeout(async () => {
                                     //let data = await getWeapons()
                                     let parse = JSON.parse(el);
-                                    eventLog('INS', 'ARMA', `${parse.name}, importación`, '')
+                                    eventLog('INS', 'ARMA', `${parse.name} [${parse.licensePlate}], importación`, '')
                                     const tableBody = document.getElementById('datatable-body')
                                     const container = document.getElementById('entity-editor-container')
                                     new CloseDialog().x(container)
@@ -516,7 +516,7 @@ export class Weapons {
             //inputSelect('Department', 'entity-department')
             //inputSelect('Business', 'entity-business')
             this.close()
-            UUpdate(entityID, data.name)
+            UUpdate(entityID, `${data.name} [${data.licensePlate}]`)
         }
 
         const UUpdate = async (entityId: any, user: any): Promise<void> => {
@@ -589,6 +589,7 @@ export class Weapons {
 
             const entityId = remove.dataset.entityid
             const entityName = remove.dataset.entityname
+            const entityType = remove.dataset.entitytype
             // BOOKMARK: MODAL
             remove.addEventListener('click', (): void => {
                 this.dialogContainer.style.display = 'block'
@@ -621,7 +622,7 @@ export class Weapons {
                     .then((res) => {
                         setTimeout(async () => {
                             //let data = await getWeapons();
-                            eventLog('DLT', 'ARMA', `${entityName}`, '')
+                            eventLog('DLT', 'ARMA', `${entityName} [${entityType}]`, '')
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
                             new Weapons().render(infoPage.offset, infoPage.currentPage, infoPage.search)

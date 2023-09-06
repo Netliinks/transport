@@ -1,4 +1,4 @@
-import { getEntitiesData, getUserInfo, getFilterEntityData, registerEntity } from "./endpoints.js";
+import { getEntitiesData, getUserInfo, getFilterEntityData, registerEntity, updateEntity } from "./endpoints.js";
 //
 export const inputObserver = () => {
     const inputs = document.querySelectorAll('input');
@@ -277,6 +277,31 @@ export const getNothing = async (param, value, table) => {
     if (data.length != 0) {
         return data[0];
     }
+};
+export const getUpdateState = async (value, table, entityId) => {
+    let raw;
+    if (table == "Vehicular") {
+        raw = JSON.stringify({
+            "vehicularState": {
+                "id": `${value}`
+            },
+        });
+    }
+    else if (table == "User") {
+        raw = JSON.stringify({
+            "userState": {
+                "id": `${value}`
+            },
+        });
+    }
+    else if (table == "Weapon") {
+        raw = JSON.stringify({
+            "weaponState": {
+                "id": `${value}`
+            },
+        });
+    }
+    updateEntity(table, entityId, raw);
 };
 export const verifyUserType = (userType) => {
     if (userType == 'CUSTOMER') {
