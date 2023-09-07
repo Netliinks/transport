@@ -826,7 +826,25 @@ export class Crews {
                 };
                 let dataArray = [];
                 let dataChangesArray = [];
-                if ($value.supervisor.dataset.optionid) {
+                let category = 0;
+                if ($value.vehicular.dataset.optionid != data.vehicular.id) {
+                    dataArray.push({
+                        id: $value.vehicular.dataset.optionid,
+                        value: $value.vehicular.value,
+                        table: "Vehicular",
+                        state: nothingConfig.vehicularState.id,
+                        title: "VEHÍCULO"
+                    });
+                    dataChangesArray.push({
+                        id: data.vehicular.id,
+                        value: `${data.vehicular.type} [${data.vehicular.licensePlate}]`,
+                        table: "Vehicular",
+                        state: nothingConfig.vehicularEnable.id,
+                        title: "VEHÍCULO"
+                    });
+                }
+                category += 1;
+                if ($value.supervisor.dataset.optionid != data.crewOne.id) {
                     dataArray.push({
                         id: $value.supervisor.dataset.optionid,
                         value: $value.supervisor.value,
@@ -834,15 +852,15 @@ export class Crews {
                         state: nothingConfig.userState.id,
                         title: "GUARDIA"
                     });
-                    if ($value.supervisor.dataset.optionid != data.crewOne.id) {
-                        dataChangesArray.push({
-                            id: data.crewOne.id,
-                            value: data.crewOne.username,
-                            table: "User",
-                            state: nothingConfig.userEnable.id,
-                            title: "GUARDIA"
-                        });
-                    }
+                    dataChangesArray.push({
+                        id: data.crewOne.id,
+                        value: data.crewOne.username,
+                        table: "User",
+                        state: nothingConfig.userEnable.id,
+                        title: "GUARDIA"
+                    });
+                }
+                if ($value.weapon1.dataset.optionid != data.weaponOne.id) {
                     if ($value.weapon1.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon1.value != "N/A [N/A]") {
                         dataArray.push({
                             id: $value.weapon1.dataset.optionid,
@@ -851,10 +869,21 @@ export class Crews {
                             state: nothingConfig.weaponState.id,
                             title: "ARMA"
                         });
-                        if ($value.weapon1.dataset.optionid != data.weaponOne.id) {
+                        if (data.weaponOne.id != nothingConfig.nothingWeapon.id) {
                             dataChangesArray.push({
                                 id: data.weaponOne.id,
-                                value: data.weaponOne.name,
+                                value: `${data.weaponOne.name} [${data.weaponOne.licensePlate}]`,
+                                table: "Weapon",
+                                state: nothingConfig.weaponEnable.id,
+                                title: "ARMA"
+                            });
+                        }
+                    }
+                    else {
+                        if (data.weaponOne.id != nothingConfig.nothingWeapon.id) {
+                            dataChangesArray.push({
+                                id: data.weaponOne.id,
+                                value: `${data.weaponOne.name} [${data.weaponOne.licensePlate}]`,
                                 table: "Weapon",
                                 state: nothingConfig.weaponEnable.id,
                                 title: "ARMA"
@@ -862,18 +891,60 @@ export class Crews {
                         }
                     }
                 }
-                else {
-                    $value.weapon1.dataset.optionid = nothingConfig.nothingWeapon.id;
-                }
                 if ($value.segundero.dataset.optionid != nothingConfig.nothingUser.id || $value.segundero.value != "N/A") {
-                    dataArray.push({
-                        id: $value.segundero.dataset.optionid,
-                        value: $value.segundero.value,
-                        table: "User",
-                        state: nothingConfig.userState.id,
-                        title: "GUARDIA"
-                    });
+                    category += 1;
                     if ($value.segundero.dataset.optionid != data.crewTwo.id) {
+                        dataArray.push({
+                            id: $value.segundero.dataset.optionid,
+                            value: $value.segundero.value,
+                            table: "User",
+                            state: nothingConfig.userState.id,
+                            title: "GUARDIA"
+                        });
+                        if (data.crewTwo.id != nothingConfig.nothingUser.id) {
+                            dataChangesArray.push({
+                                id: data.crewTwo.id,
+                                value: data.crewTwo.username,
+                                table: "User",
+                                state: nothingConfig.userEnable.id,
+                                title: "GUARDIA"
+                            });
+                        }
+                    }
+                    if ($value.weapon2.dataset.optionid != data.weaponTwo.id) {
+                        if ($value.weapon2.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon2.value != "N/A [N/A]") {
+                            dataArray.push({
+                                id: $value.weapon2.dataset.optionid,
+                                value: $value.weapon2.value,
+                                table: "Weapon",
+                                state: nothingConfig.weaponState.id,
+                                title: "ARMA"
+                            });
+                            if (data.weaponTwo.id != nothingConfig.nothingWeapon.id) {
+                                dataChangesArray.push({
+                                    id: data.weaponTwo.id,
+                                    value: `${data.weaponTwo.name} [${data.weaponTwo.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                });
+                            }
+                        }
+                        else {
+                            if (data.weaponTwo.id != nothingConfig.nothingWeapon.id) {
+                                dataChangesArray.push({
+                                    id: data.weaponTwo.id,
+                                    value: `${data.weaponTwo.name} [${data.weaponTwo.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                });
+                            }
+                        }
+                    }
+                }
+                else {
+                    if (data.crewTwo.id != nothingConfig.nothingUser.id) {
                         dataChangesArray.push({
                             id: data.crewTwo.id,
                             value: data.crewTwo.username,
@@ -882,37 +953,72 @@ export class Crews {
                             title: "GUARDIA"
                         });
                     }
-                    if ($value.weapon2.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon2.value != "N/A [N/A]") {
-                        dataArray.push({
-                            id: $value.weapon2.dataset.optionid,
-                            value: $value.weapon2.value,
+                    if (data.weaponTwo.id != nothingConfig.nothingWeapon.id) {
+                        dataChangesArray.push({
+                            id: data.weaponTwo.id,
+                            value: `${data.weaponTwo.name} [${data.weaponTwo.licensePlate}]`,
                             table: "Weapon",
-                            state: nothingConfig.weaponState.id,
+                            state: nothingConfig.weaponEnable.id,
                             title: "ARMA"
                         });
-                        if ($value.weapon2.dataset.optionid != data.weaponTwo.id) {
+                    }
+                    $value.weapon2.dataset.optionid = nothingConfig.nothingWeapon.id;
+                    $value.weapon2.value = "N/A [N/A]";
+                }
+                if ($value.custodio1.dataset.optionid != nothingConfig.nothingUser.id || $value.custodio1.value != "N/A") {
+                    category += 1;
+                    if ($value.custodio1.dataset.optionid != data.crewThree.id) {
+                        dataArray.push({
+                            id: $value.custodio1.dataset.optionid,
+                            value: $value.custodio1.value,
+                            table: "User",
+                            state: nothingConfig.userState.id,
+                            title: "GUARDIA"
+                        });
+                        if (data.crewThree.id != nothingConfig.nothingUser.id) {
                             dataChangesArray.push({
-                                id: data.weaponTwo.id,
-                                value: data.weaponTwo.name,
+                                id: data.crewThree.id,
+                                value: data.crewThree.username,
+                                table: "User",
+                                state: nothingConfig.userEnable.id,
+                                title: "GUARDIA"
+                            });
+                        }
+                    }
+                    if ($value.weapon3.dataset.optionid != data.weaponThree.id) {
+                        if ($value.weapon3.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon3.value != "N/A [N/A]") {
+                            dataArray.push({
+                                id: $value.weapon3.dataset.optionid,
+                                value: $value.weapon3.value,
                                 table: "Weapon",
-                                state: nothingConfig.weaponEnable.id,
+                                state: nothingConfig.weaponState.id,
                                 title: "ARMA"
                             });
+                            if (data.weaponThree.id != nothingConfig.nothingWeapon.id) {
+                                dataChangesArray.push({
+                                    id: data.weaponThree.id,
+                                    value: `${data.weaponThree.name} [${data.weaponThree.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                });
+                            }
+                        }
+                        else {
+                            if (data.weaponThree.id != nothingConfig.nothingWeapon.id) {
+                                dataChangesArray.push({
+                                    id: data.weaponThree.id,
+                                    value: `${data.weaponThree.name} [${data.weaponThree.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                });
+                            }
                         }
                     }
                 }
                 else {
-                    $value.weapon2.dataset.optionid = nothingConfig.nothingWeapon.id;
-                }
-                if ($value.custodio1.dataset.optionid != nothingConfig.nothingUser.id || $value.custodio1.value != "N/A") {
-                    dataArray.push({
-                        id: $value.custodio1.dataset.optionid,
-                        value: $value.custodio1.value,
-                        table: "User",
-                        state: nothingConfig.userState.id,
-                        title: "GUARDIA"
-                    });
-                    if ($value.custodio1.dataset.optionid != data.crewThree.id) {
+                    if (data.crewThree.id != nothingConfig.nothingUser.id) {
                         dataChangesArray.push({
                             id: data.crewThree.id,
                             value: data.crewThree.username,
@@ -921,37 +1027,72 @@ export class Crews {
                             title: "GUARDIA"
                         });
                     }
-                    if ($value.weapon3.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon3.value != "N/A [N/A]") {
-                        dataArray.push({
-                            id: $value.weapon3.dataset.optionid,
-                            value: $value.weapon3.value,
+                    if (data.weaponThree.id != nothingConfig.nothingWeapon.id) {
+                        dataChangesArray.push({
+                            id: data.weaponThree.id,
+                            value: `${data.weaponThree.name} [${data.weaponThree.licensePlate}]`,
                             table: "Weapon",
-                            state: nothingConfig.weaponState.id,
+                            state: nothingConfig.weaponEnable.id,
                             title: "ARMA"
                         });
-                        if ($value.weapon3.dataset.optionid != data.weaponThree.id) {
+                    }
+                    $value.weapon3.dataset.optionid = nothingConfig.nothingWeapon.id;
+                    $value.weapon3.value = "N/A [N/A]";
+                }
+                if ($value.custodio2.dataset.optionid != nothingConfig.nothingUser.id || $value.custodio2.value != "N/A") {
+                    category += 1;
+                    if ($value.custodio2.dataset.optionid != data.crewFour.id) {
+                        dataArray.push({
+                            id: $value.custodio2.dataset.optionid,
+                            value: $value.custodio2.value,
+                            table: "User",
+                            state: nothingConfig.userState.id,
+                            title: "GUARDIA"
+                        });
+                        if (data.crewFour.id != nothingConfig.nothingUser.id) {
                             dataChangesArray.push({
-                                id: data.weaponThree.id,
-                                value: data.weaponThree.name,
+                                id: data.crewFour.id,
+                                value: data.crewFour.username,
+                                table: "User",
+                                state: nothingConfig.userEnable.id,
+                                title: "GUARDIA"
+                            });
+                        }
+                    }
+                    if ($value.weapon4.dataset.optionid != data.weaponFour.id) {
+                        if ($value.weapon4.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon4.value != "N/A [N/A]") {
+                            dataArray.push({
+                                id: $value.weapon4.dataset.optionid,
+                                value: $value.weapon4.value,
                                 table: "Weapon",
-                                state: nothingConfig.weaponEnable.id,
+                                state: nothingConfig.weaponState.id,
                                 title: "ARMA"
                             });
+                            if (data.weaponFour.id != nothingConfig.nothingWeapon.id) {
+                                dataChangesArray.push({
+                                    id: data.weaponFour.id,
+                                    value: `${data.weaponFour.name} [${data.weaponFour.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                });
+                            }
+                        }
+                        else {
+                            if (data.weaponFour.id != nothingConfig.nothingWeapon.id) {
+                                dataChangesArray.push({
+                                    id: data.weaponThree.id,
+                                    value: `${data.weaponFour.name} [${data.weaponFour.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                });
+                            }
                         }
                     }
                 }
                 else {
-                    $value.weapon3.dataset.optionid = nothingConfig.nothingWeapon.id;
-                }
-                if ($value.custodio2.dataset.optionid != nothingConfig.nothingUser.id || $value.custodio2.value != "N/A") {
-                    dataArray.push({
-                        id: $value.custodio2.dataset.optionid,
-                        value: $value.custodio2.value,
-                        table: "User",
-                        state: nothingConfig.userState.id,
-                        title: "GUARDIA"
-                    });
-                    if ($value.custodio2.dataset.optionid != data.crewFour.id) {
+                    if (data.crewFour.id != nothingConfig.nothingUser.id) {
                         dataChangesArray.push({
                             id: data.crewFour.id,
                             value: data.crewFour.username,
@@ -960,37 +1101,72 @@ export class Crews {
                             title: "GUARDIA"
                         });
                     }
-                    if ($value.weapon4.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon4.value != "N/A [N/A]") {
-                        dataArray.push({
-                            id: $value.weapon4.dataset.optionid,
-                            value: $value.weapon4.value,
+                    if (data.weaponFour.id != nothingConfig.nothingWeapon.id) {
+                        dataChangesArray.push({
+                            id: data.weaponFour.id,
+                            value: `${data.weaponFour.name} [${data.weaponFour.licensePlate}]`,
                             table: "Weapon",
-                            state: nothingConfig.weaponState.id,
+                            state: nothingConfig.weaponEnable.id,
                             title: "ARMA"
                         });
-                        if ($value.weapon4.dataset.optionid != data.weaponFour.id) {
+                    }
+                    $value.weapon4.dataset.optionid = nothingConfig.nothingWeapon.id;
+                    $value.weapon4.value = "N/A [N/A]";
+                }
+                if ($value.custodio3.dataset.optionid != nothingConfig.nothingUser.id || $value.custodio3.value != "N/A") {
+                    category += 1;
+                    if ($value.custodio3.dataset.optionid != data.crewFive.id) {
+                        dataArray.push({
+                            id: $value.custodio3.dataset.optionid,
+                            value: $value.custodio3.value,
+                            table: "User",
+                            state: nothingConfig.userState.id,
+                            title: "GUARDIA"
+                        });
+                        if (data.crewFive.id != nothingConfig.nothingUser.id) {
                             dataChangesArray.push({
-                                id: data.weaponFour.id,
-                                value: data.weaponFour.name,
+                                id: data.crewFive.id,
+                                value: data.crewFive.username,
+                                table: "User",
+                                state: nothingConfig.userEnable.id,
+                                title: "GUARDIA"
+                            });
+                        }
+                    }
+                    if ($value.weapon5.dataset.optionid != data.weaponFive.id) {
+                        if ($value.weapon5.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon5.value != "N/A [N/A]") {
+                            dataArray.push({
+                                id: $value.weapon5.dataset.optionid,
+                                value: $value.weapon5.value,
                                 table: "Weapon",
-                                state: nothingConfig.weaponEnable.id,
+                                state: nothingConfig.weaponState.id,
                                 title: "ARMA"
                             });
+                            if (data.weaponFive.id != nothingConfig.nothingWeapon.id) {
+                                dataChangesArray.push({
+                                    id: data.weaponFive.id,
+                                    value: `${data.weaponFive.name} [${data.weaponFive.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                });
+                            }
+                        }
+                        else {
+                            if (data.weaponFive.id != nothingConfig.nothingWeapon.id) {
+                                dataChangesArray.push({
+                                    id: data.weaponThree.id,
+                                    value: `${data.weaponFive.name} [${data.weaponFive.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                });
+                            }
                         }
                     }
                 }
                 else {
-                    $value.weapon4.dataset.optionid = nothingConfig.nothingWeapon.id;
-                }
-                if ($value.custodio3.dataset.optionid != nothingConfig.nothingUser.id || $value.custodio3.value != "N/A") {
-                    dataArray.push({
-                        id: $value.custodio3.dataset.optionid,
-                        value: $value.custodio3.value,
-                        table: "User",
-                        state: nothingConfig.userState.id,
-                        title: "GUARDIA"
-                    });
-                    if ($value.custodio3.dataset.optionid != data.crewFive.id) {
+                    if (data.crewFive.id != nothingConfig.nothingUser.id) {
                         dataChangesArray.push({
                             id: data.crewFive.id,
                             value: data.crewFive.username,
@@ -999,33 +1175,18 @@ export class Crews {
                             title: "GUARDIA"
                         });
                     }
-                    if ($value.weapon5.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon5.value != "N/A [N/A]") {
-                        dataArray.push({
-                            id: $value.weapon5.dataset.optionid,
-                            value: $value.weapon5.value,
+                    if (data.weaponFive.id != nothingConfig.nothingWeapon.id) {
+                        dataChangesArray.push({
+                            id: data.weaponFive.id,
+                            value: `${data.weaponFive.name} [${data.weaponFive.licensePlate}]`,
                             table: "Weapon",
-                            state: nothingConfig.weaponState.id,
+                            state: nothingConfig.weaponEnable.id,
                             title: "ARMA"
                         });
-                        if ($value.weapon5.dataset.optionid != data.weaponFive.id) {
-                            dataChangesArray.push({
-                                id: data.weaponFive.id,
-                                value: data.weaponFive.name,
-                                table: "Weapon",
-                                state: nothingConfig.weaponEnable.id,
-                                title: "ARMA"
-                            });
-                        }
                     }
-                }
-                else {
                     $value.weapon5.dataset.optionid = nothingConfig.nothingWeapon.id;
+                    $value.weapon5.value = "N/A [N/A]";
                 }
-                let category = 0;
-                dataArray.forEach((data) => {
-                    if (data.table == "User")
-                        category += 1;
-                });
                 let raw = JSON.stringify({
                     "name": `${$value.name.value}`,
                     "vehicular": {
@@ -1139,44 +1300,7 @@ export class Crews {
                         //CHANGES
                         dataChangesArray.forEach((crew) => {
                             getUpdateState(crew.state, crew.table, crew.id);
-                            let message = "";
-                            if (crew.table == "Vehicular") {
-                                message = `${crew.value} asignado a patrulla: ${parse.name}`;
-                            }
-                            else if (crew.table == "User") {
-                                if (crew.id == parse.crewOne.id) {
-                                    message = `${crew.value} asignado como supervisor, en patrulla: ${parse.name}`;
-                                }
-                                else if (crew.id == parse.crewTwo.id) {
-                                    message = `${crew.value} asignado como segundero, en patrulla: ${parse.name}`;
-                                }
-                                else if (crew.id == parse.crewThree.id) {
-                                    message = `${crew.value} asignado como custodio 1, en patrulla: ${parse.name}`;
-                                }
-                                else if (crew.id == parse.crewFour.id) {
-                                    message = `${crew.value} asignado como custodio 2, en patrulla: ${parse.name}`;
-                                }
-                                else if (crew.id == parse.crewFive.id) {
-                                    message = `${crew.value} asignado como custodio 3, en patrulla: ${parse.name}`;
-                                }
-                            }
-                            else if (crew.table == "Weapon") {
-                                if (crew.id == parse.weaponOne.id) {
-                                    message = `${crew.value} asignado a supervisor, en patrulla: ${parse.name}`;
-                                }
-                                else if (crew.id == parse.weaponTwo.id) {
-                                    message = `${crew.value} asignado a segundero, en patrulla: ${parse.name}`;
-                                }
-                                else if (crew.id == parse.weaponThree.id) {
-                                    message = `${crew.value} asignado a custodio 1, en patrulla: ${parse.name}`;
-                                }
-                                else if (crew.id == parse.weaponFour.id) {
-                                    message = `${crew.value} asignado a custodio 2, en patrulla: ${parse.name}`;
-                                }
-                                else if (crew.id == parse.weaponFive.id) {
-                                    message = `${crew.value} asignado a custodio 3, en patrulla: ${parse.name}`;
-                                }
-                            }
+                            let message = `${crew.value} disponible`;
                             eventLog('UPD', `${crew.title}`, `${message}`, '');
                         });
                         new CloseDialog()
