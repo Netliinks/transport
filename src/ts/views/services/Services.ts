@@ -1,7 +1,7 @@
 // @filename: Departments.ts
 
 import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount } from "../../endpoints.js"
-import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination } from "../../tools.js"
+import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing } from "../../tools.js"
 import { InterfaceElement } from "../../types.js"
 import { Config } from "../../Configs.js"
 import { tableLayout } from "./Layout.js"
@@ -44,6 +44,16 @@ const getServices = async (): Promise<void> => {
                     "conditions": [
                       {
                         "property": "name",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "customer.name",
+                        "operator": "contains",
+                        "value": `${infoPage.search.toLowerCase()}`
+                      },
+                      {
+                        "property": "serviceState.name",
                         "operator": "contains",
                         "value": `${infoPage.search.toLowerCase()}`
                       }
@@ -104,7 +114,7 @@ export class Services {
         if (data.length === 0) {
             let row: InterfaceElement = document.createElement('tr')
             row.innerHTML = `
-        <td>los datos no coinciden con su búsqueda</td>
+        <td>No hay datos</td>
         <td></td>
         <td></td>
       `
@@ -112,16 +122,23 @@ export class Services {
         }
         else {
             for (let i = 0; i < paginatedItems.length; i++) {
-                let department = paginatedItems[i]
+                let service = paginatedItems[i]
                 let row: InterfaceElement =
                     document.createElement('tr')
                 row.innerHTML += `
-          <td>${department.name}</dt>
-          <td class="entity_options">
-            <button class="button" id="remove-entity" data-entityId="${department.id}">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </dt>
+                <td>${service.name}</dt>
+                <td>${service?.customer?.name ?? ''}</dt>
+                <td>${service?.outputDate ?? ''} ${service?.outputTime ?? ''}</dt>
+                <td class="tag"><span>${service?.serviceState.name ?? ''}</span></td>
+                <td class="entity_options">
+                    <button class="button" id="edit-entity" data-entityId="${service.id}">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+
+                    <button class="button" id="remove-entity" data-entityId="${service.id}" data-entityName="${service.name}" style="display:${userPermissions().style};">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
         `
                 table.appendChild(row)
             }
@@ -164,14 +181,24 @@ export class Services {
         })
 
         const renderInterface = async (): Promise<void> => {
+            const nothingConfig = {
+              nothingUser: await getNothing("username", "N/A", "User"),
+              nothingWeapon: await getNothing("name", "N/A", "Weapon"),
+              userState: await getNothing("name", "Asignado", "UserState"),
+              weaponState: await getNothing("name", "Asignado", "WeaponState"),
+              vehicularState: await getNothing("name", "Asignado", "VehicularState"),
+              userEnable: await getNothing("name", "Disponible", "UserState"),
+              vehicularEnable: await getNothing("name", "Disponible", "VehicularState"),
+              weaponEnable: await getNothing("name", "Disponible", "WeaponState")
+            }
             this.entityDialogContainer.innerHTML = ''
             this.entityDialogContainer.style.display = 'flex'
             this.entityDialogContainer.innerHTML = `
-        <div class="entity_editor" id="entity-editor" style="max-width:90%">
+        <div class="entity_editor" id="entity-editor">
           <div class="entity_editor_header">
             <div class="user_info">
               <div class="avatar"><i class="fa-solid fa-building"></i></div>
-              <h1 class="entity_editor_title">Registrar <br><small>Departamento</small></h1>
+              <h1 class="entity_editor_title">Registrar <br><small>Servicio</small></h1>
             </div>
 
             <button class="btn btn_close_editor" id="close"><i class="fa-regular fa-x"></i></button>
@@ -180,17 +207,92 @@ export class Services {
           <!-- EDITOR BODY -->
           <div class="entity_editor_body">
             <div class="material_input">
-              <input type="text" id="entity-name" autocomplete="none">
-              <label for="entity-name">Nombre</label>
+            <input type="text" id="entity-name" autocomplete="none">
+            <label for="entity-name"><i class="fa-solid fa-users"></i> Nombre</label>
             </div>
 
-            <!--
-            <div class="material_input_select">
-              <label for="entity-customer">Cliente</label>
-              <input type="text" id="entity-customer" class="input_select" readonly placeholder="cargando...">
-              <div id="input-options" class="input_options">
+            <div class="material_input">
+            <input type="text" id="entity-client" autocomplete="none" readonly>
+            <label for="entity-client"><i class="fa-solid fa-car" readonly></i> Cliente</label>
+            </div>
+
+            <div class="material_input">
+            <input type="text" id="entity-city-origin" autocomplete="none" readonly>
+            <label for="entity-city-origin"><i class="fa-solid fa-car" readonly></i> Ciudad Origen</label>
+            </div>
+
+            <div class="material_input">
+            <input type="text" id="entity-city-destiny" autocomplete="none" readonly>
+            <label for="entity-city-destiny"><i class="fa-solid fa-car" readonly></i> Ciudad Destino</label>
+            </div>
+
+            <div class="material_input">
+            <input type="text" id="entity-place-origin" autocomplete="none" readonly>
+            <label for="entity-place-origin"><i class="fa-solid fa-car" readonly></i> Lugar Origen</label>
+            </div>
+
+            <div class="material_input">
+            <input type="text" id="entity-place-destiny" autocomplete="none" readonly>
+            <label for="entity-place-destiny"><i class="fa-solid fa-car" readonly></i> Lugar Destino</label>
+            </div>
+
+            <div class="material_input">
+            <input type="text" id="entity-place-destiny" autocomplete="none" readonly>
+            <label for="entity-place-destiny"><i class="fa-solid fa-car" readonly></i> Lugar Destino</label>
+            </div>
+
+            <div class="material_input">
+            <input type="email" id="entity-email" autocomplete="none" readonly>
+            <label for="entity-place-email"><i class="fa-solid fa-car" readonly></i> Correo Electrónico</label>
+            </div>
+
+            <div class="material_input">
+            <input type="text" id="entity-reference" autocomplete="none" readonly>
+            <label for="entity-place-reference"><i class="fa-solid fa-car" readonly></i> Referencia Cliente</label>
+            </div>
+
+            <div class="form_group">
+              <div class="material_input">
+                <select id="select">
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+                <label for="entity-place-reference"><i class="fa-solid fa-car" readonly></i> Referencia Cliente</label>
               </div>
-            </div> -->
+
+              <div class="material_input">
+                <select id="select">
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+                <label for="entity-place-reference"><i class="fa-solid fa-car" readonly></i> Referencia Cliente</label>
+              </div>
+            </div>
+
+            <div class="form_group">
+                <div class="form_input">
+                    <label class="form_label" for="output-date">Fecha Salida:</label>
+                    <input type="date" class="input_time input_time-start" id="output-date" name="output-date">
+                </div>
+
+                <div class="form_input">
+                    <label class="form_label" for="output-time">Hora Salida:</label>
+                    <input type="time" class="input_time input_time-end" id="output-time" name="output-time">
+                </div>
+            </div>
+
+            <div class="material_input">
+            <textarea id="entity-observation" rows="4" autocomplete="none"></textarea>
+            <label for="entity-observation"><i class="fa-solid fa-car" readonly></i> Observación</label>
+            </div>
           </div>
           <!-- END EDITOR BODY -->
 
