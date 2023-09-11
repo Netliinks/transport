@@ -1,131 +1,153 @@
 // @filename: Departments.ts
-
-import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity } from "../../endpoints.js"
-import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog } from "../../tools.js"
-import { Data, InterfaceElement } from "../../types.js"
-import { Config } from "../../Configs.js"
-import { tableLayout } from "./Layout.js"
-import { tableLayoutTemplate } from "./Template.js"
-
-const tableRows = Config.tableRows
-const currentPage = Config.currentPage
+import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity } from "../../../endpoints.js";
+import { inputObserver, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog } from "../../../tools.js";
+import { Config } from "../../../Configs.js";
+import { tableLayout } from "./Layout.js";
+import { tableLayoutTemplate } from "./Template.js";
+const tableRows = Config.tableRows;
+const currentPage = Config.currentPage;
 const businessId = localStorage.getItem('business_id');
 let infoPage = {
     count: 0,
     offset: Config.offset,
     currentPage: currentPage,
     search: ""
-}
-let dataPage: any
-const getServices = async (): Promise<void> => {
+};
+let dataPage;
+const getPatrols = async (idService) => {
     //const departmentRaw: any = await getEntitiesData('Department')
     //const department = departmentRaw.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
     let raw = JSON.stringify({
         "filter": {
             "conditions": [
-              {
-                "property": "business.id",
-                "operator": "=",
-                "value": `${businessId}`
-              }
-            ],
-            
-        }, 
-        sort: "-createdDate",     
-        limit: Config.tableRows,
-        offset: infoPage.offset,
-        fetchPlan: 'full',
-    })
-    if(infoPage.search != ""){
-        raw = JSON.stringify({
-            "filter": {
-                "conditions": [
-                  {
-                    "group": "OR",
-                    "conditions": [
-                      {
-                        "property": "name",
-                        "operator": "contains",
-                        "value": `${infoPage.search.toLowerCase()}`
-                      },
-                      {
-                        "property": "customer.name",
-                        "operator": "contains",
-                        "value": `${infoPage.search.toLowerCase()}`
-                      },
-                      {
-                        "property": "serviceState.name",
-                        "operator": "contains",
-                        "value": `${infoPage.search.toLowerCase()}`
-                      }
-                    ]
-                  },
-                  {
+                {
                     "property": "business.id",
                     "operator": "=",
                     "value": `${businessId}`
-                  }
+                },
+                {
+                    "property": "service.id",
+                    "operator": "=",
+                    "value": `${idService}`
+                },
+            ],
+        },
+        sort: "-createdDate",
+        limit: Config.tableRows,
+        offset: infoPage.offset,
+        fetchPlan: 'full',
+    });
+    if (infoPage.search != "") {
+        raw = JSON.stringify({
+            "filter": {
+                "conditions": [
+                    {
+                        "group": "OR",
+                        "conditions": [
+                            {
+                                "property": "name",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            },
+                            {
+                                "property": "crew.name",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            },
+                            {
+                                "property": "service.name",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            }
+                        ]
+                    },
+                    {
+                        "property": "business.id",
+                        "operator": "=",
+                        "value": `${businessId}`
+                    },
+                    {
+                        "property": "service.id",
+                        "operator": "=",
+                        "value": `${idService}`
+                    },
                 ]
-              },
+            },
             sort: "-createdDate",
             limit: Config.tableRows,
             offset: infoPage.offset,
             fetchPlan: 'full',
-        })
+        });
     }
-    infoPage.count = await getFilterEntityCount("Service", raw)
-    dataPage = await getFilterEntityData("Service", raw)
-    return dataPage
-
-}
-
+    infoPage.count = await getFilterEntityCount("ServiceDetailV", raw);
+    dataPage = await getFilterEntityData("ServiceDetailV", raw);
+    return dataPage;
+};
 export class Services {
-    private dialogContainer: InterfaceElement =
-        document.getElementById('app-dialogs')
-
-    private entityDialogContainer: InterfaceElement =
-        document.getElementById('entity-editor-container')
-
-    private content: InterfaceElement =
-        document.getElementById('datatable-container')
-
-    public async render(offset: any, actualPage: any, search: any): Promise<void> {
-        infoPage.offset = offset
-        infoPage.currentPage = actualPage
-        infoPage.search = search   
-        this.content.innerHTML = ''
-        this.content.innerHTML = tableLayout
-        const tableBody: InterfaceElement = document.getElementById('datatable-body')
-        tableBody.innerHTML = '.Cargando...'
-        
-        let data: any = await getServices()
-        tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows)
-        this.load(tableBody, currentPage, data)
-        new filterDataByHeaderType().filter()
-        this.searchEntity(tableBody/*, data*/)
-        this.pagination(data, tableRows, infoPage.currentPage)
+    constructor() {
+        this.dialogContainer = document.getElementById('app-dialogs');
+        this.entityDialogContainer = document.getElementById('entity-editor-container');
+        this.content = document.getElementById('datatable-container');
+        this.searchEntity = async (tableBody /*, data: any*/) => {
+            const search = document.getElementById('search');
+            const btnSearch = document.getElementById('btnSearch');
+            search.value = infoPage.search;
+            await search.addEventListener('keyup', () => {
+                /*const arrayData: any = data.filter((user: any) =>
+                    `${user.firstName}
+                     ${user.lastName}
+                     ${user.username}`
+                        .toLowerCase()
+                        .includes(search.value.toLowerCase())
+                )
+    
+                let filteredResult = arrayData.length
+                let result = arrayData
+                if (filteredResult >= tableRows) filteredResult = tableRows
+    
+                this.load(tableBody, currentPage, result)
+                */
+            });
+            btnSearch.addEventListener('click', async () => {
+                new Services().render(Config.offset, Config.currentPage, search.value.toLowerCase().trim());
+            });
+        };
     }
-
-    public load(table: InterfaceElement, currentPage: number, data?: any) {
-        table.innerHTML = ''
-        currentPage--
-        let start: number = tableRows * currentPage
-        let end: number = start + tableRows
-        let paginatedItems: any = data.slice(start, end)
+    async render(offset, actualPage, search, idService) {
+        infoPage.offset = offset;
+        infoPage.currentPage = actualPage;
+        infoPage.search = search;
+        this.content.innerHTML = '';
+        this.content.innerHTML = tableLayout;
+        const tableBody = document.getElementById('datatable-body');
+        tableBody.innerHTML = '.Cargando...';
+        //const service: any = await getEntityData('Service', idService)
+        let data = await getPatrols(idService);
+        tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows);
+        this.load(tableBody, currentPage, data);
+        new filterDataByHeaderType().filter();
+        this.searchEntity(tableBody /*, data*/);
+        this.pagination(data, tableRows, infoPage.currentPage);
+    }
+    load(table, currentPage, data) {
+        table.innerHTML = '';
+        currentPage--;
+        let start = tableRows * currentPage;
+        let end = start + tableRows;
+        let paginatedItems = data.slice(start, end);
         if (data.length === 0) {
-            let row: InterfaceElement = document.createElement('tr')
+            let row = document.createElement('tr');
             row.innerHTML = `
         <td>No hay datos</td>
         <td></td>
         <td></td>
-      `
-            table.appendChild(row)
+      `;
+            table.appendChild(row);
         }
         else {
             for (let i = 0; i < paginatedItems.length; i++) {
-                let service = paginatedItems[i]
-                let row: InterfaceElement =
-                    document.createElement('tr')
+                let service = paginatedItems[i];
+                let row = document.createElement('tr');
                 row.innerHTML += `
                 <td>${service.name}</dt>
                 <td>${service?.customer?.name ?? ''}</dt>
@@ -141,54 +163,26 @@ export class Services {
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 </td>
-        `
-                table.appendChild(row)
+        `;
+                table.appendChild(row);
             }
         }
-
-        this.register()
-        this.edit(this.entityDialogContainer, data)
-        this.remove()
+        this.register();
+        this.edit(this.entityDialogContainer, data);
+        this.remove();
     }
-
-    public searchEntity = async (tableBody: InterfaceElement /*, data: any*/) => {
-        const search: InterfaceElement = document.getElementById('search')
-        const btnSearch: InterfaceElement = document.getElementById('btnSearch')
-        search.value = infoPage.search
-        await search.addEventListener('keyup', () => {
-            /*const arrayData: any = data.filter((user: any) =>
-                `${user.firstName}
-                 ${user.lastName}
-                 ${user.username}`
-                    .toLowerCase()
-                    .includes(search.value.toLowerCase())
-            )
-
-            let filteredResult = arrayData.length
-            let result = arrayData
-            if (filteredResult >= tableRows) filteredResult = tableRows
-
-            this.load(tableBody, currentPage, result)
-            */
-        })
-        btnSearch.addEventListener('click', async () => {
-            new Services().render(Config.offset , Config.currentPage, search.value.toLowerCase().trim())
-        })
-    }
-
-    public register() {
+    register() {
         // register entity
-        const openEditor: InterfaceElement = document.getElementById('new-entity')
-        openEditor.addEventListener('click', (): void => {
-            renderInterface()
-        })
-
-        const renderInterface = async (): Promise<void> => {
+        const openEditor = document.getElementById('new-entity');
+        openEditor.addEventListener('click', () => {
+            renderInterface();
+        });
+        const renderInterface = async () => {
             const nothingConfig = {
-              serviceState: await getNothing("name", "Pendiente", "ServiceState"),
-            }
-            this.entityDialogContainer.innerHTML = ''
-            this.entityDialogContainer.style.display = 'flex'
+                serviceState: await getNothing("name", "Pendiente", "ServiceState"),
+            };
+            this.entityDialogContainer.innerHTML = '';
+            this.entityDialogContainer.style.display = 'flex';
             this.entityDialogContainer.innerHTML = `
         <div class="entity_editor" id="entity-editor">
           <div class="entity_editor_header">
@@ -302,36 +296,33 @@ export class Services {
             <button class="btn btn_primary btn_widder" id="register-entity">Guardar</button>
           </div>
         </div>
-      `
-
+      `;
             // @ts-ignore
-            inputObserver()
-            this.selectClient()
-            this.selectCity()
+            inputObserver();
+            this.selectClient();
+            this.selectCity();
             inputSelectType('entity-custody', 'SERVICE', '');
             //inputSelect('Customer', 'entity-customer')
-            this.close()
+            this.close();
             let fecha = new Date(); //Fecha actual
-            let mes: any = fecha.getMonth()+1; //obteniendo mes
-            let dia: any = fecha.getDate(); //obteniendo dia
+            let mes = fecha.getMonth() + 1; //obteniendo mes
+            let dia = fecha.getDate(); //obteniendo dia
             let anio = fecha.getFullYear(); //obteniendo año
             let _hours = fecha.getHours();
             let _minutes = fecha.getMinutes();
             let _fixedHours = ('0' + _hours).slice(-2);
             let _fixedMinutes = ('0' + _minutes).slice(-2);
-            if(dia<10)
-                dia='0'+dia; //agrega cero si el menor de 10
-            if(mes<10)
-                mes='0'+mes //agrega cero si el menor de 10
+            if (dia < 10)
+                dia = '0' + dia; //agrega cero si el menor de 10
+            if (mes < 10)
+                mes = '0' + mes; //agrega cero si el menor de 10
             // @ts-ignore
-            document.getElementById("output-date").value = anio+"-"+mes+"-"+dia;
+            document.getElementById("output-date").value = anio + "-" + mes + "-" + dia;
             // @ts-ignore
             document.getElementById("output-time").value = `${_fixedHours}:${_fixedMinutes}`;
-
-
-            const registerButton: InterfaceElement = document.getElementById('register-entity')
-            registerButton.addEventListener('click', (): void => {
-                const inputsCollection: any = {
+            const registerButton = document.getElementById('register-entity');
+            registerButton.addEventListener('click', () => {
+                const inputsCollection = {
                     name: document.getElementById('entity-name'),
                     client: document.getElementById('entity-client'),
                     cityOrigin: document.getElementById('entity-city-origin'),
@@ -346,26 +337,25 @@ export class Services {
                     vehicle: document.getElementById('entity-vehicle'),
                     containers: document.getElementById('entity-containers'),
                     observation: document.getElementById('entity-observation'),
-                }
-
+                };
                 const raw = JSON.stringify({
                     "name": `${inputsCollection.name.value}`,
                     'creationDate': `${currentDateTime().date}`,
                     'creationTime': `${currentDateTime().time}`,
                     "serviceState": {
-                      "id": `${nothingConfig.serviceState.id}`
+                        "id": `${nothingConfig.serviceState.id}`
                     },
                     "business": {
-                      "id": `${businessId}`
+                        "id": `${businessId}`
                     },
                     "customer": {
-                      "id": `${inputsCollection.client.dataset.optionid}`
+                        "id": `${inputsCollection.client.dataset.optionid}`
                     },
                     "cityOrigin": {
-                      "id": `${inputsCollection.cityOrigin.dataset.optionid}`
+                        "id": `${inputsCollection.cityOrigin.dataset.optionid}`
                     },
                     "cityDestination": {
-                      "id": `${inputsCollection.cityDestiny.dataset.optionid}`
+                        "id": `${inputsCollection.cityDestiny.dataset.optionid}`
                     },
                     "placeOrigin": `${inputsCollection.placeOrigin.value}`,
                     "placeDestination": `${inputsCollection.placeDestiny.value}`,
@@ -377,53 +367,52 @@ export class Services {
                     "quantyVehiculars": `${inputsCollection.vehicle.value}`,
                     "quantyContainers": `${inputsCollection.containers.value}`,
                     "observation": `${inputsCollection.observation.value}`,
-                })
-                if(inputsCollection.name.value === '' || inputsCollection.name.value === undefined){
-                    alert("¡Nombre vacío!")
-                }else if(inputsCollection.client.value === '' || inputsCollection.client.value === undefined){
-                    alert("Cliente no seleccionado!")
-                }else if(inputsCollection.cityOrigin.value === '' || inputsCollection.cityOrigin.value === undefined){
-                    alert("¡Ciudad origen no seleccionada!")
-                }else if(inputsCollection.cityDestiny.value === '' || inputsCollection.cityDestiny.value === undefined){
-                    alert("¡Ciudad destino no seleccionada!")
-                }else if(inputsCollection.email.value === '' || inputsCollection.email.value === undefined){
-                    alert("¡Email vacío!")
-                }else{
-
-                  registerEntity(raw, 'Service').then((res) => {
-                    setTimeout(() => {
-                        let parse = JSON.parse(raw);
-                        eventLog('INS', 'SERVICIO', `${parse.name}`, '')
-                        const container: InterfaceElement = document.getElementById('entity-editor-container')
-
-                        new CloseDialog().x(container)
-                        new Services().render(Config.offset, Config.currentPage, infoPage.search)
-                    }, 1000)
-                  })
+                });
+                if (inputsCollection.name.value === '' || inputsCollection.name.value === undefined) {
+                    alert("¡Nombre vacío!");
                 }
-            })
-
-        }
-
-        const reg = async (raw: any) => {
-        }
+                else if (inputsCollection.client.value === '' || inputsCollection.client.value === undefined) {
+                    alert("Cliente no seleccionado!");
+                }
+                else if (inputsCollection.cityOrigin.value === '' || inputsCollection.cityOrigin.value === undefined) {
+                    alert("¡Ciudad origen no seleccionada!");
+                }
+                else if (inputsCollection.cityDestiny.value === '' || inputsCollection.cityDestiny.value === undefined) {
+                    alert("¡Ciudad destino no seleccionada!");
+                }
+                else if (inputsCollection.email.value === '' || inputsCollection.email.value === undefined) {
+                    alert("¡Email vacío!");
+                }
+                else {
+                    registerEntity(raw, 'Service').then((res) => {
+                        setTimeout(() => {
+                            let parse = JSON.parse(raw);
+                            eventLog('INS', 'SERVICIO', `${parse.name}`, '');
+                            const container = document.getElementById('entity-editor-container');
+                            new CloseDialog().x(container);
+                            new Services().render(Config.offset, Config.currentPage, infoPage.search);
+                        }, 1000);
+                    });
+                }
+            });
+        };
+        const reg = async (raw) => {
+        };
     }
-
-    private edit(container: InterfaceElement, data: Data) {
-      // Edit entity
-      const edit: InterfaceElement = document.querySelectorAll('#edit-entity')
-      edit.forEach((edit: InterfaceElement) => {
-          const entityId = edit.dataset.entityid
-          edit.addEventListener('click', (): void => {
-              RInterface('Service', entityId)
-          })
-      })
-
-      const RInterface = async (entities: string, entityID: string): Promise<void> => {
-          const data: any = await getEntityData(entities, entityID)
-          this.entityDialogContainer.innerHTML = ''
-          this.entityDialogContainer.style.display = 'flex'
-          this.entityDialogContainer.innerHTML = `
+    edit(container, data) {
+        // Edit entity
+        const edit = document.querySelectorAll('#edit-entity');
+        edit.forEach((edit) => {
+            const entityId = edit.dataset.entityid;
+            edit.addEventListener('click', () => {
+                RInterface('Service', entityId);
+            });
+        });
+        const RInterface = async (entities, entityID) => {
+            const data = await getEntityData(entities, entityID);
+            this.entityDialogContainer.innerHTML = '';
+            this.entityDialogContainer.style.display = 'flex';
+            this.entityDialogContainer.innerHTML = `
               <div class="entity_editor" id="entity-editor">
               <div class="entity_editor_header">
                   <div class="user_info">
@@ -552,82 +541,73 @@ export class Services {
                   <button class="btn btn_primary btn_widder" id="update-changes" style="display:${userPermissions().style};">Guardar</button>
               </div>
               </div>
-          `
-
-          inputObserver()
-          // @ts-ignore
-          document.getElementById("entity-vehicle").value = data.quantyVehiculars
-          // @ts-ignore
-          document.getElementById("entity-containers").value = data.quantyContainers
-          this.close()
-          UUpdate(entityID, data)
-      }
-
-      const UUpdate = async (entityId: any, service: any): Promise<void> => {
-          const updateButton: InterfaceElement =
-              document.getElementById('update-changes')
-          updateButton.addEventListener('click', () => {
-              const $value: InterfaceElement = {
-                  // @ts-ignore
-                  name: document.getElementById('entity-name'),
-                  placeOrigin: document.getElementById('entity-place-origin'),
-                  placeDestiny: document.getElementById('entity-place-destiny'),
-                  reference: document.getElementById('entity-reference'),
-                  observation: document.getElementById('entity-observation'),
-              }
-              let raw = JSON.stringify({
-                  // @ts-ignore
-                  "name": `${$value.name?.value}`,
-                  "placeOrigin": `${$value.placeOrigin?.value}`,
-                  "placeDestination": `${$value.placeDestiny?.value}`,
-                  "reference": `${$value.reference?.value}`,
-                  "observation": `${$value.observation?.value}`,
-              })
-              // @ts-ignore
-              if ($value.name.value === '' || $value.name.value === undefined) {
-                  alert("Nombre vacío!");
-              }
-              else{
-                  update(raw)
-              }
-          })
-          const update = (raw: any) => {
-              updateEntity('Service', entityId, raw)
-                  .then((res) => {
-                      setTimeout(async () => {
-                          let tableBody: InterfaceElement
-                          let container: InterfaceElement
-                          let data: any
-                          
-                          //data = await getWeapons()
-                          let parse = JSON.parse(raw);
-                          eventLog('UPD', 'SERVICIO', `${parse.name}`, service)
-                          new CloseDialog()
-                              .x(container =
-                                  document.getElementById('entity-editor-container')
-                              )
-                          new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search)
-                         /* new Clients().load(tableBody
-                              = document.getElementById('datatable-body'),
-                              currentPage,
-                              data
-                          )*/
-
-                      }, 100)
-                  })
-          }
-      }
-  }
-
-    public remove() {
-        const remove: InterfaceElement = document.querySelectorAll('#remove-entity')
-        remove.forEach((remove: InterfaceElement) => {
-
-            const entityId = remove.dataset.entityid
-            const entityName = remove.dataset.entityname
-
-            remove.addEventListener('click', (): void => {
-                this.dialogContainer.style.display = 'flex'
+          `;
+            inputObserver();
+            // @ts-ignore
+            document.getElementById("entity-vehicle").value = data.quantyVehiculars;
+            // @ts-ignore
+            document.getElementById("entity-containers").value = data.quantyContainers;
+            this.close();
+            UUpdate(entityID, data);
+        };
+        const UUpdate = async (entityId, service) => {
+            const updateButton = document.getElementById('update-changes');
+            updateButton.addEventListener('click', () => {
+                const $value = {
+                    // @ts-ignore
+                    name: document.getElementById('entity-name'),
+                    placeOrigin: document.getElementById('entity-place-origin'),
+                    placeDestiny: document.getElementById('entity-place-destiny'),
+                    reference: document.getElementById('entity-reference'),
+                    observation: document.getElementById('entity-observation'),
+                };
+                let raw = JSON.stringify({
+                    // @ts-ignore
+                    "name": `${$value.name?.value}`,
+                    "placeOrigin": `${$value.placeOrigin?.value}`,
+                    "placeDestination": `${$value.placeDestiny?.value}`,
+                    "reference": `${$value.reference?.value}`,
+                    "observation": `${$value.observation?.value}`,
+                });
+                // @ts-ignore
+                if ($value.name.value === '' || $value.name.value === undefined) {
+                    alert("Nombre vacío!");
+                }
+                else {
+                    update(raw);
+                }
+            });
+            const update = (raw) => {
+                updateEntity('Service', entityId, raw)
+                    .then((res) => {
+                    setTimeout(async () => {
+                        let tableBody;
+                        let container;
+                        let data;
+                        //data = await getWeapons()
+                        let parse = JSON.parse(raw);
+                        eventLog('UPD', 'SERVICIO', `${parse.name}`, service);
+                        new CloseDialog()
+                            .x(container =
+                            document.getElementById('entity-editor-container'));
+                        new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search);
+                        /* new Clients().load(tableBody
+                             = document.getElementById('datatable-body'),
+                             currentPage,
+                             data
+                         )*/
+                    }, 100);
+                });
+            };
+        };
+    }
+    remove() {
+        const remove = document.querySelectorAll('#remove-entity');
+        remove.forEach((remove) => {
+            const entityId = remove.dataset.entityid;
+            const entityName = remove.dataset.entityname;
+            remove.addEventListener('click', () => {
+                this.dialogContainer.style.display = 'flex';
                 this.dialogContainer.innerHTML = `
           <div class="dialog_content" id="dialog-content">
             <div class="dialog dialog_danger">
@@ -647,203 +627,170 @@ export class Services {
               </div>
             </div>
           </div>
-        `
-
+        `;
                 // delete button
                 // cancel button
                 // dialog content
-                const deleteButton: InterfaceElement = document.getElementById('delete')
-                const cancelButton: InterfaceElement = document.getElementById('cancel')
-                const dialogContent: InterfaceElement = document.getElementById('dialog-content')
-
+                const deleteButton = document.getElementById('delete');
+                const cancelButton = document.getElementById('cancel');
+                const dialogContent = document.getElementById('dialog-content');
                 deleteButton.onclick = async () => {
-                    const data: any = await getEntityData('Service', entityId)
-                    if(data.serviceState.name == "Pendiente"){
-                      deleteEntity('Service', entityId)
-                        .then(res => {
-                          eventLog('DLT', 'SERVICIO', `${entityName}`, data)
-                          new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search)
-                        })
-                    }else{
-                      alert("No se puede eliminar un servicio en proceso.")
+                    const data = await getEntityData('Service', entityId);
+                    if (data.serviceState.name == "Pendiente") {
+                        deleteEntity('Service', entityId)
+                            .then(res => {
+                            eventLog('DLT', 'SERVICIO', `${entityName}`, data);
+                            new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search);
+                        });
                     }
-                    
-
-                    new CloseDialog().x(dialogContent)
-                }
-
+                    else {
+                        alert("No se puede eliminar un servicio en proceso.");
+                    }
+                    new CloseDialog().x(dialogContent);
+                };
                 cancelButton.onclick = () => {
-                    new CloseDialog().x(dialogContent)
-                }
-            })
-        })
-
+                    new CloseDialog().x(dialogContent);
+                };
+            });
+        });
     }
-
-    public close(): void {
-        const closeButton: InterfaceElement = document.getElementById('close')
-        const editor: InterfaceElement = document.getElementById('entity-editor-container')
-
+    close() {
+        const closeButton = document.getElementById('close');
+        const editor = document.getElementById('entity-editor-container');
         closeButton.addEventListener('click', () => {
             //console.log('close')
-            new CloseDialog().x(editor)
-        })
+            new CloseDialog().x(editor);
+        });
     }
-
-    private pagination(items: [], limitRows: number, currentPage: number) {
-        const tableBody: InterfaceElement = document.getElementById('datatable-body')
-        const paginationWrapper: InterfaceElement = document.getElementById('pagination-container')
-        paginationWrapper.innerHTML = ''
-
-        let pageCount: number
-        pageCount = Math.ceil(infoPage.count / limitRows)
-
-        let button: InterfaceElement
-
-        if(pageCount <= Config.maxLimitPage){
-          for (let i = 1; i < pageCount + 1; i++) {
-              button = setupButtons(
-                  i /*, items, currentPage, tableBody, limitRows*/
-              )
-
-              paginationWrapper.appendChild(button)
-          }
-          fillBtnPagination(currentPage, Config.colorPagination)
-        }else{
-            pagesOptions(items, currentPage)  
+    pagination(items, limitRows, currentPage) {
+        const tableBody = document.getElementById('datatable-body');
+        const paginationWrapper = document.getElementById('pagination-container');
+        paginationWrapper.innerHTML = '';
+        let pageCount;
+        pageCount = Math.ceil(infoPage.count / limitRows);
+        let button;
+        if (pageCount <= Config.maxLimitPage) {
+            for (let i = 1; i < pageCount + 1; i++) {
+                button = setupButtons(i /*, items, currentPage, tableBody, limitRows*/);
+                paginationWrapper.appendChild(button);
+            }
+            fillBtnPagination(currentPage, Config.colorPagination);
         }
-
-        function setupButtons(page: any /*, items: any, currentPage: number, tableBody: InterfaceElement, limitRows: number*/) {
-            const button: InterfaceElement = document.createElement('button')
-            button.classList.add('pagination_button')
-            button.setAttribute("name", "pagination-button")
-            button.setAttribute("id", "btnPag"+page)
-            button.innerText = page
-
-            button.addEventListener('click', (): void => {
-                infoPage.offset = Config.tableRows * (page - 1)
-                currentPage = page
-                new Services().render(infoPage.offset, currentPage, infoPage.search)
-            })
-
-            return button
+        else {
+            pagesOptions(items, currentPage);
         }
-
-      function pagesOptions(items: any, currentPage: any) {
-          paginationWrapper.innerHTML = ''
-          let pages = pageNumbers(items, Config.maxLimitPage, currentPage)
-          
-          const prevButton: InterfaceElement = document.createElement('button')
-          prevButton.classList.add('pagination_button')
-          prevButton.innerText = "<<"     
-          paginationWrapper.appendChild(prevButton)
-
-          const nextButton: InterfaceElement = document.createElement('button')
-          nextButton.classList.add('pagination_button')
-          nextButton.innerText = ">>"
-  
-          for (let i = 0; i < pages.length; i++) {
-              if(pages[i] > 0 && pages[i] <= pageCount){
-                  button = setupButtons(
-                      pages[i]
-                  )
-                  paginationWrapper.appendChild(button)
-              }
-          }
-          paginationWrapper.appendChild(nextButton)
-          fillBtnPagination(currentPage, Config.colorPagination)
-          setupButtonsEvents(prevButton, nextButton)
-      }
-
-      function setupButtonsEvents(prevButton: InterfaceElement, nextButton: InterfaceElement) {
-          prevButton.addEventListener('click', (): void => {
-            new Services().render(Config.offset, Config.currentPage, infoPage.search)
-          })
-
-          nextButton.addEventListener('click', (): void => {
-            infoPage.offset = Config.tableRows * (pageCount - 1)
-            new Services().render(infoPage.offset, pageCount, infoPage.search)
-          })
-      }
+        function setupButtons(page /*, items: any, currentPage: number, tableBody: InterfaceElement, limitRows: number*/) {
+            const button = document.createElement('button');
+            button.classList.add('pagination_button');
+            button.setAttribute("name", "pagination-button");
+            button.setAttribute("id", "btnPag" + page);
+            button.innerText = page;
+            button.addEventListener('click', () => {
+                infoPage.offset = Config.tableRows * (page - 1);
+                currentPage = page;
+                new Services().render(infoPage.offset, currentPage, infoPage.search);
+            });
+            return button;
+        }
+        function pagesOptions(items, currentPage) {
+            paginationWrapper.innerHTML = '';
+            let pages = pageNumbers(items, Config.maxLimitPage, currentPage);
+            const prevButton = document.createElement('button');
+            prevButton.classList.add('pagination_button');
+            prevButton.innerText = "<<";
+            paginationWrapper.appendChild(prevButton);
+            const nextButton = document.createElement('button');
+            nextButton.classList.add('pagination_button');
+            nextButton.innerText = ">>";
+            for (let i = 0; i < pages.length; i++) {
+                if (pages[i] > 0 && pages[i] <= pageCount) {
+                    button = setupButtons(pages[i]);
+                    paginationWrapper.appendChild(button);
+                }
+            }
+            paginationWrapper.appendChild(nextButton);
+            fillBtnPagination(currentPage, Config.colorPagination);
+            setupButtonsEvents(prevButton, nextButton);
+        }
+        function setupButtonsEvents(prevButton, nextButton) {
+            prevButton.addEventListener('click', () => {
+                new Services().render(Config.offset, Config.currentPage, infoPage.search);
+            });
+            nextButton.addEventListener('click', () => {
+                infoPage.offset = Config.tableRows * (pageCount - 1);
+                new Services().render(infoPage.offset, pageCount, infoPage.search);
+            });
+        }
     }
-
-    private selectClient(): void {
-        
-      const element: InterfaceElement = document.getElementById('entity-client')
-      //let offset = 0
-
-          element.addEventListener('click', async (): Promise<void> => {
-              modalTable(0, "")
-          })
-
-          async function modalTable(offset: any, search: any){
-              const dialogContainer: InterfaceElement =
-              document.getElementById('app-dialogs')
-              let raw = JSON.stringify({
-                  "filter": {
-                      "conditions": [
+    selectClient() {
+        const element = document.getElementById('entity-client');
+        //let offset = 0
+        element.addEventListener('click', async () => {
+            modalTable(0, "");
+        });
+        async function modalTable(offset, search) {
+            const dialogContainer = document.getElementById('app-dialogs');
+            let raw = JSON.stringify({
+                "filter": {
+                    "conditions": [
                         {
-                          "property": "business.id",
-                          "operator": "=",
-                          "value": `${businessId}`
+                            "property": "business.id",
+                            "operator": "=",
+                            "value": `${businessId}`
                         },
                         {
-                          "property": "state.name",
-                          "operator": "=",
-                          "value": `Enabled`
+                            "property": "state.name",
+                            "operator": "=",
+                            "value": `Enabled`
                         }
-                      ],
-                      
-                  }, 
-                  sort: "-createdDate",
-                  limit: Config.modalRows,
-                  offset: offset,
-                  fetchPlan: 'full',
-                  
-              })
-              if(search != ""){
-                  raw = JSON.stringify({
-                      "filter": {
-                          "conditions": [
+                    ],
+                },
+                sort: "-createdDate",
+                limit: Config.modalRows,
+                offset: offset,
+                fetchPlan: 'full',
+            });
+            if (search != "") {
+                raw = JSON.stringify({
+                    "filter": {
+                        "conditions": [
                             {
-                              "group": "OR",
-                              "conditions": [
-                                  {
-                                  "property": "name",
-                                  "operator": "contains",
-                                  "value": `${search.toLowerCase()}`
-                                  },
-                                  {
-                                    "property": "ruc",
-                                    "operator": "contains",
-                                    "value": `${search.toLowerCase()}`
+                                "group": "OR",
+                                "conditions": [
+                                    {
+                                        "property": "name",
+                                        "operator": "contains",
+                                        "value": `${search.toLowerCase()}`
+                                    },
+                                    {
+                                        "property": "ruc",
+                                        "operator": "contains",
+                                        "value": `${search.toLowerCase()}`
                                     }
-                              ]
+                                ]
                             },
                             {
-                              "property": "business.id",
-                              "operator": "=",
-                              "value": `${businessId}`
+                                "property": "business.id",
+                                "operator": "=",
+                                "value": `${businessId}`
                             },
                             {
-                              "property": "state.name",
-                              "operator": "=",
-                              "value": `Enabled`
+                                "property": "state.name",
+                                "operator": "=",
+                                "value": `Enabled`
                             }
-                          ],
-                          
-                      }, 
-                      sort: "-createdDate",
-                      limit: Config.modalRows,
-                      offset: offset,
-                      fetchPlan: 'full',
-                      
-                  })
-              }
-              let dataModal = await getFilterEntityData("Customer", raw)
-              const FData: Data = dataModal.filter((data: any) => data.id != element.dataset.optionid)
-              dialogContainer.style.display = 'block'
-              dialogContainer.innerHTML = `
+                        ],
+                    },
+                    sort: "-createdDate",
+                    limit: Config.modalRows,
+                    offset: offset,
+                    fetchPlan: 'full',
+                });
+            }
+            let dataModal = await getFilterEntityData("Customer", raw);
+            const FData = dataModal.filter((data) => data.id != element.dataset.optionid);
+            dialogContainer.style.display = 'block';
+            dialogContainer.innerHTML = `
                   <div class="dialog_content" id="dialog-content">
                       <div class="dialog">
                           <div class="dialog_container padding_8">
@@ -887,24 +834,23 @@ export class Services {
                           </div>
                       </div>
                   </div>
-              `
-              inputObserver()
-              const datetableBody: InterfaceElement = document.getElementById('datatable-modal-body')
-              if (FData.length === 0) {
-                  let row: InterfaceElement = document.createElement('tr')
-                  row.innerHTML = `
+              `;
+            inputObserver();
+            const datetableBody = document.getElementById('datatable-modal-body');
+            if (FData.length === 0) {
+                let row = document.createElement('tr');
+                row.innerHTML = `
                       <td>No hay datos</td>
                       <td></td>
                       <td></td>
-                  `
-                  datetableBody.appendChild(row)
-              }
-              else {
-                  for (let i = 0; i < FData.length; i++) {
-                      let client = FData[i]
-                      let row: InterfaceElement =
-                          document.createElement('tr')
-                      row.innerHTML += `
+                  `;
+                datetableBody.appendChild(row);
+            }
+            else {
+                for (let i = 0; i < FData.length; i++) {
+                    let client = FData[i];
+                    let row = document.createElement('tr');
+                    row.innerHTML += `
                           <td>${client.name}</dt>
                           <td>${client?.ruc ?? ''}</dt>
                           <td class="entity_options">
@@ -912,118 +858,100 @@ export class Services {
                                   <i class="fa-solid fa-arrow-up-right-from-square"></i>
                               </button>
                           </td>
-                      `
-                      datetableBody.appendChild(row)
-                  }
-              }
-              const txtSearch: InterfaceElement = document.getElementById('search-modal')
-              const btnSearchModal: InterfaceElement = document.getElementById('btnSearchModal')
-              const _selectVehicle: InterfaceElement = document.querySelectorAll('#edit-entity')
-              const _closeButton: InterfaceElement = document.getElementById('cancel')
-              const _dialog: InterfaceElement = document.getElementById('dialog-content')
-              const prevModalButton: InterfaceElement = document.getElementById('prevModal')
-              const nextModalButton: InterfaceElement = document.getElementById('nextModal')
-
-              txtSearch.value = search ?? ''
-
-
-              _selectVehicle.forEach((edit: InterfaceElement) => {
-                  const entityId = edit.dataset.entityid
-                  const entityName = edit.dataset.entityname
-                  edit.addEventListener('click', (): void => {
-                      element.setAttribute('data-optionid', entityId)
-                      element.setAttribute('value', `${entityName}`)
-                      element.classList.add('input_filled')
-                      new CloseDialog().x(_dialog)
-                  })
-              
-              })
-
-              btnSearchModal.onclick = () => {
-                  modalTable(0, txtSearch.value)
-              }
-
-              _closeButton.onclick = () => {
-                  new CloseDialog().x(_dialog)
-              }
-
-              nextModalButton.onclick = () => {
-                  offset = Config.modalRows + (offset)
-                  modalTable(offset, search)
-              }
-
-              prevModalButton.onclick = () => {
-                  offset = Config.modalRows - (offset)
-                  modalTable(offset, search)
-              }
-          }
-
-  }
-  private selectCity(): void {
-       
-    const origin: InterfaceElement = document.getElementById('entity-city-origin')
-    const destiny: InterfaceElement = document.getElementById('entity-city-destiny')
-    //let offset = 0
-
-        origin.addEventListener('click', async (): Promise<void> => {
-            modalTable(0, "", origin)
-        })
-
-        destiny.addEventListener('click', async (): Promise<void> => {
-            modalTable(0, "", destiny)
-        })
-
-        async function modalTable(offset: any, search: any, element: InterfaceElement){
-            const dialogContainer: InterfaceElement =
-            document.getElementById('app-dialogs')
+                      `;
+                    datetableBody.appendChild(row);
+                }
+            }
+            const txtSearch = document.getElementById('search-modal');
+            const btnSearchModal = document.getElementById('btnSearchModal');
+            const _selectVehicle = document.querySelectorAll('#edit-entity');
+            const _closeButton = document.getElementById('cancel');
+            const _dialog = document.getElementById('dialog-content');
+            const prevModalButton = document.getElementById('prevModal');
+            const nextModalButton = document.getElementById('nextModal');
+            txtSearch.value = search ?? '';
+            _selectVehicle.forEach((edit) => {
+                const entityId = edit.dataset.entityid;
+                const entityName = edit.dataset.entityname;
+                edit.addEventListener('click', () => {
+                    element.setAttribute('data-optionid', entityId);
+                    element.setAttribute('value', `${entityName}`);
+                    element.classList.add('input_filled');
+                    new CloseDialog().x(_dialog);
+                });
+            });
+            btnSearchModal.onclick = () => {
+                modalTable(0, txtSearch.value);
+            };
+            _closeButton.onclick = () => {
+                new CloseDialog().x(_dialog);
+            };
+            nextModalButton.onclick = () => {
+                offset = Config.modalRows + (offset);
+                modalTable(offset, search);
+            };
+            prevModalButton.onclick = () => {
+                offset = Config.modalRows - (offset);
+                modalTable(offset, search);
+            };
+        }
+    }
+    selectCity() {
+        const origin = document.getElementById('entity-city-origin');
+        const destiny = document.getElementById('entity-city-destiny');
+        //let offset = 0
+        origin.addEventListener('click', async () => {
+            modalTable(0, "", origin);
+        });
+        destiny.addEventListener('click', async () => {
+            modalTable(0, "", destiny);
+        });
+        async function modalTable(offset, search, element) {
+            const dialogContainer = document.getElementById('app-dialogs');
             let raw = JSON.stringify({
                 "filter": {
                     "conditions": [
-                      {
-                        "property": "business.id",
-                        "operator": "=",
-                        "value": `${businessId}`
-                      }
+                        {
+                            "property": "business.id",
+                            "operator": "=",
+                            "value": `${businessId}`
+                        }
                     ],
-                    
-                }, 
+                },
                 sort: "-createdDate",
                 limit: Config.modalRows,
                 offset: offset,
                 fetchPlan: 'full',
-                
-            })
-            if(search != ""){
+            });
+            if (search != "") {
                 raw = JSON.stringify({
                     "filter": {
                         "conditions": [
-                          {
-                            "group": "OR",
-                            "conditions": [
-                                {
-                                "property": "name",
-                                "operator": "contains",
-                                "value": `${search.toLowerCase()}`
-                                }
-                            ]
-                          },
-                          {
-                            "property": "business.id",
-                            "operator": "=",
-                            "value": `${businessId}`
-                          }
+                            {
+                                "group": "OR",
+                                "conditions": [
+                                    {
+                                        "property": "name",
+                                        "operator": "contains",
+                                        "value": `${search.toLowerCase()}`
+                                    }
+                                ]
+                            },
+                            {
+                                "property": "business.id",
+                                "operator": "=",
+                                "value": `${businessId}`
+                            }
                         ],
-                        
-                    }, 
+                    },
                     sort: "-createdDate",
                     limit: Config.modalRows,
                     offset: offset,
                     fetchPlan: 'full',
-                    
-                })
+                });
             }
-            let dataModal = await getFilterEntityData("City", raw)
-            dialogContainer.style.display = 'block'
+            let dataModal = await getFilterEntityData("City", raw);
+            dialogContainer.style.display = 'block';
             dialogContainer.innerHTML = `
                 <div class="dialog_content" id="dialog-content">
                     <div class="dialog">
@@ -1067,23 +995,22 @@ export class Services {
                         </div>
                     </div>
                 </div>
-            `
-            inputObserver()
-            const datetableBody: InterfaceElement = document.getElementById('datatable-modal-body')
+            `;
+            inputObserver();
+            const datetableBody = document.getElementById('datatable-modal-body');
             if (dataModal.length === 0) {
-                let row: InterfaceElement = document.createElement('tr')
+                let row = document.createElement('tr');
                 row.innerHTML = `
                     <td>No hay datos</td>
                     <td></td>
                     <td></td>
-                `
-                datetableBody.appendChild(row)
+                `;
+                datetableBody.appendChild(row);
             }
             else {
                 for (let i = 0; i < dataModal.length; i++) {
-                    let client = dataModal[i]
-                    let row: InterfaceElement =
-                        document.createElement('tr')
+                    let client = dataModal[i];
+                    let row = document.createElement('tr');
                     row.innerHTML += `
                         <td>${client.name}</dt>
                         <td class="entity_options">
@@ -1091,51 +1018,42 @@ export class Services {
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </button>
                         </td>
-                    `
-                    datetableBody.appendChild(row)
+                    `;
+                    datetableBody.appendChild(row);
                 }
             }
-            const txtSearch: InterfaceElement = document.getElementById('search-modal')
-            const btnSearchModal: InterfaceElement = document.getElementById('btnSearchModal')
-            const _selectVehicle: InterfaceElement = document.querySelectorAll('#edit-entity')
-            const _closeButton: InterfaceElement = document.getElementById('cancel')
-            const _dialog: InterfaceElement = document.getElementById('dialog-content')
-            const prevModalButton: InterfaceElement = document.getElementById('prevModal')
-            const nextModalButton: InterfaceElement = document.getElementById('nextModal')
-
-            txtSearch.value = search ?? ''
-
-
-            _selectVehicle.forEach((edit: InterfaceElement) => {
-                const entityId = edit.dataset.entityid
-                const entityName = edit.dataset.entityname
-                edit.addEventListener('click', (): void => {
-                    element.setAttribute('data-optionid', entityId)
-                    element.setAttribute('value', `${entityName}`)
-                    element.classList.add('input_filled')
-                    new CloseDialog().x(_dialog)
-                })
-            
-            })
-
+            const txtSearch = document.getElementById('search-modal');
+            const btnSearchModal = document.getElementById('btnSearchModal');
+            const _selectVehicle = document.querySelectorAll('#edit-entity');
+            const _closeButton = document.getElementById('cancel');
+            const _dialog = document.getElementById('dialog-content');
+            const prevModalButton = document.getElementById('prevModal');
+            const nextModalButton = document.getElementById('nextModal');
+            txtSearch.value = search ?? '';
+            _selectVehicle.forEach((edit) => {
+                const entityId = edit.dataset.entityid;
+                const entityName = edit.dataset.entityname;
+                edit.addEventListener('click', () => {
+                    element.setAttribute('data-optionid', entityId);
+                    element.setAttribute('value', `${entityName}`);
+                    element.classList.add('input_filled');
+                    new CloseDialog().x(_dialog);
+                });
+            });
             btnSearchModal.onclick = () => {
-                modalTable(0, txtSearch.value, element)
-            }
-
+                modalTable(0, txtSearch.value, element);
+            };
             _closeButton.onclick = () => {
-                new CloseDialog().x(_dialog)
-            }
-
+                new CloseDialog().x(_dialog);
+            };
             nextModalButton.onclick = () => {
-                offset = Config.modalRows + (offset)
-                modalTable(offset, search, element)
-            }
-
+                offset = Config.modalRows + (offset);
+                modalTable(offset, search, element);
+            };
             prevModalButton.onclick = () => {
-                offset = Config.modalRows - (offset)
-                modalTable(offset, search, element)
-            }
+                offset = Config.modalRows - (offset);
+                modalTable(offset, search, element);
+            };
         }
-
-}
+    }
 }

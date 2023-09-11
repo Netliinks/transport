@@ -729,6 +729,25 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-25px);
   font-size: 10px;
 }
+.material_input select {
+  display: block;
+  width: 100%;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid #E9EAEF;
+  background-color: transparent;
+  color: #FFFFFF;
+}
+.material_input select:focus {
+  border-color: #6F7ADD;
+  color: #706F8E;
+  transition: 0.5s color ease-in-out;
+}
+.material_input select:focus + label {
+  color: #6F7ADD;
+  transform: translateY(-25px);
+  font-size: 10px;
+}
 .material_input_select {
   position: relative;
   width: 100%;

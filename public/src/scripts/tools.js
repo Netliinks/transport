@@ -510,6 +510,13 @@ export const inputSelectType = async (selectId, table, currentType) => {
             { id: 'LANCHA', name: 'LANCHA' },
         ];
     }
+    else if (table == "SERVICE") {
+        data = [
+            { id: 'INTERNA', name: 'INTERNA' },
+            { id: 'EXTERNA', name: 'EXTERNA' },
+            { id: 'FLUVIAL', name: 'FLUVIAL' },
+        ];
+    }
     const type = await currentType;
     const select = document.querySelector(`#${selectId}`);
     const inputParent = select.parentNode;

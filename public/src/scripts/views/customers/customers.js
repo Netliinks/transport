@@ -580,7 +580,8 @@ export class Customers {
                         let container;
                         let data;
                         //data = await getUsers()
-                        eventLog('UPD', 'EMPRESA', `${user}`, '');
+                        let parse = JSON.parse(raw);
+                        eventLog('UPD', 'EMPRESA', `${parse.name}`, '');
                         new CloseDialog()
                             .x(container =
                             document.getElementById('entity-editor-container'));

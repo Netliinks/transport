@@ -1,9 +1,9 @@
 // @filename: Departments.ts
 
-import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity } from "../../endpoints.js"
-import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog } from "../../tools.js"
-import { Data, InterfaceElement } from "../../types.js"
-import { Config } from "../../Configs.js"
+import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity } from "../../../endpoints.js"
+import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog } from "../../../tools.js"
+import { Data, InterfaceElement } from "../../../types.js"
+import { Config } from "../../../Configs.js"
 import { tableLayout } from "./Layout.js"
 import { tableLayoutTemplate } from "./Template.js"
 
@@ -17,7 +17,7 @@ let infoPage = {
     search: ""
 }
 let dataPage: any
-const getServices = async (): Promise<void> => {
+const getPatrols = async (idService: any): Promise<void> => {
     //const departmentRaw: any = await getEntitiesData('Department')
     //const department = departmentRaw.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
     let raw = JSON.stringify({
@@ -27,7 +27,13 @@ const getServices = async (): Promise<void> => {
                 "property": "business.id",
                 "operator": "=",
                 "value": `${businessId}`
-              }
+              },
+              {
+                "property": "service.id",
+                "operator": "=",
+                "value": `${idService}`
+              },
+
             ],
             
         }, 
@@ -49,12 +55,12 @@ const getServices = async (): Promise<void> => {
                         "value": `${infoPage.search.toLowerCase()}`
                       },
                       {
-                        "property": "customer.name",
+                        "property": "crew.name",
                         "operator": "contains",
                         "value": `${infoPage.search.toLowerCase()}`
                       },
                       {
-                        "property": "serviceState.name",
+                        "property": "service.name",
                         "operator": "contains",
                         "value": `${infoPage.search.toLowerCase()}`
                       }
@@ -64,7 +70,12 @@ const getServices = async (): Promise<void> => {
                     "property": "business.id",
                     "operator": "=",
                     "value": `${businessId}`
-                  }
+                  },
+                  {
+                    "property": "service.id",
+                    "operator": "=",
+                    "value": `${idService}`
+                  },
                 ]
               },
             sort: "-createdDate",
@@ -73,8 +84,8 @@ const getServices = async (): Promise<void> => {
             fetchPlan: 'full',
         })
     }
-    infoPage.count = await getFilterEntityCount("Service", raw)
-    dataPage = await getFilterEntityData("Service", raw)
+    infoPage.count = await getFilterEntityCount("ServiceDetailV", raw)
+    dataPage = await getFilterEntityData("ServiceDetailV", raw)
     return dataPage
 
 }
@@ -89,7 +100,7 @@ export class Services {
     private content: InterfaceElement =
         document.getElementById('datatable-container')
 
-    public async render(offset: any, actualPage: any, search: any): Promise<void> {
+    public async render(offset: any, actualPage: any, search: any, idService: any): Promise<void> {
         infoPage.offset = offset
         infoPage.currentPage = actualPage
         infoPage.search = search   
@@ -97,8 +108,8 @@ export class Services {
         this.content.innerHTML = tableLayout
         const tableBody: InterfaceElement = document.getElementById('datatable-body')
         tableBody.innerHTML = '.Cargando...'
-        
-        let data: any = await getServices()
+        //const service: any = await getEntityData('Service', idService)
+        let data: any = await getPatrols(idService)
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows)
         this.load(tableBody, currentPage, data)
         new filterDataByHeaderType().filter()

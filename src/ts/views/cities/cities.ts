@@ -457,7 +457,8 @@ export class Cities {
                             let data: any
                             
                             //data = await getWeapons()
-                            eventLog('UPD', 'CIUDAD', `${user}`, '')
+                            let parse = JSON.parse(raw);
+                            eventLog('UPD', 'CIUDAD', `${parse.name}`, '')
                             new CloseDialog()
                                 .x(container =
                                     document.getElementById('entity-editor-container')

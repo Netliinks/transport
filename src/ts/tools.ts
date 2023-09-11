@@ -543,6 +543,12 @@ export const inputSelectType = async (selectId: any, table: any, currentType: an
             {id: 'MOTO', name: 'MOTO'},
             {id: 'LANCHA', name: 'LANCHA'},
         ]
+    }else if(table == "SERVICE"){
+        data = [
+            {id: 'INTERNA', name: 'INTERNA'},
+            {id: 'EXTERNA', name: 'EXTERNA'},
+            {id: 'FLUVIAL', name: 'FLUVIAL'},
+        ]
     }
     const type = await currentType
     const select: InterfaceElement = document.querySelector(`#${selectId}`)

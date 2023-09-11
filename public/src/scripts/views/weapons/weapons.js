@@ -629,7 +629,8 @@ export class Weapons {
                         let container;
                         let data;
                         //data = await getWeapons()
-                        eventLog('UPD', 'ARMA', `${user}`, '');
+                        let parse = JSON.parse(raw);
+                        eventLog('UPD', 'ARMA', `${parse.name}`, '');
                         new CloseDialog()
                             .x(container =
                             document.getElementById('entity-editor-container'));
