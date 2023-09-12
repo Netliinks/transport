@@ -4,6 +4,7 @@ import { inputObserver, CloseDialog, filterDataByHeaderType, pageNumbers, fillBt
 import { Config } from "../../Configs.js";
 import { tableLayout } from "./Layout.js";
 import { tableLayoutTemplate } from "./Template.js";
+import { Patrols } from "./patrols/Patrols.js";
 const tableRows = Config.tableRows;
 const currentPage = Config.currentPage;
 const businessId = localStorage.getItem('business_id');
@@ -144,6 +145,10 @@ export class Services {
                 <td>${service?.custodyType ?? ''}</dt>
                 <td class="tag"><span>${service?.serviceState?.name ?? ''}</span></td>
                 <td class="entity_options">
+                    <button class="button" id="get-patrols" data-entityId="${service.id}">
+                        <i class="fa-solid fa-car"></i>
+                    </button>
+                    
                     <button class="button" id="edit-entity" data-entityId="${service.id}">
                         <i class="fa-solid fa-pen"></i>
                     </button>
@@ -156,6 +161,7 @@ export class Services {
                 table.appendChild(row);
             }
         }
+        this.getVehicles();
         this.register();
         this.edit(this.entityDialogContainer, data);
         this.remove();
@@ -589,6 +595,15 @@ export class Services {
                 });
             };
         };
+    }
+    getVehicles() {
+        const patrols = document.querySelectorAll('#get-patrols');
+        patrols.forEach((patrol) => {
+            const entityId = patrol.dataset.entityid;
+            patrol.addEventListener('click', () => {
+                new Patrols().render(Config.offset, Config.currentPage, "", entityId);
+            });
+        });
     }
     remove() {
         const remove = document.querySelectorAll('#remove-entity');

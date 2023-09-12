@@ -1,7 +1,7 @@
 // @filename: Departments.ts
 
 import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity } from "../../../endpoints.js"
-import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog } from "../../../tools.js"
+import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog, getUpdateState } from "../../../tools.js"
 import { Data, InterfaceElement } from "../../../types.js"
 import { Config } from "../../../Configs.js"
 import { tableLayout } from "./Layout.js"
@@ -17,9 +17,11 @@ let infoPage = {
     search: ""
 }
 let dataPage: any
+let serviceId: any
 const getPatrols = async (idService: any): Promise<void> => {
     //const departmentRaw: any = await getEntitiesData('Department')
     //const department = departmentRaw.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
+    serviceId = await getEntityData("Service", idService)
     let raw = JSON.stringify({
         "filter": {
             "conditions": [
@@ -50,17 +52,7 @@ const getPatrols = async (idService: any): Promise<void> => {
                     "group": "OR",
                     "conditions": [
                       {
-                        "property": "name",
-                        "operator": "contains",
-                        "value": `${infoPage.search.toLowerCase()}`
-                      },
-                      {
                         "property": "crew.name",
-                        "operator": "contains",
-                        "value": `${infoPage.search.toLowerCase()}`
-                      },
-                      {
-                        "property": "service.name",
                         "operator": "contains",
                         "value": `${infoPage.search.toLowerCase()}`
                       }
@@ -90,7 +82,7 @@ const getPatrols = async (idService: any): Promise<void> => {
 
 }
 
-export class Services {
+export class Patrols {
     private dialogContainer: InterfaceElement =
         document.getElementById('app-dialogs')
 
@@ -98,7 +90,7 @@ export class Services {
         document.getElementById('entity-editor-container')
 
     private content: InterfaceElement =
-        document.getElementById('datatable-container')
+        document.getElementById('datatable-container') 
 
     public async render(offset: any, actualPage: any, search: any, idService: any): Promise<void> {
         infoPage.offset = offset
@@ -107,9 +99,11 @@ export class Services {
         this.content.innerHTML = ''
         this.content.innerHTML = tableLayout
         const tableBody: InterfaceElement = document.getElementById('datatable-body')
+        const subtitle: InterfaceElement = document.getElementById('datatable_subtitle')   
         tableBody.innerHTML = '.Cargando...'
         //const service: any = await getEntityData('Service', idService)
         let data: any = await getPatrols(idService)
+        subtitle.innerText = `Servicio: ${serviceId.name}`
         tableBody.innerHTML = tableLayoutTemplate.repeat(tableRows)
         this.load(tableBody, currentPage, data)
         new filterDataByHeaderType().filter()
@@ -126,29 +120,23 @@ export class Services {
         if (data.length === 0) {
             let row: InterfaceElement = document.createElement('tr')
             row.innerHTML = `
-        <td>No hay datos</td>
-        <td></td>
-        <td></td>
-      `
+                <td>No hay datos</td>
+                <td></td>
+                <td></td>
+            `
             table.appendChild(row)
         }
         else {
             for (let i = 0; i < paginatedItems.length; i++) {
-                let service = paginatedItems[i]
+                let patrol = paginatedItems[i]
                 let row: InterfaceElement =
                     document.createElement('tr')
                 row.innerHTML += `
-                <td>${service.name}</dt>
-                <td>${service?.customer?.name ?? ''}</dt>
-                <td>${service?.outputDate ?? ''} ${service?.outputTime ?? ''}</dt>
-                <td>${service?.custodyType ?? ''}</dt>
-                <td class="tag"><span>${service?.serviceState?.name ?? ''}</span></td>
+                <td>${patrol.crew?.name ?? ''}</dt>
+                <td>${patrol?.category ?? ''}</dt>
                 <td class="entity_options">
-                    <button class="button" id="edit-entity" data-entityId="${service.id}">
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
 
-                    <button class="button" id="remove-entity" data-entityId="${service.id}" data-entityName="${service.name}" style="display:${userPermissions().style};">
+                    <button class="button" id="remove-entity" data-entityId="${patrol.id}" data-entityName="${patrol.crew.name}" style="display:${userPermissions().style};">
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 </td>
@@ -158,7 +146,6 @@ export class Services {
         }
 
         this.register()
-        this.edit(this.entityDialogContainer, data)
         this.remove()
     }
 
@@ -183,7 +170,7 @@ export class Services {
             */
         })
         btnSearch.addEventListener('click', async () => {
-            new Services().render(Config.offset , Config.currentPage, search.value.toLowerCase().trim())
+            new Patrols().render(Config.offset , Config.currentPage, search.value.toLowerCase().trim(), serviceId.id)
         })
     }
 
@@ -191,12 +178,17 @@ export class Services {
         // register entity
         const openEditor: InterfaceElement = document.getElementById('new-entity')
         openEditor.addEventListener('click', (): void => {
-            renderInterface()
+            if((infoPage.count + 1) <= serviceId.quantyVehiculars){
+                renderInterface()
+            }else{
+                alert(`El servicio ha sido registrado con ${serviceId.quantyVehiculars} vehículo(s)`)
+            }
+            
         })
 
         const renderInterface = async (): Promise<void> => {
             const nothingConfig = {
-              serviceState: await getNothing("name", "Pendiente", "ServiceState"),
+              crewState: await getNothing("name", "En servicio", "CrewState"),
             }
             this.entityDialogContainer.innerHTML = ''
             this.entityDialogContainer.style.display = 'flex'
@@ -204,8 +196,8 @@ export class Services {
         <div class="entity_editor" id="entity-editor">
           <div class="entity_editor_header">
             <div class="user_info">
-              <div class="avatar"><i class="fa-solid fa-desktop"></i></div>
-              <h1 class="entity_editor_title">Registrar <br><small>Servicio</small></h1>
+              <div class="avatar"><i class="fa-solid fa-car"></i></div>
+              <h1 class="entity_editor_title">Registrar <br><small>Patrulla</small></h1>
             </div>
 
             <button class="btn btn_close_editor" id="close"><i class="fa-regular fa-x"></i></button>
@@ -213,99 +205,20 @@ export class Services {
 
           <!-- EDITOR BODY -->
           <div class="entity_editor_body">
-            <div class="material_input">
-            <input type="text" id="entity-name" autocomplete="none">
-            <label for="entity-name"><i class="fa-solid fa-desktop"></i> Nombre</label>
-            </div>
-
-            <div class="material_input">
-            <input type="text" id="entity-client" autocomplete="none" readonly>
-            <label for="entity-client"><i class="fa-solid fa-buildings" readonly></i> Cliente</label>
-            </div>
-
-            <div class="material_input">
-            <input type="text" id="entity-city-origin" autocomplete="none" readonly>
-            <label for="entity-city-origin"><i class="fa-solid fa-earth-americas" readonly></i> Ciudad Origen</label>
-            </div>
-
-            <div class="material_input">
-            <input type="text" id="entity-city-destiny" autocomplete="none" readonly>
-            <label for="entity-city-destiny"><i class="fa-solid fa-earth-americas" readonly></i> Ciudad Destino</label>
-            </div>
-
-            <div class="material_input">
-            <input type="text" id="entity-place-origin" autocomplete="none">
-            <label for="entity-place-origin"><i class="fa-solid fa-location-arrow" readonly></i> Lugar Origen</label>
-            </div>
-
-            <div class="material_input">
-            <input type="text" id="entity-place-destiny" autocomplete="none">
-            <label for="entity-place-destiny"><i class="fa-solid fa-location-arrow" readonly></i> Lugar Destino</label>
-            </div>
-
-            <div class="material_input">
-            <input type="email" id="entity-email" autocomplete="none">
-            <label for="entity-place-email"><i class="fa-solid fa-envelope" readonly></i> Correo Electrónico</label>
-            </div>
-
-            <div class="form_group">
-                <div class="form_input">
-                    <label class="form_label" for="output-date">Fecha Salida:</label>
-                    <input type="date" class="input_time input_time-start" id="output-date" name="output-date">
-                </div>
-
-                <div class="form_input">
-                    <label class="form_label" for="output-time">Hora Salida:</label>
-                    <input type="time" class="input_time input_time-end" id="output-time" name="output-time">
-                </div>
-            </div>
-            <br>
-
-            <div class="material_input">
-            <input type="text" id="entity-reference" autocomplete="none">
-            <label for="entity-place-reference"><i class="fa-solid fa-info" readonly></i> Referencia Cliente</label>
-            </div>
-
             <div class="material_input_select">
-            <label for="entity-custody"><i class="fa-solid fa-shield" readonly></i> Tipo de Custodia</label>
-            <input type="text" id="entity-custody" class="input_select" readonly placeholder="cargando..." autocomplete="none">
+            <label for="entity-category"><i class="fa-solid fa-users" readonly></i> Categoría</label>
+            <input type="text" id="entity-category" class="input_select" readonly placeholder="cargando..." autocomplete="none">
             <div id="input-options" class="input_options">
             </div>
             </div>
 
-            <div class="form_group">
-              <div class="material_input">
-                <br>
-                <select class="input_filled" id="entity-vehicle">
-                    <option value="1" selected>1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                </select>
-                <label for="entity-vehicle"><i class="fa-solid fa-car" readonly></i> Vehículos</label>
-              </div>
-
-              <div class="material_input">
-                <br>
-                <select class="input_filled" id="entity-containers">
-                    <option value="1" selected>1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                </select>
-                <label for="entity-containers"><i class="fa-solid fa-truck" readonly></i> Contenedores</label>
-              </div>
-            </div>
-
             <div class="material_input">
-            <br>
-            <textarea id="entity-observation" rows="4" class="input_filled" autocomplete="none"></textarea>
-            <label for="entity-observation"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
+            <input type="text" id="entity-patrol" autocomplete="none">
+            <label for="entity-patrol"><i class="fa-solid fa-car"></i> Patrulla</label>
             </div>
+
+            
+
           </div>
           <!-- END EDITOR BODY -->
 
@@ -317,98 +230,56 @@ export class Services {
 
             // @ts-ignore
             inputObserver()
-            this.selectClient()
-            this.selectCity()
-            inputSelectType('entity-custody', 'SERVICE', '');
+            this.selectCrew()
+            inputSelectType('entity-category', 'CATEGORY', '');
             //inputSelect('Customer', 'entity-customer')
             this.close()
-            let fecha = new Date(); //Fecha actual
-            let mes: any = fecha.getMonth()+1; //obteniendo mes
-            let dia: any = fecha.getDate(); //obteniendo dia
-            let anio = fecha.getFullYear(); //obteniendo año
-            let _hours = fecha.getHours();
-            let _minutes = fecha.getMinutes();
-            let _fixedHours = ('0' + _hours).slice(-2);
-            let _fixedMinutes = ('0' + _minutes).slice(-2);
-            if(dia<10)
-                dia='0'+dia; //agrega cero si el menor de 10
-            if(mes<10)
-                mes='0'+mes //agrega cero si el menor de 10
-            // @ts-ignore
-            document.getElementById("output-date").value = anio+"-"+mes+"-"+dia;
-            // @ts-ignore
-            document.getElementById("output-time").value = `${_fixedHours}:${_fixedMinutes}`;
-
 
             const registerButton: InterfaceElement = document.getElementById('register-entity')
             registerButton.addEventListener('click', (): void => {
                 const inputsCollection: any = {
-                    name: document.getElementById('entity-name'),
-                    client: document.getElementById('entity-client'),
-                    cityOrigin: document.getElementById('entity-city-origin'),
-                    cityDestiny: document.getElementById('entity-city-destiny'),
-                    placeOrigin: document.getElementById('entity-place-origin'),
-                    placeDestiny: document.getElementById('entity-place-destiny'),
-                    email: document.getElementById('entity-email'),
-                    date: document.getElementById('output-date'),
-                    time: document.getElementById('output-time'),
-                    reference: document.getElementById('entity-reference'),
-                    custody: document.getElementById('entity-custody'),
-                    vehicle: document.getElementById('entity-vehicle'),
-                    containers: document.getElementById('entity-containers'),
-                    observation: document.getElementById('entity-observation'),
+                    category: document.getElementById('entity-category'),
+                    patrol: document.getElementById('entity-patrol'),
                 }
 
                 const raw = JSON.stringify({
-                    "name": `${inputsCollection.name.value}`,
+                    "category": `${inputsCollection.category.value}`,
                     'creationDate': `${currentDateTime().date}`,
                     'creationTime': `${currentDateTime().time}`,
-                    "serviceState": {
-                      "id": `${nothingConfig.serviceState.id}`
-                    },
                     "business": {
                       "id": `${businessId}`
                     },
+                    "service": {
+                        "id": `${serviceId.id}`
+                    },
                     "customer": {
-                      "id": `${inputsCollection.client.dataset.optionid}`
+                      "id": `${serviceId.customer.id}`
                     },
-                    "cityOrigin": {
-                      "id": `${inputsCollection.cityOrigin.dataset.optionid}`
-                    },
-                    "cityDestination": {
-                      "id": `${inputsCollection.cityDestiny.dataset.optionid}`
-                    },
-                    "placeOrigin": `${inputsCollection.placeOrigin.value}`,
-                    "placeDestination": `${inputsCollection.placeDestiny.value}`,
-                    "email": `${inputsCollection.email.value}`,
-                    "outputDate": `${inputsCollection.date.value}`,
-                    "outputTime": `${inputsCollection.time.value}`,
-                    "reference": `${inputsCollection.reference.value}`,
-                    "custodyType": `${inputsCollection.custody.value}`,
-                    "quantyVehiculars": `${inputsCollection.vehicle.value}`,
-                    "quantyContainers": `${inputsCollection.containers.value}`,
-                    "observation": `${inputsCollection.observation.value}`,
+                    "crew": {
+                      "id": `${inputsCollection.patrol.dataset.optionid}`
+                    }
                 })
-                if(inputsCollection.name.value === '' || inputsCollection.name.value === undefined){
-                    alert("¡Nombre vacío!")
-                }else if(inputsCollection.client.value === '' || inputsCollection.client.value === undefined){
-                    alert("Cliente no seleccionado!")
-                }else if(inputsCollection.cityOrigin.value === '' || inputsCollection.cityOrigin.value === undefined){
-                    alert("¡Ciudad origen no seleccionada!")
-                }else if(inputsCollection.cityDestiny.value === '' || inputsCollection.cityDestiny.value === undefined){
-                    alert("¡Ciudad destino no seleccionada!")
-                }else if(inputsCollection.email.value === '' || inputsCollection.email.value === undefined){
-                    alert("¡Email vacío!")
+                if(inputsCollection.patrol.value === '' || inputsCollection.patrol.value === undefined){
+                    alert("¡Patrulla no seleccionada!")
                 }else{
+                    let dataCrew = {
+                        id: inputsCollection.patrol.dataset.optionid,
+                        value: inputsCollection.patrol.value,
+                        table: "Crew",
+                        state: nothingConfig.crewState.id,
+                        title: "PATRULLA"
+                    }
 
-                  registerEntity(raw, 'Service').then((res) => {
+                  registerEntity(raw, 'ServiceDetailV').then((res) => {
                     setTimeout(() => {
-                        let parse = JSON.parse(raw);
-                        eventLog('INS', 'SERVICIO', `${parse.name}`, '')
+                        //let parse = JSON.parse(raw);
+                        eventLog('INS', 'SERVICIO-PATRULLA', `${dataCrew.value}`, serviceId)
+                        getUpdateState(dataCrew.state, dataCrew.table, dataCrew.id)
+                        eventLog('UPD', `${dataCrew.title}`, `${dataCrew.value} asignado a servicio: ${serviceId.name}`, '')
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
                         new CloseDialog().x(container)
-                        new Services().render(Config.offset, Config.currentPage, infoPage.search)
+                        new Patrols().render(Config.offset, Config.currentPage, infoPage.search, serviceId.id)
                     }, 1000)
                   })
                 }
@@ -419,216 +290,6 @@ export class Services {
         const reg = async (raw: any) => {
         }
     }
-
-    private edit(container: InterfaceElement, data: Data) {
-      // Edit entity
-      const edit: InterfaceElement = document.querySelectorAll('#edit-entity')
-      edit.forEach((edit: InterfaceElement) => {
-          const entityId = edit.dataset.entityid
-          edit.addEventListener('click', (): void => {
-              RInterface('Service', entityId)
-          })
-      })
-
-      const RInterface = async (entities: string, entityID: string): Promise<void> => {
-          const data: any = await getEntityData(entities, entityID)
-          this.entityDialogContainer.innerHTML = ''
-          this.entityDialogContainer.style.display = 'flex'
-          this.entityDialogContainer.innerHTML = `
-              <div class="entity_editor" id="entity-editor">
-              <div class="entity_editor_header">
-                  <div class="user_info">
-                  <div class="avatar"><i class="fa-regular fa-desktop"></i></div>
-                  <h1 class="entity_editor_title">Editar <br><small>${data.name}</small></h1>
-                  </div>
-
-                  <button class="btn btn_close_editor" id="close"><i class="fa-solid fa-x"></i></button>
-              </div>
-
-              <!-- EDITOR BODY -->
-              <div class="entity_editor_body">
-                  <div class="material_input">
-                  <input type="text" id="entity-name" class="input_filled" value="${data.name}">
-                  <label for="entity-name">Nombre</label>
-                  </div>
-
-                  <div class="material_input">
-                  <input type="text" id="entity-client" class="input_filled" data-optionid="${data.customer?.id ?? ''}" value="${data.customer?.name ?? ''}" readonly>
-                  <label for="entity-client"><i class="fa-solid fa-buildings" readonly></i> Cliente</label>
-                  </div>
-
-                  <div class="material_input">
-                  <input type="text" id="entity-city-origin" class="input_filled" data-optionid="${data.cityOrigin?.id ?? ''}" value="${data.cityOrigin?.name ?? ''}" readonly>
-                  <label for="entity-city-origin"><i class="fa-solid fa-earth-americas" readonly></i> Ciudad Origen</label>
-                  </div>
-
-                  <div class="material_input">
-                  <input type="text" id="entity-city-destiny" class="input_filled" data-optionid="${data.cityDestination?.id ?? ''}" value="${data.cityDestination?.name ?? ''}" readonly>
-                  <label for="entity-city-destiny"><i class="fa-solid fa-earth-americas" readonly></i> Ciudad Destino</label>
-                  </div>
-
-                  <div class="material_input">
-                  <input type="text" id="entity-place-origin" class="input_filled" value="${data?.placeOrigin ?? ''}">
-                  <label for="entity-place-origin"><i class="fa-solid fa-location-arrow" readonly></i> Lugar Origen</label>
-                  </div>
-
-                  <div class="material_input">
-                  <input type="text" id="entity-place-destiny" class="input_filled" value="${data?.placeDestination ?? ''}">
-                  <label for="entity-place-destiny"><i class="fa-solid fa-location-arrow" readonly></i> Lugar Destino</label>
-                  </div>
-
-                  <div class="material_input">
-                  <input type="email" id="entity-email" class="input_filled" value="${data?.email ?? ''}" readonly>
-                  <label for="entity-place-email"><i class="fa-solid fa-envelope" readonly></i> Correo Electrónico</label>
-                  </div>
-
-                  <div class="form_group">
-                      <div class="form_input">
-                          <label class="form_label" for="output-date">Fecha Salida:</label>
-                          <input type="date" class="input_time input_time-start" id="output-date" name="output-date" value="${data?.outputDate ?? ''}" readonly>
-                      </div>
-
-                      <div class="form_input">
-                          <label class="form_label" for="output-time">Hora Salida:</label>
-                          <input type="time" class="input_time input_time-end" id="output-time" name="output-time" value="${data?.outputTime ?? ''}" readonly>
-                      </div>
-                  </div>
-                  <br>
-
-                  <div class="material_input">
-                  <input type="text" id="entity-reference" class="input_filled" value="${data?.reference ?? ''}">
-                  <label for="entity-place-reference"><i class="fa-solid fa-info" readonly></i> Referencia Cliente</label>
-                  </div>
-
-                  <div class="material_input">
-                  <input type="text" id="entity-custody" class="input_filled" value="${data?.custodyType ?? ''}" readonly>
-                  <label for="entity-place-custody"><i class="fa-solid fa-shield" readonly></i> Tipo de Custodia</label>
-                  </div>
-
-                  <div class="form_group">
-                    <div class="material_input">
-                      <br>
-                      <select class="input_filled" id="entity-vehicle" disabled>
-                          <option value="1" selected>1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
-                          <option value="5">5</option>
-                          <option value="6">6</option>
-                      </select>
-                      <label for="entity-vehicle"><i class="fa-solid fa-car" readonly></i> Vehículos</label>
-                    </div>
-
-                    <div class="material_input">
-                      <br>
-                      <select class="input_filled" id="entity-containers" disabled>
-                          <option value="1" selected>1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
-                          <option value="5">5</option>
-                          <option value="6">6</option>
-                      </select>
-                      <label for="entity-containers"><i class="fa-solid fa-truck" readonly></i> Contenedores</label>
-                    </div>
-                  </div>
-
-                  <div class="material_input">
-                  <br>
-                  <textarea id="entity-observation" rows="4" class="input_filled">${data?.observation ?? ''}</textarea>
-                  <label for="entity-observation"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
-                  </div>
-                  <br>
-                  <br>
-
-                  <div class="input_detail">
-                      <label for="creation-date"><i class="fa-solid fa-calendar"></i></label>
-                      <input type="date" id="creation-date" class="input_filled" value="${data.creationDate}" readonly>
-                  </div>
-                  <br>
-                  <div class="input_detail">
-                      <label for="creation-time"><i class="fa-solid fa-clock"></i></label>
-                      <input type="time" id="creation-time" class="input_filled" value="${data.creationTime}" readonly>
-                  </div>
-                  <br>
-                  <div class="input_detail">
-                      <label for="log-user"><i class="fa-solid fa-user"></i></label>
-                      <input type="text" id="log-user" class="input_filled" value="${data.createdBy}" readonly>
-                  </div>
-
-              </div>
-              <!-- END EDITOR BODY -->
-
-              <div class="entity_editor_footer">
-                  <button class="btn btn_primary btn_widder" id="update-changes" style="display:${userPermissions().style};">Guardar</button>
-              </div>
-              </div>
-          `
-
-          inputObserver()
-          // @ts-ignore
-          document.getElementById("entity-vehicle").value = data.quantyVehiculars
-          // @ts-ignore
-          document.getElementById("entity-containers").value = data.quantyContainers
-          this.close()
-          UUpdate(entityID, data)
-      }
-
-      const UUpdate = async (entityId: any, service: any): Promise<void> => {
-          const updateButton: InterfaceElement =
-              document.getElementById('update-changes')
-          updateButton.addEventListener('click', () => {
-              const $value: InterfaceElement = {
-                  // @ts-ignore
-                  name: document.getElementById('entity-name'),
-                  placeOrigin: document.getElementById('entity-place-origin'),
-                  placeDestiny: document.getElementById('entity-place-destiny'),
-                  reference: document.getElementById('entity-reference'),
-                  observation: document.getElementById('entity-observation'),
-              }
-              let raw = JSON.stringify({
-                  // @ts-ignore
-                  "name": `${$value.name?.value}`,
-                  "placeOrigin": `${$value.placeOrigin?.value}`,
-                  "placeDestination": `${$value.placeDestiny?.value}`,
-                  "reference": `${$value.reference?.value}`,
-                  "observation": `${$value.observation?.value}`,
-              })
-              // @ts-ignore
-              if ($value.name.value === '' || $value.name.value === undefined) {
-                  alert("Nombre vacío!");
-              }
-              else{
-                  update(raw)
-              }
-          })
-          const update = (raw: any) => {
-              updateEntity('Service', entityId, raw)
-                  .then((res) => {
-                      setTimeout(async () => {
-                          let tableBody: InterfaceElement
-                          let container: InterfaceElement
-                          let data: any
-                          
-                          //data = await getWeapons()
-                          let parse = JSON.parse(raw);
-                          eventLog('UPD', 'SERVICIO', `${parse.name}`, service)
-                          new CloseDialog()
-                              .x(container =
-                                  document.getElementById('entity-editor-container')
-                              )
-                          new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search)
-                         /* new Clients().load(tableBody
-                              = document.getElementById('datatable-body'),
-                              currentPage,
-                              data
-                          )*/
-
-                      }, 100)
-                  })
-          }
-      }
-  }
 
     public remove() {
         const remove: InterfaceElement = document.querySelectorAll('#remove-entity')
@@ -644,7 +305,7 @@ export class Services {
             <div class="dialog dialog_danger">
               <div class="dialog_container">
                 <div class="dialog_header">
-                  <h2>¿Deseas eliminar este servicio?</h2>
+                  <h2>¿Deseas eliminar esta patrulla?</h2>
                 </div>
 
                 <div class="dialog_message">
@@ -668,15 +329,18 @@ export class Services {
                 const dialogContent: InterfaceElement = document.getElementById('dialog-content')
 
                 deleteButton.onclick = async () => {
-                    const data: any = await getEntityData('Service', entityId)
-                    if(data.serviceState.name == "Pendiente"){
-                      deleteEntity('Service', entityId)
+                    let crewState = await getNothing("name", "Disponible", "CrewState")
+                    const data: any = await getEntityData('ServiceDetailV', entityId)
+                    if(serviceId.serviceState.name == "Pendiente"){
+                      deleteEntity('ServiceDetailV', entityId)
                         .then(res => {
-                          eventLog('DLT', 'SERVICIO', `${entityName}`, data)
-                          new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search)
+                          eventLog('DLT', 'SERVICIO-PATRULLA', `${entityName}`, serviceId)
+                          getUpdateState(crewState.id, 'Crew', data.crew.id)
+                          eventLog('UPD', `PATRULLA`, `${data.crew.name} disponible`, '')
+                          new Patrols().render(infoPage.offset, infoPage.currentPage, infoPage.search, serviceId.id)
                         })
                     }else{
-                      alert("No se puede eliminar un servicio en proceso.")
+                      alert("No se puede eliminar una patrulla en servicio.")
                     }
                     
 
@@ -734,7 +398,7 @@ export class Services {
             button.addEventListener('click', (): void => {
                 infoPage.offset = Config.tableRows * (page - 1)
                 currentPage = page
-                new Services().render(infoPage.offset, currentPage, infoPage.search)
+                new Patrols().render(infoPage.offset, currentPage, infoPage.search, serviceId.id)
             })
 
             return button
@@ -768,260 +432,46 @@ export class Services {
 
       function setupButtonsEvents(prevButton: InterfaceElement, nextButton: InterfaceElement) {
           prevButton.addEventListener('click', (): void => {
-            new Services().render(Config.offset, Config.currentPage, infoPage.search)
+            new Patrols().render(Config.offset, Config.currentPage, infoPage.search, serviceId.id)
           })
 
           nextButton.addEventListener('click', (): void => {
             infoPage.offset = Config.tableRows * (pageCount - 1)
-            new Services().render(infoPage.offset, pageCount, infoPage.search)
+            new Patrols().render(infoPage.offset, pageCount, infoPage.search, serviceId.id)
           })
       }
     }
 
-    private selectClient(): void {
+    private selectCrew(): void {
         
-      const element: InterfaceElement = document.getElementById('entity-client')
-      //let offset = 0
+        const element: InterfaceElement = document.getElementById('entity-patrol')
+        const category: InterfaceElement = document.getElementById('entity-category')
+        //let offset = 0
 
-          element.addEventListener('click', async (): Promise<void> => {
-              modalTable(0, "")
-          })
-
-          async function modalTable(offset: any, search: any){
-              const dialogContainer: InterfaceElement =
-              document.getElementById('app-dialogs')
-              let raw = JSON.stringify({
-                  "filter": {
-                      "conditions": [
-                        {
-                          "property": "business.id",
-                          "operator": "=",
-                          "value": `${businessId}`
-                        },
-                        {
-                          "property": "state.name",
-                          "operator": "=",
-                          "value": `Enabled`
-                        }
-                      ],
-                      
-                  }, 
-                  sort: "-createdDate",
-                  limit: Config.modalRows,
-                  offset: offset,
-                  fetchPlan: 'full',
-                  
-              })
-              if(search != ""){
-                  raw = JSON.stringify({
-                      "filter": {
-                          "conditions": [
-                            {
-                              "group": "OR",
-                              "conditions": [
-                                  {
-                                  "property": "name",
-                                  "operator": "contains",
-                                  "value": `${search.toLowerCase()}`
-                                  },
-                                  {
-                                    "property": "ruc",
-                                    "operator": "contains",
-                                    "value": `${search.toLowerCase()}`
-                                    }
-                              ]
-                            },
-                            {
-                              "property": "business.id",
-                              "operator": "=",
-                              "value": `${businessId}`
-                            },
-                            {
-                              "property": "state.name",
-                              "operator": "=",
-                              "value": `Enabled`
-                            }
-                          ],
-                          
-                      }, 
-                      sort: "-createdDate",
-                      limit: Config.modalRows,
-                      offset: offset,
-                      fetchPlan: 'full',
-                      
-                  })
-              }
-              let dataModal = await getFilterEntityData("Customer", raw)
-              const FData: Data = dataModal.filter((data: any) => data.id != element.dataset.optionid)
-              dialogContainer.style.display = 'block'
-              dialogContainer.innerHTML = `
-                  <div class="dialog_content" id="dialog-content">
-                      <div class="dialog">
-                          <div class="dialog_container padding_8">
-                              <div class="dialog_header">
-                                  <h2>Clientes disponibles</h2>
-                              </div>
-
-                              <div class="dialog_message padding_8">
-                                  <div class="datatable_tools">
-                                      <input type="search"
-                                      class="search_input"
-                                      placeholder="Buscar"
-                                      id="search-modal">
-                                      <button
-                                          class="datatable_button add_user"
-                                          id="btnSearchModal">
-                                          <i class="fa-solid fa-search"></i>
-                                      </button>
-                                  </div>
-                                  <div class="dashboard_datatable">
-                                      <table class="datatable_content margin_t_16">
-                                      <thead>
-                                          <tr>
-                                          <th>Nombre</th>
-                                          <th>RUC</th>
-                                          <th></th>
-                                          </tr>
-                                      </thead>
-                                      <tbody id="datatable-modal-body">
-                                      </tbody>
-                                      </table>
-                                  </div>
-                                  <br>
-                              </div>
-
-                              <div class="dialog_footer">
-                                  <button class="btn btn_primary" id="prevModal"><i class="fa-solid fa-arrow-left"></i></button>
-                                  <button class="btn btn_primary" id="nextModal"><i class="fa-solid fa-arrow-right"></i></button>
-                                  <button class="btn btn_danger" id="cancel">Cancelar</button>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              `
-              inputObserver()
-              const datetableBody: InterfaceElement = document.getElementById('datatable-modal-body')
-              if (FData.length === 0) {
-                  let row: InterfaceElement = document.createElement('tr')
-                  row.innerHTML = `
-                      <td>No hay datos</td>
-                      <td></td>
-                      <td></td>
-                  `
-                  datetableBody.appendChild(row)
-              }
-              else {
-                  for (let i = 0; i < FData.length; i++) {
-                      let client = FData[i]
-                      let row: InterfaceElement =
-                          document.createElement('tr')
-                      row.innerHTML += `
-                          <td>${client.name}</dt>
-                          <td>${client?.ruc ?? ''}</dt>
-                          <td class="entity_options">
-                              <button class="button" id="edit-entity" data-entityId="${client.id}" data-entityName="${client.name}">
-                                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                              </button>
-                          </td>
-                      `
-                      datetableBody.appendChild(row)
-                  }
-              }
-              const txtSearch: InterfaceElement = document.getElementById('search-modal')
-              const btnSearchModal: InterfaceElement = document.getElementById('btnSearchModal')
-              const _selectVehicle: InterfaceElement = document.querySelectorAll('#edit-entity')
-              const _closeButton: InterfaceElement = document.getElementById('cancel')
-              const _dialog: InterfaceElement = document.getElementById('dialog-content')
-              const prevModalButton: InterfaceElement = document.getElementById('prevModal')
-              const nextModalButton: InterfaceElement = document.getElementById('nextModal')
-
-              txtSearch.value = search ?? ''
-
-
-              _selectVehicle.forEach((edit: InterfaceElement) => {
-                  const entityId = edit.dataset.entityid
-                  const entityName = edit.dataset.entityname
-                  edit.addEventListener('click', (): void => {
-                      element.setAttribute('data-optionid', entityId)
-                      element.setAttribute('value', `${entityName}`)
-                      element.classList.add('input_filled')
-                      new CloseDialog().x(_dialog)
-                  })
-              
-              })
-
-              btnSearchModal.onclick = () => {
-                  modalTable(0, txtSearch.value)
-              }
-
-              _closeButton.onclick = () => {
-                  new CloseDialog().x(_dialog)
-              }
-
-              nextModalButton.onclick = () => {
-                  offset = Config.modalRows + (offset)
-                  modalTable(offset, search)
-              }
-
-              prevModalButton.onclick = () => {
-                  offset = Config.modalRows - (offset)
-                  modalTable(offset, search)
-              }
-          }
-
-  }
-  private selectCity(): void {
-       
-    const origin: InterfaceElement = document.getElementById('entity-city-origin')
-    const destiny: InterfaceElement = document.getElementById('entity-city-destiny')
-    //let offset = 0
-
-        origin.addEventListener('click', async (): Promise<void> => {
-            modalTable(0, "", origin)
-        })
-
-        destiny.addEventListener('click', async (): Promise<void> => {
-            modalTable(0, "", destiny)
-        })
-
-        async function modalTable(offset: any, search: any, element: InterfaceElement){
-            const dialogContainer: InterfaceElement =
-            document.getElementById('app-dialogs')
-            let raw = JSON.stringify({
-                "filter": {
-                    "conditions": [
-                      {
-                        "property": "business.id",
-                        "operator": "=",
-                        "value": `${businessId}`
-                      }
-                    ],
-                    
-                }, 
-                sort: "-createdDate",
-                limit: Config.modalRows,
-                offset: offset,
-                fetchPlan: 'full',
-                
+            element.addEventListener('click', async (): Promise<void> => {
+                modalTable(0, "")
             })
-            if(search != ""){
-                raw = JSON.stringify({
+
+            async function modalTable(offset: any, search: any){
+                const dialogContainer: InterfaceElement =
+                document.getElementById('app-dialogs')
+                let raw = JSON.stringify({
                     "filter": {
                         "conditions": [
-                          {
-                            "group": "OR",
-                            "conditions": [
-                                {
-                                "property": "name",
-                                "operator": "contains",
-                                "value": `${search.toLowerCase()}`
-                                }
-                            ]
-                          },
                           {
                             "property": "business.id",
                             "operator": "=",
                             "value": `${businessId}`
+                          },
+                          {
+                            "property": "crewState.name",
+                            "operator": "=",
+                            "value": `Disponible`
+                          },
+                          {
+                            "property": "category",
+                            "operator": "=",
+                            "value": `${category.value}`
                           }
                         ],
                         
@@ -1032,121 +482,175 @@ export class Services {
                     fetchPlan: 'full',
                     
                 })
-            }
-            let dataModal = await getFilterEntityData("City", raw)
-            dialogContainer.style.display = 'block'
-            dialogContainer.innerHTML = `
-                <div class="dialog_content" id="dialog-content">
-                    <div class="dialog">
-                        <div class="dialog_container padding_8">
-                            <div class="dialog_header">
-                                <h2>Clientes disponibles</h2>
-                            </div>
-
-                            <div class="dialog_message padding_8">
-                                <div class="datatable_tools">
-                                    <input type="search"
-                                    class="search_input"
-                                    placeholder="Buscar"
-                                    id="search-modal">
-                                    <button
-                                        class="datatable_button add_user"
-                                        id="btnSearchModal">
-                                        <i class="fa-solid fa-search"></i>
-                                    </button>
+                if(search != ""){
+                    raw = JSON.stringify({
+                        "filter": {
+                            "conditions": [
+                              {
+                                "group": "OR",
+                                "conditions": [
+                                    {
+                                    "property": "name",
+                                    "operator": "contains",
+                                    "value": `${search.toLowerCase()}`
+                                    },
+                                    {
+                                    "property": "vehicular.licensePlate",
+                                    "operator": "contains",
+                                    "value": `${search.toLowerCase()}`
+                                    },
+                                    {
+                                    "property": "crewOne.username",
+                                    "operator": "contains",
+                                    "value": `${search.toLowerCase()}`
+                                    },
+                                ]
+                              },
+                              {
+                                "property": "business.id",
+                                "operator": "=",
+                                "value": `${businessId}`
+                              },
+                              {
+                                "property": "crewState.name",
+                                "operator": "=",
+                                "value": `Disponible`
+                              },
+                              {
+                                "property": "category",
+                                "operator": "=",
+                                "value": `${category.value}`
+                              }
+                            ],
+                            
+                        }, 
+                        sort: "-createdDate",
+                        limit: Config.modalRows,
+                        offset: offset,
+                        fetchPlan: 'full',
+                        
+                    })
+                }
+                let dataModal = await getFilterEntityData("Crew", raw)
+                const FData: Data = dataModal.filter((data: any) => data.id != element.dataset.optionid)
+                dialogContainer.style.display = 'block'
+                dialogContainer.innerHTML = `
+                    <div class="dialog_content" id="dialog-content">
+                        <div class="dialog">
+                            <div class="dialog_container padding_8">
+                                <div class="dialog_header">
+                                    <h2>Patrullas disponibles</h2>
                                 </div>
-                                <div class="dashboard_datatable">
-                                    <table class="datatable_content margin_t_16">
-                                    <thead>
-                                        <tr>
-                                        <th>Nombre</th>
-                                        <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="datatable-modal-body">
-                                    </tbody>
-                                    </table>
-                                </div>
-                                <br>
-                            </div>
 
-                            <div class="dialog_footer">
-                                <button class="btn btn_primary" id="prevModal"><i class="fa-solid fa-arrow-left"></i></button>
-                                <button class="btn btn_primary" id="nextModal"><i class="fa-solid fa-arrow-right"></i></button>
-                                <button class="btn btn_danger" id="cancel">Cancelar</button>
+                                <div class="dialog_message padding_8">
+                                    <div class="datatable_tools">
+                                        <input type="search"
+                                        class="search_input"
+                                        placeholder="Buscar"
+                                        id="search-modal">
+                                        <button
+                                            class="datatable_button add_user"
+                                            id="btnSearchModal">
+                                            <i class="fa-solid fa-search"></i>
+                                        </button>
+                                    </div>
+                                    <div class="dashboard_datatable">
+                                        <table class="datatable_content margin_t_16">
+                                        <thead>
+                                            <tr>
+                                            <th>Nombre</th>
+                                            <th>Categoría</th>
+                                            <th>Vehículo</th>
+                                            <th>Supervisor</th>
+                                            <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="datatable-modal-body">
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                    <br>
+                                </div>
+
+                                <div class="dialog_footer">
+                                    <button class="btn btn_primary" id="prevModal"><i class="fa-solid fa-arrow-left"></i></button>
+                                    <button class="btn btn_primary" id="nextModal"><i class="fa-solid fa-arrow-right"></i></button>
+                                    <button class="btn btn_danger" id="cancel">Cancelar</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `
-            inputObserver()
-            const datetableBody: InterfaceElement = document.getElementById('datatable-modal-body')
-            if (dataModal.length === 0) {
-                let row: InterfaceElement = document.createElement('tr')
-                row.innerHTML = `
-                    <td>No hay datos</td>
-                    <td></td>
-                    <td></td>
                 `
-                datetableBody.appendChild(row)
-            }
-            else {
-                for (let i = 0; i < dataModal.length; i++) {
-                    let client = dataModal[i]
-                    let row: InterfaceElement =
-                        document.createElement('tr')
-                    row.innerHTML += `
-                        <td>${client.name}</dt>
-                        <td class="entity_options">
-                            <button class="button" id="edit-entity" data-entityId="${client.id}" data-entityName="${client.name}">
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                            </button>
-                        </td>
+                inputObserver()
+                const datetableBody: InterfaceElement = document.getElementById('datatable-modal-body')
+                if (FData.length === 0) {
+                    let row: InterfaceElement = document.createElement('tr')
+                    row.innerHTML = `
+                        <td>No hay datos</td>
+                        <td></td>
+                        <td></td>
                     `
                     datetableBody.appendChild(row)
                 }
-            }
-            const txtSearch: InterfaceElement = document.getElementById('search-modal')
-            const btnSearchModal: InterfaceElement = document.getElementById('btnSearchModal')
-            const _selectVehicle: InterfaceElement = document.querySelectorAll('#edit-entity')
-            const _closeButton: InterfaceElement = document.getElementById('cancel')
-            const _dialog: InterfaceElement = document.getElementById('dialog-content')
-            const prevModalButton: InterfaceElement = document.getElementById('prevModal')
-            const nextModalButton: InterfaceElement = document.getElementById('nextModal')
+                else {
+                    for (let i = 0; i < FData.length; i++) {
+                        let client = FData[i]
+                        let row: InterfaceElement =
+                            document.createElement('tr')
+                        row.innerHTML += `
+                            <td>${client.name}</dt>
+                            <td>${client?.category ?? ''}</dt>
+                            <td>${client?.vehicular?.type ?? ''} [${client?.vehicular?.licensePlate ?? ''}]</dt>
+                            <td>${client?.crewOne?.username ?? ''}</dt>
+                            <td class="entity_options">
+                                <button class="button" id="edit-entity" data-entityId="${client.id}" data-entityName="${client.name}">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </button>
+                            </td>
+                        `
+                        datetableBody.appendChild(row)
+                    }
+                }
+                const txtSearch: InterfaceElement = document.getElementById('search-modal')
+                const btnSearchModal: InterfaceElement = document.getElementById('btnSearchModal')
+                const _selectVehicle: InterfaceElement = document.querySelectorAll('#edit-entity')
+                const _closeButton: InterfaceElement = document.getElementById('cancel')
+                const _dialog: InterfaceElement = document.getElementById('dialog-content')
+                const prevModalButton: InterfaceElement = document.getElementById('prevModal')
+                const nextModalButton: InterfaceElement = document.getElementById('nextModal')
 
-            txtSearch.value = search ?? ''
+                txtSearch.value = search ?? ''
 
-
-            _selectVehicle.forEach((edit: InterfaceElement) => {
-                const entityId = edit.dataset.entityid
-                const entityName = edit.dataset.entityname
-                edit.addEventListener('click', (): void => {
-                    element.setAttribute('data-optionid', entityId)
-                    element.setAttribute('value', `${entityName}`)
-                    element.classList.add('input_filled')
-                    new CloseDialog().x(_dialog)
+                _selectVehicle.forEach((edit: InterfaceElement) => {
+                    const entityId = edit.dataset.entityid
+                    const entityName = edit.dataset.entityname
+                    edit.addEventListener('click', (): void => {
+                        element.setAttribute('data-optionid', entityId)
+                        element.setAttribute('value', `${entityName}`)
+                        element.classList.add('input_filled')
+                        new CloseDialog().x(_dialog)
+                    })
+                
                 })
-            
-            })
 
-            btnSearchModal.onclick = () => {
-                modalTable(0, txtSearch.value, element)
+                btnSearchModal.onclick = () => {
+                    modalTable(0, txtSearch.value)
+                }
+
+                _closeButton.onclick = () => {
+                    new CloseDialog().x(_dialog)
+                }
+
+                nextModalButton.onclick = () => {
+                    offset = Config.modalRows + (offset)
+                    modalTable(offset, search)
+                }
+
+                prevModalButton.onclick = () => {
+                    offset = Config.modalRows - (offset)
+                    modalTable(offset, search)
+                }
             }
 
-            _closeButton.onclick = () => {
-                new CloseDialog().x(_dialog)
-            }
-
-            nextModalButton.onclick = () => {
-                offset = Config.modalRows + (offset)
-                modalTable(offset, search, element)
-            }
-
-            prevModalButton.onclick = () => {
-                offset = Config.modalRows - (offset)
-                modalTable(offset, search, element)
-            }
-        }
-
-}
+    }
 }

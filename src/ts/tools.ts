@@ -304,7 +304,8 @@ export const getNothing = async (param: string, value: string, table: string) =>
                 "value": `${value}`
                 }
             ]
-        }
+        },
+        fetchPlan: 'full',
     });
     let data = await getFilterEntityData(`${table}`, raw);
     if(data.length != 0){
@@ -329,6 +330,12 @@ export const getUpdateState = async (value: string, table: string, entityId: any
     }else if(table == "Weapon"){
         raw = JSON.stringify({
             "weaponState": {
+                "id": `${value}`
+            },
+        })
+    }else if(table == "Crew"){
+        raw = JSON.stringify({
+            "crewState": {
                 "id": `${value}`
             },
         })
@@ -548,6 +555,14 @@ export const inputSelectType = async (selectId: any, table: any, currentType: an
             {id: 'INTERNA', name: 'INTERNA'},
             {id: 'EXTERNA', name: 'EXTERNA'},
             {id: 'FLUVIAL', name: 'FLUVIAL'},
+        ]
+    }else if(table == "CATEGORY"){
+        data = [
+            {id: 'P1', name: 'P1'},
+            {id: 'P2', name: 'P2'},
+            {id: 'P3', name: 'P3'},
+            {id: 'P4', name: 'P4'},
+            {id: 'P5', name: 'P5'},
         ]
     }
     const type = await currentType
