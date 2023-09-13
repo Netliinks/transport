@@ -1,7 +1,7 @@
 // @filename: Departments.ts
 
 import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity } from "../../endpoints.js"
-import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog } from "../../tools.js"
+import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog, getSearch } from "../../tools.js"
 import { Data, InterfaceElement } from "../../types.js"
 import { Config } from "../../Configs.js"
 import { tableLayout } from "./Layout.js"
@@ -336,7 +336,7 @@ export class Services {
 
 
             const registerButton: InterfaceElement = document.getElementById('register-entity')
-            registerButton.addEventListener('click', (): void => {
+            registerButton.addEventListener('click', async (): Promise<void> => {
                 const inputsCollection: any = {
                     name: document.getElementById('entity-name'),
                     client: document.getElementById('entity-client'),
@@ -355,7 +355,7 @@ export class Services {
                 }
 
                 const raw = JSON.stringify({
-                    "name": `${inputsCollection.name.value}`,
+                    "name": `${inputsCollection.name.value.toUpperCase()}`,
                     'creationDate': `${currentDateTime().date}`,
                     'creationTime': `${currentDateTime().time}`,
                     "serviceState": {
@@ -384,6 +384,7 @@ export class Services {
                     "quantyContainers": `${inputsCollection.containers.value}`,
                     "observation": `${inputsCollection.observation.value}`,
                 })
+                let searchExist = await getSearch("name", inputsCollection.name.value.toUpperCase(), "Service")
                 if(inputsCollection.name.value === '' || inputsCollection.name.value === undefined){
                     alert("¡Nombre vacío!")
                 }else if(inputsCollection.client.value === '' || inputsCollection.client.value === undefined){
@@ -394,6 +395,8 @@ export class Services {
                     alert("¡Ciudad destino no seleccionada!")
                 }else if(inputsCollection.email.value === '' || inputsCollection.email.value === undefined){
                     alert("¡Email vacío!")
+                }else if(searchExist != undefined){
+                    alert("Servicio ya existe!")
                 }else{
 
                   registerEntity(raw, 'Service').then((res) => {
@@ -572,7 +575,7 @@ export class Services {
       const UUpdate = async (entityId: any, service: any): Promise<void> => {
           const updateButton: InterfaceElement =
               document.getElementById('update-changes')
-          updateButton.addEventListener('click', () => {
+          updateButton.addEventListener('click', async () => {
               const $value: InterfaceElement = {
                   // @ts-ignore
                   name: document.getElementById('entity-name'),
@@ -583,15 +586,22 @@ export class Services {
               }
               let raw = JSON.stringify({
                   // @ts-ignore
-                  "name": `${$value.name?.value}`,
+                  "name": `${$value.name?.value.toUpperCase()}`,
                   "placeOrigin": `${$value.placeOrigin?.value}`,
                   "placeDestination": `${$value.placeDestiny?.value}`,
                   "reference": `${$value.reference?.value}`,
                   "observation": `${$value.observation?.value}`,
               })
+              let searchExist = [] 
+                searchExist[0] = 'none'
+                if($value.name.value.toUpperCase() != service.name){
+                    searchExist[1] = await getSearch("name", $value.name.value.toUpperCase(), "Service")
+                }
               // @ts-ignore
               if ($value.name.value === '' || $value.name.value === undefined) {
                   alert("Nombre vacío!");
+              }else if(searchExist[1] != undefined || searchExist[0] != 'none'){
+                  alert("Servicio ya existe!")
               }
               else{
                   update(raw)
