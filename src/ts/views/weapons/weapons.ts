@@ -630,7 +630,7 @@ export class Weapons {
                 const dialogContent: InterfaceElement = document.getElementById('dialog-content')
 
                 deleteButton.onclick = async () => { 
-                    if(data.weaponState.name == "Disponible"){
+                    if(data.weaponState.name == "Disponible" || data.weaponState.name == "No disponible"){
                         deleteEntity('Weapon', entityId)
                         .then((res) => {
                             setTimeout(async () => {

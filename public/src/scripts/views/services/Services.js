@@ -5,6 +5,7 @@ import { Config } from "../../Configs.js";
 import { tableLayout } from "./Layout.js";
 import { tableLayoutTemplate } from "./Template.js";
 import { Patrols } from "./patrols/Patrols.js";
+import { Charges } from "./containers/Containers.js";
 const tableRows = Config.tableRows;
 const currentPage = Config.currentPage;
 const businessId = localStorage.getItem('business_id');
@@ -148,6 +149,10 @@ export class Services {
                     <button class="button" id="get-patrols" data-entityId="${service.id}">
                         <i class="fa-solid fa-car"></i>
                     </button>
+
+                    <button class="button" id="get-containers" data-entityId="${service.id}">
+                        <i class="fa-solid fa-truck-container"></i>
+                    </button>
                     
                     <button class="button" id="edit-entity" data-entityId="${service.id}">
                         <i class="fa-solid fa-pen"></i>
@@ -162,6 +167,7 @@ export class Services {
             }
         }
         this.getVehicles();
+        this.getContainers();
         this.register();
         this.edit(this.entityDialogContainer, data);
         this.remove();
@@ -617,6 +623,15 @@ export class Services {
             });
         });
     }
+    getContainers() {
+        const containers = document.querySelectorAll('#get-containers');
+        containers.forEach((container) => {
+            const entityId = container.dataset.entityid;
+            container.addEventListener('click', () => {
+                new Charges().render(Config.offset, Config.currentPage, "", entityId);
+            });
+        });
+    }
     remove() {
         const remove = document.querySelectorAll('#remove-entity');
         remove.forEach((remove) => {
@@ -652,7 +667,7 @@ export class Services {
                 const dialogContent = document.getElementById('dialog-content');
                 deleteButton.onclick = async () => {
                     const data = await getEntityData('Service', entityId);
-                    if (data.serviceState.name == "Pendiente") {
+                    if (data.serviceState.name == "Pendiente" || data.serviceState.name == "Terminado") {
                         deleteEntity('Service', entityId)
                             .then(res => {
                             eventLog('DLT', 'SERVICIO', `${entityName}`, data);

@@ -597,7 +597,7 @@ export class Vehiculars {
                 const dialogContent: InterfaceElement = document.getElementById('dialog-content')
 
                 deleteButton.onclick = async () => {
-                    if(data.vehicularState.name == "Disponible"){
+                    if(data.vehicularState.name == "Disponible" || data.vehicularState.name == "No disponible"){
                         deleteEntity('Vehicular', entityId)
                         .then((res) => {
                             setTimeout(async () => {

@@ -7,6 +7,7 @@ import { Config } from "../../Configs.js"
 import { tableLayout } from "./Layout.js"
 import { tableLayoutTemplate } from "./Template.js"
 import { Patrols } from "./patrols/Patrols.js"
+import { Charges } from "./containers/Containers.js"
 
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
@@ -137,6 +138,10 @@ export class Services {
                     <button class="button" id="get-patrols" data-entityId="${service.id}">
                         <i class="fa-solid fa-car"></i>
                     </button>
+
+                    <button class="button" id="get-containers" data-entityId="${service.id}">
+                        <i class="fa-solid fa-truck-container"></i>
+                    </button>
                     
                     <button class="button" id="edit-entity" data-entityId="${service.id}">
                         <i class="fa-solid fa-pen"></i>
@@ -152,6 +157,7 @@ export class Services {
         }
         
         this.getVehicles()
+        this.getContainers()
         this.register()
         this.edit(this.entityDialogContainer, data)
         this.remove()
@@ -633,7 +639,7 @@ export class Services {
                   })
           }
       }
-  }
+    }
     public getVehicles(){
         const patrols: InterfaceElement = document.querySelectorAll('#get-patrols')
         patrols.forEach((patrol: InterfaceElement) => {
@@ -642,6 +648,18 @@ export class Services {
 
             patrol.addEventListener('click', (): void => {
                 new Patrols().render(Config.offset, Config.currentPage, "", entityId)
+            })
+        })
+    }
+
+    public getContainers(){
+        const containers: InterfaceElement = document.querySelectorAll('#get-containers')
+        containers.forEach((container: InterfaceElement) => {
+
+            const entityId = container.dataset.entityid
+
+            container.addEventListener('click', (): void => {
+                new Charges().render(Config.offset, Config.currentPage, "", entityId)
             })
         })
     }
@@ -685,7 +703,7 @@ export class Services {
 
                 deleteButton.onclick = async () => {
                     const data: any = await getEntityData('Service', entityId)
-                    if(data.serviceState.name == "Pendiente"){
+                    if(data.serviceState.name == "Pendiente" || data.serviceState.name == "Terminado"){
                       deleteEntity('Service', entityId)
                         .then(res => {
                           eventLog('DLT', 'SERVICIO', `${entityName}`, data)

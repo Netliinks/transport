@@ -189,6 +189,11 @@ export class Patrols {
         const renderInterface = async (): Promise<void> => {
             const nothingConfig = {
               crewState: await getNothing("name", "En servicio", "CrewState"),
+              vehicularState: await getNothing("name", "En servicio", "VehicularState"),
+              userState: await getNothing("name", "En servicio", "UserState"),
+              weaponState: await getNothing("name", "En servicio", "WeaponState"),
+              nothingWeapon: await getNothing("name", "N/A", "Weapon"),
+              nothingUser: await getNothing("username", "N/A", "User"),
             }
             this.entityDialogContainer.innerHTML = ''
             this.entityDialogContainer.style.display = 'flex'
@@ -271,11 +276,50 @@ export class Patrols {
                     }
 
                   registerEntity(raw, 'ServiceDetailV').then((res) => {
-                    setTimeout(() => {
+                    setTimeout(async () => {
                         //let parse = JSON.parse(raw);
                         eventLog('INS', 'SERVICIO-PATRULLA', `${dataCrew.value}`, serviceId)
                         getUpdateState(dataCrew.state, dataCrew.table, dataCrew.id)
-                        eventLog('UPD', `${dataCrew.title}`, `${dataCrew.value} asignado a servicio: ${serviceId.name}`, '')
+                        eventLog('UPD', `${dataCrew.title}`, `${dataCrew.value} en servicio: ${serviceId.name}`, '')
+                        const crew: any = await getEntityData('Crew', dataCrew.id)
+                        let dataArray = []
+                        if(crew?.vehicular?.id){
+                          dataArray.push({
+                              id: crew.vehicular.id,
+                              value: `${crew.vehicular.type} [${crew.vehicular.licensePlate}]`,
+                              table: "Vehicular",
+                              state: nothingConfig.vehicularState.id,
+                              title: "VEHÍCULO"
+                          })
+                        }
+                        let users = [crew?.crewOne, crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive]
+                        let weapons = [crew?.weaponOne, crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive]
+                        for(let i = 0; i < 5; i++){
+                          if(users[i]?.id != nothingConfig.nothingUser.id || users[i]?.username != 'N/A'){
+                            dataArray.push({
+                                id: users[i].id,
+                                value: `${users[i].username}`,
+                                table: "User",
+                                state: nothingConfig.userState.id,
+                                title: "GUARDIA"
+                            })
+
+                          if(weapons[i]?.id != nothingConfig.nothingWeapon.id || weapons[i]?.name != 'N/A'){
+                              dataArray.push({
+                                  id: weapons[i].id,
+                                  value: `${weapons[i].name} [${weapons[i].licensePlate}]`,
+                                  table: "Weapon",
+                                  state: nothingConfig.weaponState.id,
+                                  title: "ARMA"
+                              })
+                            }
+                          }
+                        }
+
+                        for(let i = 0; i < dataArray.length; i++){
+                          getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
+                          eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} en servicio: ${serviceId.name}`, serviceId)
+                        }
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
                         new CloseDialog().x(container)
@@ -298,7 +342,15 @@ export class Patrols {
             const entityId = remove.dataset.entityid
             const entityName = remove.dataset.entityname
 
-            remove.addEventListener('click', (): void => {
+            remove.addEventListener('click', async (): Promise<void> => {
+              const nothingConfig = {
+                vehicularState: await getNothing("name", "Asignado", "VehicularState"),
+                userState: await getNothing("name", "Asignado", "UserState"),
+                weaponState: await getNothing("name", "Asignado", "WeaponState"),
+                nothingWeapon: await getNothing("name", "N/A", "Weapon"),
+                nothingUser: await getNothing("username", "N/A", "User"),
+                crewState: await getNothing("name", "Disponible", "CrewState")
+              }
                 this.dialogContainer.style.display = 'flex'
                 this.dialogContainer.innerHTML = `
           <div class="dialog_content" id="dialog-content">
@@ -329,14 +381,52 @@ export class Patrols {
                 const dialogContent: InterfaceElement = document.getElementById('dialog-content')
 
                 deleteButton.onclick = async () => {
-                    let crewState = await getNothing("name", "Disponible", "CrewState")
                     const data: any = await getEntityData('ServiceDetailV', entityId)
-                    if(serviceId.serviceState.name == "Pendiente"){
+                    if(serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Terminado"){
                       deleteEntity('ServiceDetailV', entityId)
-                        .then(res => {
+                        .then(async res => {
                           eventLog('DLT', 'SERVICIO-PATRULLA', `${entityName}`, serviceId)
-                          getUpdateState(crewState.id, 'Crew', data.crew.id)
+                          getUpdateState(nothingConfig.crewState.id, 'Crew', data.crew.id)
                           eventLog('UPD', `PATRULLA`, `${data.crew.name} disponible`, '')
+                          const crew: any = await getEntityData('Crew', data.crew.id)
+                          let dataArray = []
+                          if(crew?.vehicular?.id){
+                            dataArray.push({
+                                id: crew.vehicular.id,
+                                value: `${crew.vehicular.type} [${crew.vehicular.licensePlate}]`,
+                                table: "Vehicular",
+                                state: nothingConfig.vehicularState.id,
+                                title: "VEHÍCULO"
+                            })
+                          }
+                          let users = [crew?.crewOne, crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive]
+                          let weapons = [crew?.weaponOne, crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive]
+                          for(let i = 0; i < 5; i++){
+                            if(users[i]?.id != nothingConfig.nothingUser.id || users[i]?.username != 'N/A'){
+                              dataArray.push({
+                                  id: users[i].id,
+                                  value: `${users[i].username}`,
+                                  table: "User",
+                                  state: nothingConfig.userState.id,
+                                  title: "GUARDIA"
+                              })
+
+                            if(weapons[i]?.id != nothingConfig.nothingWeapon.id || weapons[i]?.name != 'N/A'){
+                                dataArray.push({
+                                    id: weapons[i].id,
+                                    value: `${weapons[i].name} [${weapons[i].licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponState.id,
+                                    title: "ARMA"
+                                })
+                              }
+                            }
+                          }
+
+                          for(let i = 0; i < dataArray.length; i++){
+                            getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
+                            eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
+                          }
                           new Patrols().render(infoPage.offset, infoPage.currentPage, infoPage.search, serviceId.id)
                         })
                     }else{

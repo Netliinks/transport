@@ -9,7 +9,7 @@ export const tableLayout = `
     <div class="datatable_header">
       <div class="datatable_title" id="datatable-title">
         <h1>Patrullas</h1>
-        <h2 id="datatable_subtitle">Cargando...</h2>
+        <h2 id="datatable_subtitle" style="color:blue;">Cargando...</h2>
       </div>
       <div class="datatable_tools" id="datatable-tools">
         <input type="search"

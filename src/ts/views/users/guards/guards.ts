@@ -953,7 +953,7 @@ export class Guards {
                 const dialogContent: InterfaceElement = document.getElementById('dialog-content')
 
                 deleteButton.onclick = async () => {
-                    if(data.userState.name == "Disponible"){
+                    if(data.userState.name == "Disponible" || data.userState.name == "No disponible"){
                         deleteEntity('User', entityId)
                         .then((res) => {
                             setTimeout(async () => {
