@@ -447,7 +447,7 @@ export class Charges {
 
                 deleteButton.onclick = async () => {
                     const data: any = await getEntityData('Charge', entityId)
-                    if(serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Terminado"){
+                    if(serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Finalizado"){
                       deleteEntity('Charge', entityId)
                         .then(async res => {
                           eventLog('DLT', 'SERVICIO-CONTENEDOR', `${entityName} [${entityPlate}]`, serviceId)

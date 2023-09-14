@@ -703,7 +703,7 @@ export class Services {
 
                 deleteButton.onclick = async () => {
                     const data: any = await getEntityData('Service', entityId)
-                    if(data.serviceState.name == "Pendiente" || data.serviceState.name == "Terminado"){
+                    if(data.serviceState.name == "Pendiente" || data.serviceState.name == "Finalizado"){
                       deleteEntity('Service', entityId)
                         .then(res => {
                           eventLog('DLT', 'SERVICIO', `${entityName}`, data)

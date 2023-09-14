@@ -382,7 +382,7 @@ export class Patrols {
 
                 deleteButton.onclick = async () => {
                     const data: any = await getEntityData('ServiceDetailV', entityId)
-                    if(serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Terminado"){
+                    if(serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Finalizado"){
                       deleteEntity('ServiceDetailV', entityId)
                         .then(async res => {
                           eventLog('DLT', 'SERVICIO-PATRULLA', `${entityName}`, serviceId)

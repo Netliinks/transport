@@ -667,7 +667,7 @@ export class Services {
                 const dialogContent = document.getElementById('dialog-content');
                 deleteButton.onclick = async () => {
                     const data = await getEntityData('Service', entityId);
-                    if (data.serviceState.name == "Pendiente" || data.serviceState.name == "Terminado") {
+                    if (data.serviceState.name == "Pendiente" || data.serviceState.name == "Finalizado") {
                         deleteEntity('Service', entityId)
                             .then(res => {
                             eventLog('DLT', 'SERVICIO', `${entityName}`, data);
