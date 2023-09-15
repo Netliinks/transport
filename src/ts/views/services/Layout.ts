@@ -29,7 +29,7 @@ export const tableLayout = `
     <table class="datatable_content">
       <thead><tr>
         <th><span data-type="name">
-          Nombre <i class="fa-regular fa-filter"></i>
+          Solicitante <i class="fa-regular fa-filter"></i>
         </span></th>
 
         <th><span data-type="client">

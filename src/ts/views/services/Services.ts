@@ -1,7 +1,7 @@
 // @filename: Departments.ts
 
 import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity } from "../../endpoints.js"
-import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog, getSearch } from "../../tools.js"
+import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog, getSearch, getDetails, getUpdateState } from "../../tools.js"
 import { Data, InterfaceElement } from "../../types.js"
 import { Config } from "../../Configs.js"
 import { tableLayout } from "./Layout.js"
@@ -135,6 +135,11 @@ export class Services {
                 <td>${service?.custodyType ?? ''}</dt>
                 <td class="tag"><span>${service?.serviceState?.name ?? ''}</span></td>
                 <td class="entity_options">
+
+                    <button class="button" id="get-email" data-entityId="${service.id}">
+                        <i class="fa-solid fa-envelope"></i>
+                    </button>
+
                     <button class="button" id="get-patrols" data-entityId="${service.id}">
                         <i class="fa-solid fa-car"></i>
                     </button>
@@ -142,7 +147,7 @@ export class Services {
                     <button class="button" id="get-containers" data-entityId="${service.id}">
                         <i class="fa-solid fa-truck-container"></i>
                     </button>
-                    
+
                     <button class="button" id="edit-entity" data-entityId="${service.id}">
                         <i class="fa-solid fa-pen"></i>
                     </button>
@@ -160,6 +165,7 @@ export class Services {
         this.getContainers()
         this.register()
         this.edit(this.entityDialogContainer, data)
+        this.sendEmail()
         this.remove()
     }
 
@@ -216,7 +222,7 @@ export class Services {
           <div class="entity_editor_body">
             <div class="material_input">
             <input type="text" id="entity-name" autocomplete="none">
-            <label for="entity-name"><i class="fa-solid fa-desktop"></i> Nombre</label>
+            <label for="entity-name"><i class="fa-solid fa-desktop"></i> Solicitante</label>
             </div>
 
             <div class="material_input">
@@ -278,7 +284,8 @@ export class Services {
               <div class="material_input">
                 <br>
                 <select class="input_filled" id="entity-vehicle">
-                    <option value="1" selected>1</option>
+                    <option value="0" selected>0</option>
+                    <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
@@ -291,7 +298,8 @@ export class Services {
               <div class="material_input">
                 <br>
                 <select class="input_filled" id="entity-containers">
-                    <option value="1" selected>1</option>
+                    <option value="0" selected>0</option>
+                    <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
@@ -453,7 +461,7 @@ export class Services {
               <div class="entity_editor_body">
                   <div class="material_input">
                   <input type="text" id="entity-name" class="input_filled" value="${data.name}">
-                  <label for="entity-name">Nombre</label>
+                  <label for="entity-name">Solicitante</label>
                   </div>
 
                   <div class="material_input">
@@ -513,7 +521,8 @@ export class Services {
                     <div class="material_input">
                       <br>
                       <select class="input_filled" id="entity-vehicle" disabled>
-                          <option value="1" selected>1</option>
+                          <option value="0" selected>0</option>
+                          <option value="1">1</option>
                           <option value="2">2</option>
                           <option value="3">3</option>
                           <option value="4">4</option>
@@ -526,7 +535,8 @@ export class Services {
                     <div class="material_input">
                       <br>
                       <select class="input_filled" id="entity-containers" disabled>
-                          <option value="1" selected>1</option>
+                          <option value="0" selected>0</option>
+                          <option value="1">1</option>
                           <option value="2">2</option>
                           <option value="3">3</option>
                           <option value="4">4</option>
@@ -671,7 +681,18 @@ export class Services {
             const entityId = remove.dataset.entityid
             const entityName = remove.dataset.entityname
 
-            remove.addEventListener('click', (): void => {
+            remove.addEventListener('click', async (): Promise<void> => {
+                const data: any = await getEntityData('Service', entityId)
+                const nothingConfig = {
+                    vehicularState: await getNothing("name", "Asignado", "VehicularState"),
+                    userState: await getNothing("name", "Asignado", "UserState"),
+                    weaponState: await getNothing("name", "Asignado", "WeaponState"),
+                    nothingWeapon: await getNothing("name", "N/A", "Weapon"),
+                    nothingUser: await getNothing("username", "N/A", "User"),
+                    crewState: await getNothing("name", "Disponible", "CrewState"),
+                    userContainer: await getNothing("name", "Disponible", "UserState"),
+                    weaponContainer: await getNothing("name", "Disponible", "WeaponState"),
+                }
                 this.dialogContainer.style.display = 'flex'
                 this.dialogContainer.innerHTML = `
           <div class="dialog_content" id="dialog-content">
@@ -702,11 +723,93 @@ export class Services {
                 const dialogContent: InterfaceElement = document.getElementById('dialog-content')
 
                 deleteButton.onclick = async () => {
-                    const data: any = await getEntityData('Service', entityId)
+                    
                     if(data.serviceState.name == "Pendiente" || data.serviceState.name == "Finalizado"){
+                      const patrols: any = await getDetails("service.id", entityId, "ServiceDetailV")
+                      const containers: any = await getDetails("service.id", entityId, "Charge")
                       deleteEntity('Service', entityId)
-                        .then(res => {
+                        .then(async res => {
                           eventLog('DLT', 'SERVICIO', `${entityName}`, data)
+                          //Patrulla
+                          if(patrols != undefined){
+                            patrols.forEach(async (patrol: any) => {
+                                let crew: any = await getEntityData('Crew', patrol.crew.id)
+                                getUpdateState(nothingConfig.crewState.id, 'Crew', patrol.crew.id)
+                                eventLog('UPD', `PATRULLA`, `${patrol.crew.name} disponible`, '')
+                                let dataArray = []
+                                if(crew?.vehicular?.id){
+                                dataArray.push({
+                                    id: crew.vehicular.id,
+                                    value: `${crew.vehicular.type} [${crew.vehicular.licensePlate}]`,
+                                    table: "Vehicular",
+                                    state: nothingConfig.vehicularState.id,
+                                    title: "VEHÍCULO"
+                                })
+                                }
+                                let users = [crew?.crewOne, crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive]
+                                let weapons = [crew?.weaponOne, crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive]
+                                for(let i = 0; i < 5; i++){
+                                if(users[i]?.id != nothingConfig.nothingUser.id || users[i]?.username != 'N/A'){
+                                    dataArray.push({
+                                        id: users[i].id,
+                                        value: `${users[i].username}`,
+                                        table: "User",
+                                        state: nothingConfig.userState.id,
+                                        title: "GUARDIA"
+                                    })
+    
+                                if(weapons[i]?.id != nothingConfig.nothingWeapon.id || weapons[i]?.name != 'N/A'){
+                                    dataArray.push({
+                                        id: weapons[i].id,
+                                        value: `${weapons[i].name} [${weapons[i].licensePlate}]`,
+                                        table: "Weapon",
+                                        state: nothingConfig.weaponState.id,
+                                        title: "ARMA"
+                                    })
+                                    }
+                                }
+                                }
+    
+                                for(let i = 0; i < dataArray.length; i++){
+                                getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
+                                eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
+                                }
+                            })
+                          }
+
+                          //Contenedor
+                          if(containers != undefined){
+                            containers.forEach((container: any) => {
+                                let dataArray = []
+                        
+                                if(container.companion?.id != nothingConfig.nothingUser.id || container.companion?.username != 'N/A'){
+                                    dataArray.push({
+                                        id: container.companion.id,
+                                        value: `${container.companion.username}`,
+                                        table: "User",
+                                        state: nothingConfig.userContainer.id,
+                                        title: "GUARDIA"
+                                    })
+
+                                if(container.weapon?.id != nothingConfig.nothingWeapon.id || container.weapon?.name != 'N/A'){
+                                    dataArray.push({
+                                        id: container.weapon.id,
+                                        value: `${container.weapon.name} [${container.weapon.licensePlate}]`,
+                                        table: "Weapon",
+                                        state: nothingConfig.weaponContainer.id,
+                                        title: "ARMA"
+                                    })
+                                    }
+                                }
+                                
+
+                                for(let i = 0; i < dataArray.length; i++){
+                                    getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
+                                    eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
+                                }
+                            })
+                          }
+                          
                           new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search)
                         })
                     }else{
@@ -1182,5 +1285,98 @@ export class Services {
             }
         }
 
-}
+    }
+    private sendEmail(): void {
+       
+        const email: InterfaceElement = document.querySelectorAll('#get-email')
+        email.forEach((send: InterfaceElement) => {
+            const entityId = send.dataset.entityid
+            send.addEventListener('click', (): void => {
+                modalMail('Service', entityId)
+            })
+        })
+    
+        async function modalMail(entity: any, entityID: any){
+            const dialogContainer: InterfaceElement =
+            document.getElementById('app-dialogs')
+            let data = await getEntityData(entity, entityID)
+            const patrols: any = await getDetails("service.id", entityID, "ServiceDetailV")
+            dialogContainer.style.display = 'block'
+            dialogContainer.innerHTML = `
+                <div class="dialog_content" id="dialog-content">
+                    <div class="dialog">
+                        <div class="dialog_container padding_8">
+                            <div class="dialog_header">
+                                <h2>Confirmación</h2>
+                            </div>
+
+                            <div class="dialog_message padding_8">
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-desktop"></i> Código de servicio: ${data.id}</label> 
+                                </div>
+                                <br>
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-earth-americas"></i> Ciudad Origen: ${data.cityOrigin.name}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-earth-americas"></i> Ciudad Destino: ${data.cityDestination.name}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-location-arrow"></i> Lugar Origen: ${data.placeOrigin}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-location-arrow"></i> Lugar Destino: ${data.placeDestination}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-buildings"></i> Cliente: ${data.customer?.name ?? ''}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-desktop"></i> Solicitante: ${data?.name ?? ''}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-calendar"></i> FH_Servicio: ${data?.outputDate ?? ''} ${data?.outputTime ?? ''}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-info"></i> Referencia Cliente: ${data?.reference ?? ''}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-shield"></i> Tipo de Custodia: ${data?.custodyType ?? ''}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-truck-container"></i> # Contenedores: ${data?.quantyContainers ?? '0'}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="creation-date"><i class="fa-solid fa-car"></i> # Vehículos: ${data?.quantyVehiculars ?? '0'}</label>
+                                </div>
+                                <div id="listPatrol"></div>
+                            </div>
+
+                            <div class="dialog_footer">
+                                <button class="btn btn_danger" id="cancel">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+            inputObserver()
+            
+            const _closeButton: InterfaceElement = document.getElementById('cancel')
+            const _dialog: InterfaceElement = document.getElementById('dialog-content')
+            if(patrols != undefined){
+                const _listPatrol: InterfaceElement = document.getElementById('listPatrol')
+                _listPatrol.innerHTML = `<ul>`
+                patrols.forEach(async (patrol: any) => {
+                    _listPatrol.innerHTML += `<li>${patrol.crew.name}</li>`
+                })
+                _listPatrol.innerHTML += `</ul>`
+            }
+
+            _closeButton.onclick = () => {
+                new CloseDialog().x(_dialog)
+            }
+
+            
+        }
+    
+    }
 }

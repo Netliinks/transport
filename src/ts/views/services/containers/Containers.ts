@@ -159,6 +159,10 @@ export class Charges {
                 <td>${container?.transportCompany ?? ''}</dt>
                 <td class="entity_options">
 
+                    <button class="button" id="edit-entity" data-entityId="${container.id}">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+
                     <button class="button" id="remove-entity" data-entityId="${container.id}" data-entityName="${container.name}" data-entityPlate="${container.licensePlate}" style="display:${userPermissions().style};">
                         <i class="fa-solid fa-trash"></i>
                     </button>
@@ -169,6 +173,7 @@ export class Charges {
         }
 
         this.register()
+        this.edit(this.entityDialogContainer, data)
         this.remove()
     }
 
@@ -321,6 +326,7 @@ export class Charges {
                     stamp: document.getElementById('entity-stamp'),
                     guard: document.getElementById('entity-guard'),
                     weapon: document.getElementById('entity-weapon'),
+                    observation: document.getElementById('entity-observation'),
                 }
 
                 let dataArray: any = []
@@ -366,6 +372,7 @@ export class Charges {
                     "headColor": `${inputsCollection.color.value}`,
                     "satelliteLock": `${inputsCollection.satellite.value}`,
                     "stamp": `${inputsCollection.stamp.value}`,
+                    "observation": `${inputsCollection.observation.value}`,
                     "companion": {
                       "id": `${inputsCollection.guard.dataset.optionid}`
                     },
@@ -384,7 +391,7 @@ export class Charges {
                         eventLog('INS', 'SERVICIO-CONTENEDOR', `${parse.name} [${parse.licensePlate}]`, serviceId)
                         for(let i = 0; i < dataArray.length; i++){
                           getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
-                          eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} (contenedor)  en servicio: ${serviceId.name}`, serviceId)
+                          eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} (contenedor) en servicio: ${serviceId.name}`, serviceId)
                         }
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
@@ -400,7 +407,297 @@ export class Charges {
         const reg = async (raw: any) => {
         }
     }
+    private edit(container: InterfaceElement, data: Data) {
+      // Edit entity
+      const edit: InterfaceElement = document.querySelectorAll('#edit-entity')
+      edit.forEach((edit: InterfaceElement) => {
+          const entityId = edit.dataset.entityid
+          edit.addEventListener('click', (): void => {
+              RInterface('Charge', entityId)
+          })
+      })
 
+      const RInterface = async (entities: string, entityID: string): Promise<void> => {
+          const nothingConfig = {
+            userState: await getNothing("name", "En servicio", "UserState"),
+            weaponState: await getNothing("name", "En servicio", "WeaponState"),
+            userEnable: await getNothing("name", "Disponible", "UserState"),
+            weaponEnable: await getNothing("name", "Disponible", "WeaponState"),
+            nothingWeapon: await getNothing("name", "N/A", "Weapon"),
+            nothingUser: await getNothing("username", "N/A", "User"),
+          }
+          const data: any = await getEntityData(entities, entityID)
+          this.entityDialogContainer.innerHTML = ''
+          this.entityDialogContainer.style.display = 'flex'
+          this.entityDialogContainer.innerHTML = `
+              <div class="entity_editor" id="entity-editor">
+              <div class="entity_editor_header">
+                  <div class="user_info">
+                  <div class="avatar"><i class="fa-regular fa-truck-container"></i></div>
+                  <h1 class="entity_editor_title">Editar <br><small>${data.name}</small></h1>
+                  </div>
+
+                  <button class="btn btn_close_editor" id="close"><i class="fa-solid fa-x"></i></button>
+              </div>
+
+              <!-- EDITOR BODY -->
+              <div class="entity_editor_body">
+                  <div class="material_input">
+                  <input type="text" id="entity-name" class="input_filled" value="${data.name}">
+                  <label for="entity-name"><i class="fa-solid fa-truck-container"></i> Nombre</label>
+                  </div>
+      
+                  <div class="material_input">
+                  <input type="text" id="entity-licensePlate" class="input_filled" value="${data.licensePlate}">
+                  <label for="entity-licensePlate"><i class="fa-solid fa-address-card"></i> Placa</label>
+                  </div>
+      
+                  <div class="material_input">
+                  <input type="text" id="entity-driver" class="input_filled" value="${data?.driver ?? ''}">
+                  <label for="entity-driver"><i class="fa-solid fa-user"></i> Conductor</label>
+                  </div>
+      
+                  <div class="material_input">
+                  <input type="text" id="entity-dni" maxlength="10" class="input_filled" value="${data?.dniDriver ?? ''}">
+                  <label for="entity-dni"><i class="fa-solid fa-id-card"></i> DNI</label>
+                  </div>
+      
+                  <div class="material_input">
+                  <input type="text" id="entity-company" class="input_filled" value="${data?.transportCompany ?? ''}">
+                  <label for="entity-company"><i class="fa-solid fa-building"></i> Compañía de Transporte</label>
+                  </div>
+      
+                  <div class="material_input">
+                  <input type="text" id="entity-plate" class="input_filled" value="${data?.transportPlate ?? ''}">
+                  <label for="entity-plate"><i class="fa-solid fa-credit-card-front"></i> Placa de Transporte</label>
+                  </div>
+      
+                  <div class="material_input">
+                  <input type="text" id="entity-head-color" class="input_filled" value="${data?.headColor ?? ''}">
+                  <label for="entity-head-color"><i class="fa-solid fa-fill-drip"></i> Color cabezal</label>
+                  </div>
+      
+                  <div class="material_input">
+                  <input type="text" id="entity-satellite" class="input_filled" value="${data?.satelliteLock ?? ''}">
+                  <label for="entity-satellite"><i class="fa-solid fa-satellite"></i> Bloqueo Satelital</label>
+                  </div>
+      
+                  <div class="material_input">
+                  <input type="text" id="entity-stamp" class="input_filled" value="${data?.stamp ?? ''}">
+                  <label for="entity-stamp"><i class="fa-solid fa-stamp"></i> Estampilla</label>
+                  </div>
+      
+                  <div class="material_input">
+                  <input type="text" id="entity-guard" class="input_filled" data-optionid="${data.companion.id}" value="${data?.companion.username ?? ''}">
+                  <label for="entity-guard"><i class="fa-solid fa-user-police"></i> Guardia</label>
+                  <button id="delete-guard"><i class="fa-solid fa-trash"></i></button>
+                  </div>
+      
+                  <div class="material_input">
+                  <input type="text" id="entity-weapon" class="input_filled" data-optionid="${data.weapon.id}" value="${data?.weapon.name ?? ''} [${data?.weapon.licensePlate ?? ''}]">
+                  <label for="entity-weapon"><i class="fa-solid fa-gun"></i> Arma</label>
+                  <button id="delete-weapon"><i class="fa-solid fa-trash"></i></button>
+                  </div>
+
+                  <br>
+                  <div class="material_input">
+                  <br>
+                  <textarea id="entity-observation" rows="4" class="input_filled" autocomplete="none">${data?.observation ?? ''}</textarea>
+                  <label for="entity-observation"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
+                  </div>
+                  <br>
+                  <br>
+
+                  <div class="input_detail">
+                      <label for="creation-date"><i class="fa-solid fa-calendar"></i></label>
+                      <input type="date" id="creation-date" class="input_filled" value="${data.creationDate}" readonly>
+                  </div>
+                  <br>
+                  <div class="input_detail">
+                      <label for="creation-time"><i class="fa-solid fa-clock"></i></label>
+                      <input type="time" id="creation-time" class="input_filled" value="${data.creationTime}" readonly>
+                  </div>
+                  <br>
+                  <div class="input_detail">
+                      <label for="log-user"><i class="fa-solid fa-user"></i></label>
+                      <input type="text" id="log-user" class="input_filled" value="${data.createdBy}" readonly>
+                  </div>
+
+              </div>
+              <!-- END EDITOR BODY -->
+
+              <div class="entity_editor_footer">
+                  <button class="btn btn_primary btn_widder" id="update-changes" style="display:${userPermissions().style};">Guardar</button>
+              </div>
+              </div>
+          `
+
+          inputObserver()
+          this.selectDelete(nothingConfig)
+          this.selectUser()
+          this.selectWeapon()
+          this.close()
+          UUpdate(entityID, data, nothingConfig)
+      }
+
+      const UUpdate = async (entityId: any, data: any, nothingConfig: any): Promise<void> => {
+          const updateButton: InterfaceElement =
+              document.getElementById('update-changes')
+          updateButton.addEventListener('click', async () => {
+              const $value: InterfaceElement = {
+                  // @ts-ignore
+                  name: document.getElementById('entity-name'),
+                  licensePlate: document.getElementById('entity-licensePlate'),
+                  driver: document.getElementById('entity-driver'),
+                  dni: document.getElementById('entity-dni'),
+                  company: document.getElementById('entity-company'),
+                  plate: document.getElementById('entity-plate'),
+                  color: document.getElementById('entity-head-color'),
+                  satellite: document.getElementById('entity-satellite'),
+                  stamp: document.getElementById('entity-stamp'),
+                  guard: document.getElementById('entity-guard'),
+                  weapon: document.getElementById('entity-weapon'),
+                  observation: document.getElementById('entity-observation'),
+              }
+              let dataArray = []
+              let dataChangesArray = []
+
+                if($value.guard.dataset.optionid != nothingConfig.nothingUser.id || $value.guard.value != "N/A"){
+        
+                    if($value.guard.dataset.optionid != data.companion.id){
+                        dataArray.push({
+                            id: $value.guard.dataset.optionid,
+                            value: $value.guard.value,
+                            table: "User",
+                            state: nothingConfig.userState.id,
+                            title: "GUARDIA"
+                        })
+                        
+                        if(data.companion.id != nothingConfig.nothingUser.id){
+                            dataChangesArray.push({
+                                id: data.companion.id,
+                                value: data.companion.username,
+                                table: "User",
+                                state: nothingConfig.userEnable.id,
+                                title: "GUARDIA"
+                            })
+                        }
+                    }
+
+                    if($value.weapon.dataset.optionid != data.weapon.id){
+                        if($value.weapon.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon.value != "N/A [N/A]"){
+                            dataArray.push({
+                                id: $value.weapon.dataset.optionid,
+                                value: $value.weapon.value,
+                                table: "Weapon",
+                                state: nothingConfig.weaponState.id,
+                                title: "ARMA"
+                            })
+                        
+                            if(data.weapon.id != nothingConfig.nothingWeapon.id){
+                                dataChangesArray.push({
+                                    id: data.weapon.id,
+                                    value: `${data.weapon.name} [${data.weapon.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                })
+                            }
+                        }else{
+                            if(data.weapon.id != nothingConfig.nothingWeapon.id){
+                                dataChangesArray.push({
+                                    id: data.weapon.id,
+                                    value: `${data.weapon.name} [${data.weapon.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                })
+                            }
+                        }
+                    }
+                }else{
+                    if(data.companion.id != nothingConfig.nothingUser.id){
+                        dataChangesArray.push({
+                            id: data.companion.id,
+                            value: data.companion.username,
+                            table: "User",
+                            state: nothingConfig.userEnable.id,
+                            title: "GUARDIA"
+                        })
+                    }
+                    if(data.weapon.id != nothingConfig.nothingWeapon.id){
+                        dataChangesArray.push({
+                            id: data.weapon.id,
+                            value: `${data.weapon.name} [${data.weapon.licensePlate}]`,
+                            table: "Weapon",
+                            state: nothingConfig.weaponEnable.id,
+                            title: "ARMA"
+                        })
+                    }
+                    $value.weapon.dataset.optionid = nothingConfig.nothingWeapon.id
+                    $value.weapon.value = "N/A [N/A]"
+                }
+              let raw = JSON.stringify({
+                  "name": `${$value.name.value.toUpperCase()}`,
+                  "licensePlate": `${$value.licensePlate.value.toUpperCase()}`,
+                  "driver": `${$value.driver.value}`,
+                  "dniDriver": `${$value.dni.value}`,
+                  "transportCompany": `${$value.company.value}`,
+                  "transportPlate": `${$value.plate.value}`,
+                  "headColor": `${$value.color.value}`,
+                  "satelliteLock": `${$value.satellite.value}`,
+                  "stamp": `${$value.stamp.value}`,
+                  "observation": `${$value.observation.value}`,
+                  "companion": {
+                    "id": `${$value.guard.dataset.optionid}`
+                  },
+                  "weapon": {
+                    "id": `${$value.weapon.dataset.optionid}`
+                  },
+              })
+              // @ts-ignore
+              if ($value.name.value === '' || $value.name.value === undefined) {
+                  alert("Nombre vacío!");
+              }
+              else{
+                  update(raw, dataArray, dataChangesArray)
+              }
+          })
+          const update = (raw: any, dataArray: any, dataChangesArray: any) => {
+              updateEntity('Charge', entityId, raw)
+                  .then((res) => {
+                      setTimeout(async () => {
+                          let tableBody: InterfaceElement
+                          let container: InterfaceElement
+                          let data: any
+                          
+                          //data = await getWeapons()
+                          let parse = JSON.parse(raw);
+                          eventLog('UPD', 'SERVICIO-CONTENEDOR', `${parse.name} [${parse.licensePlate}]`, serviceId)
+                          dataArray.forEach((container: any) => {
+                            getUpdateState(container.state, container.table, container.id)
+                            eventLog('UPD', `${container.title}`, `${container.value} (contenedor) en servicio: ${serviceId.name}`, '')
+                          })
+                          dataChangesArray.forEach((container: any) => {
+                            getUpdateState(container.state, container.table, container.id)
+                            eventLog('UPD', `${container.title}`, `${container.value} disponible`, '')
+                          })
+                          new CloseDialog()
+                              .x(container =
+                                  document.getElementById('entity-editor-container')
+                              )
+                          new Charges().render(infoPage.offset, infoPage.currentPage, infoPage.search, serviceId.id)
+                         /* new Clients().load(tableBody
+                              = document.getElementById('datatable-body'),
+                              currentPage,
+                              data
+                          )*/
+
+                      }, 100)
+                  })
+          }
+      }
+    }
     public remove() {
         const remove: InterfaceElement = document.querySelectorAll('#remove-entity')
         remove.forEach((remove: InterfaceElement) => {
@@ -1000,5 +1297,29 @@ export class Charges {
               }
           }
 
+  }
+  private selectDelete(nothingConfig: any): void {
+    const inputs: InterfaceElement = {
+      guard: document.getElementById('entity-guard'),
+      weapon: document.getElementById('entity-weapon'),
+    }
+
+    const deletes: InterfaceElement = {
+      guard: document.getElementById('delete-guard'),
+      weapon: document.getElementById('delete-weapon'),
+
+    }
+
+    deletes.weapon.addEventListener('click', async (): Promise<void> => {
+        inputs.weapon.value = `${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]`
+        inputs.weapon.dataset.optionid = nothingConfig.nothingWeapon.id
+    })
+
+    deletes.guard.addEventListener('click', async (): Promise<void> => {
+        inputs.guard.value = nothingConfig.nothingUser.username
+        inputs.guard.dataset.optionid = nothingConfig.nothingUser.id
+    })
+
+    
   }
 }

@@ -338,6 +338,31 @@ export const getSearch = async (param: string, value: string, table: string) => 
     }
 }
 
+export const getDetails = async (param: string, value: string, table: string) => {
+    const businessId = localStorage.getItem('business_id')
+    let raw = JSON.stringify({
+        "filter": {
+            "conditions": [
+                {
+                "property": `${param}`,
+                "operator": "=",
+                "value": `${value}`
+                },
+                {
+                "property": `business.id`,
+                "operator": "=",
+                "value": `${businessId}`
+                }
+            ]
+        },
+        fetchPlan: 'full',
+    });
+    let data = await getFilterEntityData(`${table}`, raw);
+    if(data.length != 0){
+        return data
+    }
+}
+
 export const getUpdateState = async (value: string, table: string, entityId: any) => {
     let raw: any
     if(table == "Vehicular"){
