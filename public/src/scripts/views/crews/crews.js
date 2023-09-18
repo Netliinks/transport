@@ -378,7 +378,7 @@ export class Crews {
             //inputSelect('Citadel', 'entity-citadel')
             //inputSelect('Crew', 'entity-customer')
             this.selectVehicle();
-            this.selectUser();
+            this.selectUser('INS', '');
             this.selectWeapon();
             inputSelect('CrewState', 'entity-state', 'Disponible');
             //inputSelect('Department', 'entity-department')
@@ -408,7 +408,7 @@ export class Crews {
                         value: inputsCollection.supervisor.value,
                         table: "User",
                         state: userState.id,
-                        title: "GUARDIA"
+                        title: "SUPERVISOR"
                     });
                     if (inputsCollection.weapon1.dataset.optionid != nothingWeapon.id || inputsCollection.weapon1.value != "N/A") {
                         dataArray.push({
@@ -799,7 +799,7 @@ export class Crews {
             `;
             inputObserver();
             this.selectVehicle();
-            this.selectUser();
+            this.selectUser('UPD', nothingConfig);
             this.selectWeapon();
             this.selectDelete(nothingConfig);
             //inputSelect('Business', 'entity-citadel')
@@ -854,14 +854,14 @@ export class Crews {
                         value: $value.supervisor.value,
                         table: "User",
                         state: nothingConfig.userState.id,
-                        title: "GUARDIA"
+                        title: "SUPERVISOR"
                     });
                     dataChangesArray.push({
                         id: data.crewOne.id,
                         value: data.crewOne.username,
                         table: "User",
                         state: nothingConfig.userEnable.id,
-                        title: "GUARDIA"
+                        title: "SUPERVISOR"
                     });
                 }
                 if ($value.weapon1.dataset.optionid != data.weaponOne.id) {
@@ -1377,7 +1377,7 @@ export class Crews {
                             }
                             if (data.crewOne.id != nothingUser.id || data.crewOne.username != "N/A") {
                                 getUpdateState(`${userState.id}`, "User", `${data.crewOne.id}`);
-                                eventLog('UPD', `GUARDIA`, `${data.crewOne.username} disponible`, '');
+                                eventLog('UPD', `SUPERVISOR`, `${data.crewOne.username} disponible`, '');
                             }
                             if (data.crewTwo.id != nothingUser.id || data.crewTwo.username != "N/A") {
                                 getUpdateState(`${userState.id}`, "User", `${data.crewTwo.id}`);
@@ -1888,28 +1888,28 @@ export class Crews {
             };
         }
     }
-    selectUser() {
+    selectUser(acc, nothingConfig) {
         const supervisor = document.getElementById('entity-supervisor');
         const segundero = document.getElementById('entity-segundero');
         const custodio1 = document.getElementById('entity-custodio1');
         const custodio2 = document.getElementById('entity-custodio2');
         const custodio3 = document.getElementById('entity-custodio3');
         supervisor.addEventListener('click', async () => {
-            modalTable(0, "", supervisor);
+            modalTable(0, "", supervisor, true);
         });
         segundero.addEventListener('click', async () => {
-            modalTable(0, "", segundero);
+            modalTable(0, "", segundero, false);
         });
         custodio1.addEventListener('click', async () => {
-            modalTable(0, "", custodio1);
+            modalTable(0, "", custodio1, false);
         });
         custodio2.addEventListener('click', async () => {
-            modalTable(0, "", custodio2);
+            modalTable(0, "", custodio2, false);
         });
         custodio3.addEventListener('click', async () => {
-            modalTable(0, "", custodio3);
+            modalTable(0, "", custodio3, false);
         });
-        async function modalTable(offset, search, element) {
+        async function modalTable(offset, search, element, isSupervisor) {
             const dialogContainer = document.getElementById('app-dialogs');
             let raw = JSON.stringify({
                 "filter": {
@@ -1928,7 +1928,12 @@ export class Crews {
                             "property": "userType",
                             "operator": "=",
                             "value": `GUARD`
-                        }
+                        },
+                        {
+                            "property": "isSupervisor",
+                            "operator": "=",
+                            "value": `${isSupervisor}`
+                        },
                     ],
                 },
                 sort: "-createdDate",
@@ -1984,7 +1989,12 @@ export class Crews {
                                 "property": "userType",
                                 "operator": "=",
                                 "value": `GUARD`
-                            }
+                            },
+                            {
+                                "property": "isSupervisor",
+                                "operator": "=",
+                                "value": `${isSupervisor}`
+                            },
                         ],
                     },
                     sort: "-createdDate",
@@ -2005,7 +2015,7 @@ export class Crews {
                         <div class="dialog">
                             <div class="dialog_container padding_8">
                                 <div class="dialog_header">
-                                    <h2>Guardias disponibles</h2>
+                                    <h2 id="modalTitle">Guardias disponibles</h2>
                                 </div>
 
                                 <div class="dialog_message padding_8">
@@ -2019,6 +2029,7 @@ export class Crews {
                                             id="btnSearchModal">
                                             <i class="fa-solid fa-search"></i>
                                         </button>
+                                        <div id="listUser"></div>
                                     </div>
                                     <div class="dashboard_datatable">
                                         <table class="datatable_content margin_t_16">
@@ -2075,14 +2086,18 @@ export class Crews {
                     drawTagsIntoTables();
                 }
             }
+            const modalTitle = document.getElementById('modalTitle');
             const txtSearch = document.getElementById('search-modal');
             const btnSearchModal = document.getElementById('btnSearchModal');
+            const listUser = document.getElementById('listUser');
             const _selectUser = document.querySelectorAll('#edit-entity');
             const _closeButton = document.getElementById('cancel');
             const _dialog = document.getElementById('dialog-content');
             const prevModalButton = document.getElementById('prevModal');
             const nextModalButton = document.getElementById('nextModal');
             txtSearch.value = search ?? '';
+            if (isSupervisor)
+                modalTitle.innerText = "Supervisores Disponibles";
             _selectUser.forEach((edit) => {
                 const entityId = edit.dataset.entityid;
                 const entityName = edit.dataset.entityname;
@@ -2094,19 +2109,269 @@ export class Crews {
                 });
             });
             btnSearchModal.onclick = () => {
-                modalTable(0, txtSearch.value, element);
+                modalTable(0, txtSearch.value, element, isSupervisor);
             };
             _closeButton.onclick = () => {
                 new CloseDialog().x(_dialog);
             };
             nextModalButton.onclick = () => {
                 offset = Config.modalRows + (offset);
-                modalTable(offset, search, element);
+                modalTable(offset, search, element, isSupervisor);
             };
             prevModalButton.onclick = () => {
                 offset = Config.modalRows - (offset);
-                modalTable(offset, search, element);
+                modalTable(offset, search, element, isSupervisor);
             };
+            if (acc == 'UPD') {
+                listUser.innerHTML = `
+                    <button
+                        class="datatable_button add_user"
+                        id="btnListUser">
+                        <i class="fa-solid fa-user-check"></i>
+                    </button>
+                    `;
+                const btnListUser = document.getElementById('btnListUser');
+                btnListUser.onclick = () => {
+                    //new CloseDialog().x(_dialog)
+                    userSelected();
+                };
+            }
+        }
+        function userSelected() {
+            console.log("llega");
+            const supervisor = document.getElementById('entity-supervisor');
+            const segundero = document.getElementById('entity-segundero');
+            const custodio1 = document.getElementById('entity-custodio1');
+            const custodio2 = document.getElementById('entity-custodio2');
+            const custodio3 = document.getElementById('entity-custodio3');
+            console.log(supervisor);
+            supervisor.addEventListener('click', async () => {
+                modalTable(0, "", supervisor, true);
+            });
+            segundero.addEventListener('click', async () => {
+                modalTable(0, "", segundero, false);
+            });
+            custodio1.addEventListener('click', async () => {
+                modalTable(0, "", custodio1, false);
+            });
+            custodio2.addEventListener('click', async () => {
+                modalTable(0, "", custodio2, false);
+            });
+            custodio3.addEventListener('click', async () => {
+                modalTable(0, "", custodio3, false);
+            });
+            async function modalTable(offset, search, element, isSupervisor) {
+                const dialogContainer = document.getElementById('app-dialogs');
+                let raw = JSON.stringify({
+                    "filter": {
+                        "conditions": [
+                            {
+                                "property": "business.id",
+                                "operator": "=",
+                                "value": `${businessId}`
+                            },
+                            {
+                                "property": "userState.name",
+                                "operator": "=",
+                                "value": `Disponible`
+                            },
+                            {
+                                "property": "userType",
+                                "operator": "=",
+                                "value": `GUARD`
+                            },
+                            {
+                                "property": "isSupervisor",
+                                "operator": "=",
+                                "value": `${isSupervisor}`
+                            },
+                        ],
+                    },
+                    sort: "-createdDate",
+                    limit: Config.modalRows,
+                    offset: offset,
+                    fetchPlan: 'full',
+                });
+                if (search != "") {
+                    raw = JSON.stringify({
+                        "filter": {
+                            "conditions": [
+                                {
+                                    "group": "OR",
+                                    "conditions": [
+                                        {
+                                            "property": "firstName",
+                                            "operator": "contains",
+                                            "value": `${search.toLowerCase()}`
+                                        },
+                                        {
+                                            "property": "lastName",
+                                            "operator": "contains",
+                                            "value": `${search.toLowerCase()}`
+                                        },
+                                        {
+                                            "property": "secondLastName",
+                                            "operator": "contains",
+                                            "value": `${search.toLowerCase()}`
+                                        },
+                                        {
+                                            "property": "username",
+                                            "operator": "contains",
+                                            "value": `${search.toLowerCase()}`
+                                        },
+                                        {
+                                            "property": "dni",
+                                            "operator": "contains",
+                                            "value": `${search.toLowerCase()}`
+                                        }
+                                    ]
+                                },
+                                {
+                                    "property": "business.id",
+                                    "operator": "=",
+                                    "value": `${businessId}`
+                                },
+                                {
+                                    "property": "userState.name",
+                                    "operator": "=",
+                                    "value": `Disponible`
+                                },
+                                {
+                                    "property": "userType",
+                                    "operator": "=",
+                                    "value": `GUARD`
+                                },
+                                {
+                                    "property": "isSupervisor",
+                                    "operator": "=",
+                                    "value": `${isSupervisor}`
+                                },
+                            ],
+                        },
+                        sort: "-createdDate",
+                        limit: Config.modalRows,
+                        offset: offset,
+                        fetchPlan: 'full',
+                    });
+                }
+                let dataModal = await getFilterEntityData("User", raw);
+                const FSuper = dataModal.filter((data) => data.id != supervisor.dataset.optionid);
+                const FSegun = FSuper.filter((data) => data.id != segundero.dataset.optionid);
+                const FCust1 = FSegun.filter((data) => data.id != custodio1.dataset.optionid);
+                const FCust2 = FCust1.filter((data) => data.id != custodio2.dataset.optionid);
+                const FCust3 = FCust2.filter((data) => data.id != custodio3.dataset.optionid);
+                dialogContainer.style.display = 'block';
+                dialogContainer.innerHTML = `
+                            <div class="dialog_content" id="dialog-content">
+                                <div class="dialog">
+                                    <div class="dialog_container padding_8">
+                                        <div class="dialog_header">
+                                            <h2>Guardias Enlistados</h2>
+                                        </div>
+        
+                                        <div class="dialog_message padding_8">
+                                            <div class="datatable_tools">
+                                                <input type="search"
+                                                class="search_input"
+                                                placeholder="Buscar"
+                                                id="search-modal">
+                                                <button
+                                                    class="datatable_button add_user"
+                                                    id="btnSearchModal">
+                                                    <i class="fa-solid fa-search"></i>
+                                                </button>
+                                            </div>
+                                            <div class="dashboard_datatable">
+                                                <table class="datatable_content margin_t_16">
+                                                <thead>
+                                                    <tr>
+                                                    <th>Nombre</th>
+                                                    <th>Usuario</th>
+                                                    <th>DNI</th>
+                                                    <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="datatable-modal-body">
+                                                </tbody>
+                                                </table>
+                                            </div>
+                                            <br>
+                                        </div>
+        
+                                        <div class="dialog_footer">
+                                            <button class="btn btn_primary" id="prevModal"><i class="fa-solid fa-arrow-left"></i></button>
+                                            <button class="btn btn_primary" id="nextModal"><i class="fa-solid fa-arrow-right"></i></button>
+                                            <button class="btn btn_danger" id="cancel">Cancelar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                inputObserver();
+                const datetableBody = document.getElementById('datatable-modal-body');
+                if (FCust3.length === 0) {
+                    let row = document.createElement('tr');
+                    row.innerHTML = `
+                                <td>No hay datos</td>
+                                <td></td>
+                                <td></td>
+                            `;
+                    datetableBody.appendChild(row);
+                }
+                else {
+                    for (let i = 0; i < FCust3.length; i++) {
+                        let client = FCust3[i];
+                        let row = document.createElement('tr');
+                        row.innerHTML += `
+                                    <td>${client?.firstName ?? ''} ${client?.lastName ?? ''} ${client?.secondLastName ?? ''}</dt>
+                                    <td>${client?.username ?? ''}</dt>
+                                    <td>${client?.dni ?? ''}</dt>
+                                    <td class="entity_options">
+                                        <button class="button" id="edit-entity" data-entityId="${client.id}" data-entityName="${client.username}" data-entityType="${client.type}">
+                                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        </button>
+                                    </td>
+                                `;
+                        datetableBody.appendChild(row);
+                        drawTagsIntoTables();
+                    }
+                }
+                const modalTitle = document.getElementById('modalTitle');
+                const txtSearch = document.getElementById('search-modal');
+                const btnSearchModal = document.getElementById('btnSearchModal');
+                const _selectUser = document.querySelectorAll('#edit-entity');
+                const _closeButton = document.getElementById('cancel');
+                const _dialog = document.getElementById('dialog-content');
+                const prevModalButton = document.getElementById('prevModal');
+                const nextModalButton = document.getElementById('nextModal');
+                txtSearch.value = search ?? '';
+                if (isSupervisor)
+                    modalTitle.innerText = "Supervisores Disponibles";
+                _selectUser.forEach((edit) => {
+                    const entityId = edit.dataset.entityid;
+                    const entityName = edit.dataset.entityname;
+                    edit.addEventListener('click', () => {
+                        element.setAttribute('data-optionid', entityId);
+                        element.setAttribute('value', `${entityName}`);
+                        element.classList.add('input_filled');
+                        new CloseDialog().x(_dialog);
+                    });
+                });
+                btnSearchModal.onclick = () => {
+                    modalTable(0, txtSearch.value, element, isSupervisor);
+                };
+                _closeButton.onclick = () => {
+                    new CloseDialog().x(_dialog);
+                };
+                nextModalButton.onclick = () => {
+                    offset = Config.modalRows + (offset);
+                    modalTable(offset, search, element, isSupervisor);
+                };
+                prevModalButton.onclick = () => {
+                    offset = Config.modalRows - (offset);
+                    modalTable(offset, search, element, isSupervisor);
+                };
+            }
         }
     }
     selectDelete(nothingConfig) {
@@ -2142,6 +2407,7 @@ export class Crews {
         });
         deletes.weapon2.addEventListener('click', async () => {
             inputs.weapon2.value = `${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]`;
+            inputs.weapon2.dataset.optionid = nothingConfig.nothingWeapon.id;
         });
         deletes.custodio1.addEventListener('click', async () => {
             inputs.custodio1.value = nothingConfig.nothingUser.username;
@@ -2149,6 +2415,7 @@ export class Crews {
         });
         deletes.weapon3.addEventListener('click', async () => {
             inputs.weapon3.value = `${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]`;
+            inputs.weapon3.dataset.optionid = nothingConfig.nothingWeapon.id;
         });
         deletes.custodio2.addEventListener('click', async () => {
             inputs.custodio2.value = nothingConfig.nothingUser.username;
@@ -2156,6 +2423,7 @@ export class Crews {
         });
         deletes.weapon4.addEventListener('click', async () => {
             inputs.weapon4.value = `${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]`;
+            inputs.weapon4.dataset.optionid = nothingConfig.nothingWeapon.id;
         });
         deletes.custodio3.addEventListener('click', async () => {
             inputs.custodio3.value = nothingConfig.nothingUser.username;
@@ -2163,6 +2431,7 @@ export class Crews {
         });
         deletes.weapon5.addEventListener('click', async () => {
             inputs.weapon5.value = `${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]`;
+            inputs.weapon5.dataset.optionid = nothingConfig.nothingWeapon.id;
         });
     }
 }

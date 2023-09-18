@@ -44,6 +44,11 @@ const getUsers = async () => {
                     "property": "isSuper",
                     "operator": "=",
                     "value": `${false}`
+                },
+                {
+                    "property": "isSupervisor",
+                    "operator": "=",
+                    "value": `${false}`
                 }
             ],
         },
@@ -103,6 +108,11 @@ const getUsers = async () => {
                     },
                     {
                         "property": "isSuper",
+                        "operator": "=",
+                        "value": `${false}`
+                    },
+                    {
+                        "property": "isSupervisor",
                         "operator": "=",
                         "value": `${false}`
                     }
@@ -496,6 +506,7 @@ export class Guards {
                     "username": `${inputsCollection.username.value}@${currentUserInfo.business.name.toLowerCase().replace(/\s+/g, '')}.com`,
                     'creationDate': `${currentDateTime().date}`,
                     'creationTime': `${currentDateTime().time}`,
+                    'isSupervisor': false
                 });
                 //const existEmail = await getVerifyEmail(inputsCollection.email.value)
                 const existUsername = await getVerifyUsername(`${inputsCollection.username.value}@${currentUserInfo.business.name.toLowerCase().replace(/\s+/g, '')}.com`);
@@ -1017,19 +1028,19 @@ export class Guards {
                     }
                     else {
                         let message;
-                        let status1 = await getSearch("crewOne.id", entityId, "Crew");
+                        //let status1 = await getSearch("crewOne.id", entityId, "Crew")
                         let status2 = await getSearch("crewTwo.id", entityId, "Crew");
                         let status3 = await getSearch("crewThree.id", entityId, "Crew");
                         let status4 = await getSearch("crewFour.id", entityId, "Crew");
                         let status5 = await getSearch("crewFive.id", entityId, "Crew");
-                        if (status1 != undefined) {
+                        /*if(status1 != undefined){
                             message = {
                                 role: "SUPERVISOR",
                                 crew: status1.name,
                                 status: status1.crewState.name
-                            };
-                        }
-                        else if (status2 != undefined) {
+                            }
+                        }else */
+                        if (status2 != undefined) {
                             message = {
                                 role: "SEGUNDERO",
                                 crew: status2.name,
@@ -1163,6 +1174,11 @@ export const setUserPassword = async () => {
                 },
                 {
                     "property": "isSuper",
+                    "operator": "=",
+                    "value": `${false}`
+                },
+                {
+                    "property": "isSupervisor",
                     "operator": "=",
                     "value": `${false}`
                 }

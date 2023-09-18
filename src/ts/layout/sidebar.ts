@@ -17,6 +17,7 @@ import { Weapons } from "../views/weapons/weapons.js"
 import { Logs } from "../views/logs/logs.js"
 import { Cities } from "../views/cities/cities.js"
 import { Crews } from "../views/crews/crews.js"
+import { Supervisors } from "../views/users/supervisors/supervisors.js"
 
 export class Sidebar {
     private sidebarContainer: InterfaceElement = document.getElementById('app-sidebar')
@@ -46,6 +47,12 @@ export class Sidebar {
               </span>
 
               <div class="sidebar_subitems">
+
+                <div class="sidebar_subitem">
+                  <span class="sidebar_subitem_label" id="render-supervisors">
+                    <i class="fa-regular fa-person-military-pointing"></i> <div class="label">Supervisores</div>
+                  </span>
+                </div>
 
                 <div class="sidebar_subitem">
                   <span class="sidebar_subitem_label" id="render-guards">
@@ -133,6 +140,10 @@ export class Sidebar {
     public renders(): void {
         document.getElementById('render-services')?.addEventListener('click', () => {
             new Services().render(Config.offset, Config.currentPage, "")
+        })
+
+        document.getElementById('render-supervisors')?.addEventListener('click', (): void => {
+            new Supervisors().render(Config.offset, Config.currentPage, "")
         })
 
         document.getElementById('render-guards')?.addEventListener('click', (): void => {

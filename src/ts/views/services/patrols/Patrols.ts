@@ -292,9 +292,30 @@ export class Patrols {
                               title: "VEHÍCULO"
                           })
                         }
-                        let users = [crew?.crewOne, crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive]
-                        let weapons = [crew?.weaponOne, crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive]
-                        for(let i = 0; i < 5; i++){
+
+                        if(crew?.crewOne?.id != nothingConfig.nothingUser.id || crew?.crewOne?.username != 'N/A'){
+                          dataArray.push({
+                              id: crew?.crewOne.id,
+                              value: `${crew?.crewOne.username}`,
+                              table: "User",
+                              state: nothingConfig.userState.id,
+                              title: "SUPERVISOR"
+                          })
+
+                          if(crew?.weaponOne?.id != nothingConfig.nothingWeapon.id || crew?.weaponOne?.name != 'N/A'){
+                            dataArray.push({
+                                id: crew?.weaponOne.id,
+                                value: `${crew?.weaponOne.name} [${crew?.weaponOne.licensePlate}]`,
+                                table: "Weapon",
+                                state: nothingConfig.weaponState.id,
+                                title: "ARMA"
+                            })
+                          }
+                        }
+
+                        let users = [crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive]
+                        let weapons = [crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive]
+                        for(let i = 0; i < 4; i++){
                           if(users[i]?.id != nothingConfig.nothingUser.id || users[i]?.username != 'N/A'){
                             dataArray.push({
                                 id: users[i].id,
@@ -304,7 +325,7 @@ export class Patrols {
                                 title: "GUARDIA"
                             })
 
-                          if(weapons[i]?.id != nothingConfig.nothingWeapon.id || weapons[i]?.name != 'N/A'){
+                            if(weapons[i]?.id != nothingConfig.nothingWeapon.id || weapons[i]?.name != 'N/A'){
                               dataArray.push({
                                   id: weapons[i].id,
                                   value: `${weapons[i].name} [${weapons[i].licensePlate}]`,
@@ -399,9 +420,28 @@ export class Patrols {
                                 title: "VEHÍCULO"
                             })
                           }
-                          let users = [crew?.crewOne, crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive]
-                          let weapons = [crew?.weaponOne, crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive]
-                          for(let i = 0; i < 5; i++){
+                          if(crew?.crewOne?.id != nothingConfig.nothingUser.id || crew?.crewOne?.username != 'N/A'){
+                            dataArray.push({
+                                id: crew?.crewOne.id,
+                                value: `${crew?.crewOne.username}`,
+                                table: "User",
+                                state: nothingConfig.userState.id,
+                                title: "SUPERVISOR"
+                            })
+
+                            if(crew?.weaponOne?.id != nothingConfig.nothingWeapon.id || crew?.weaponOne?.name != 'N/A'){
+                              dataArray.push({
+                                  id: crew?.weaponOne.id,
+                                  value: `${crew?.weaponOne.name} [${crew?.weaponOne.licensePlate}]`,
+                                  table: "Weapon",
+                                  state: nothingConfig.weaponState.id,
+                                  title: "ARMA"
+                              })
+                            }
+                          }
+                          let users = [crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive]
+                          let weapons = [crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive]
+                          for(let i = 0; i < 4; i++){
                             if(users[i]?.id != nothingConfig.nothingUser.id || users[i]?.username != 'N/A'){
                               dataArray.push({
                                   id: users[i].id,
@@ -411,7 +451,7 @@ export class Patrols {
                                   title: "GUARDIA"
                               })
 
-                            if(weapons[i]?.id != nothingConfig.nothingWeapon.id || weapons[i]?.name != 'N/A'){
+                              if(weapons[i]?.id != nothingConfig.nothingWeapon.id || weapons[i]?.name != 'N/A'){
                                 dataArray.push({
                                     id: weapons[i].id,
                                     value: `${weapons[i].name} [${weapons[i].licensePlate}]`,

@@ -25,7 +25,6 @@ let dataPage: any
 const getUsers = async (): Promise<void> => {
     const currentUser = await getUserInfo()
     currentUserInfo = await getEntityData('User', `${currentUser.attributes.id}`)
-    console.log(localStorage.getItem('user_type'))
     //const users: Data = await getEntitiesData('User')
     //const FSuper: Data = users.filter((data: any) => data.isSuper === false)
     //const FCustomer: Data = FSuper.filter((data: any) => `${data.customer?.id}` === `${customerId}`)
@@ -567,6 +566,7 @@ export class Operators {
                             "createVisit": false,
                             'creationDate': `${currentDateTime().date}`,
                             'creationTime': `${currentDateTime().time}`,
+                            'isSupervisor': false
                         });
                         elem.push(rawFile)
                     }

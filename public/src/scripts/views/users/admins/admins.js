@@ -493,6 +493,7 @@ export class Admins {
                     "username": `${inputsCollection.username.value}@${currentUserInfo.business.name.toLowerCase().replace(/\s+/g, '')}.com`,
                     'creationDate': `${currentDateTime().date}`,
                     'creationTime': `${currentDateTime().time}`,
+                    "isSupervisor": false
                 });
                 //const existEmail = await getVerifyEmail(inputsCollection.email.value)
                 const existUsername = await getVerifyUsername(`${inputsCollection.username.value}@${currentUserInfo.business.name.toLowerCase().replace(/\s+/g, '')}.com`);
