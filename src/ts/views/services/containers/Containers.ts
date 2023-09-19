@@ -284,11 +284,13 @@ export class Charges {
             <div class="material_input">
             <input type="text" id="entity-guard" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}">
             <label for="entity-guard"><i class="fa-solid fa-user-police"></i> Guardia</label>
+            <button id="delete-guard"><i class="fa-solid fa-trash"></i></button>
             </div>
 
             <div class="material_input">
-            <input type="text" id="entity-weapon" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name}">
+            <input type="text" id="entity-weapon" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]">
             <label for="entity-weapon"><i class="fa-solid fa-gun"></i> Arma</label>
+            <button id="delete-weapon"><i class="fa-solid fa-trash"></i></button>
             </div>
 
             <div class="material_input">
@@ -310,6 +312,7 @@ export class Charges {
             inputObserver()
             this.selectUser()
             this.selectWeapon()
+            this.selectDelete(nothingConfig)
             this.close()
 
             const registerButton: InterfaceElement = document.getElementById('register-entity')
@@ -338,7 +341,7 @@ export class Charges {
                       state: nothingConfig.userState.id,
                       title: "GUARDIA"
                   })
-                  if(inputsCollection.weapon.dataset.optionid != nothingConfig.nothingWeapon.id || inputsCollection.weapon.value != "N/A"){
+                  if(inputsCollection.weapon.dataset.optionid != nothingConfig.nothingWeapon.id || inputsCollection.weapon.value != "N/A [N/A]"){
                     dataArray.push({
                         id: inputsCollection.weapon.dataset.optionid,
                         value: inputsCollection.weapon.value,
@@ -1167,7 +1170,12 @@ export class Charges {
                               "property": "userType",
                               "operator": "=",
                               "value": `GUARD`
-                            }
+                            },
+                            {
+                              "property": "isSupervisor",
+                              "operator": "=",
+                              "value": `${false}`
+                            },
                           ],
                           
                       }, 

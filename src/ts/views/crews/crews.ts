@@ -5,7 +5,7 @@
 //
 import { deleteEntity, getEntityData, registerEntity, setPassword, updateEntity, sendMail, getFilterEntityData, getFilterEntityCount } from "../../endpoints.js"
 import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, getVerifyEmail, pageNumbers, fillBtnPagination, userPermissions, currentDateTime, eventLog, getNothing, getUpdateState, getSearch } from "../../tools.js"
-import { Data, InterfaceElement } from "../../types.js"
+import { Data, InterfaceElement, InterfaceElementCollection } from "../../types.js"
 import { Config } from "../../Configs.js"
 import { UIConvertToSU, tableLayout } from "./Layout.js"
 import { tableLayoutTemplate } from "./Templates.js"
@@ -127,9 +127,9 @@ export class Crews {
                 let row: InterfaceElement =
                     document.createElement('tr')
                 row.innerHTML += `
-                    <td>${client.name}</dt>
-                    <td>${client?.vehicular?.type ?? ''} [${client?.vehicular.licensePlate ?? ''}]</dt>
-                    <td>${client?.category ?? ''}</dt>
+                    <td>${client.name}</td>
+                    <td>${client?.vehicular?.type ?? ''} [${client?.vehicular.licensePlate ?? ''}]</td>
+                    <td>${client?.category ?? ''}</td>
                     <td class="tag"><span>${client?.crewState.name ?? ''}</span></td>
                     <td class="entity_options">
                         <button class="button" id="edit-entity" data-entityId="${client.id}">
@@ -190,11 +190,13 @@ export class Crews {
         })
 
         const renderInterface = async (entities: string): Promise<void> => {
-            let nothingUser = await getNothing("username", "N/A", "User")
-            let nothingWeapon = await getNothing("name", "N/A", "Weapon")
-            let userState = await getNothing("name", "Asignado", "UserState")
-            let weaponState = await getNothing("name", "Asignado", "WeaponState")
-            let vehicularState = await getNothing("name", "Asignado", "VehicularState")
+            const nothingConfig = {
+                 nothingUser: await getNothing("username", "N/A", "User"),
+                 nothingWeapon: await getNothing("name", "N/A", "Weapon"),
+                 userState: await getNothing("name", "Asignado", "UserState"),
+                 weaponState: await getNothing("name", "Asignado", "WeaponState"),
+                 vehicularState: await getNothing("name", "Asignado", "VehicularState")
+            }
             this.entityDialogContainer.innerHTML = '' //style="max-width:90%"
             this.entityDialogContainer.style.display = 'flex'
             this.entityDialogContainer.innerHTML = `
@@ -237,60 +239,69 @@ export class Crews {
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon1" autocomplete="none" data-optionid="${nothingWeapon.id}" value="${nothingWeapon.name}" readonly>
+                    <input type="text" id="entity-weapon1" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" readonly>
                     <label for="entity-weapon1"><i class="fa-solid fa-gun"></i> Arma Supervisor</label>
+                    <button id="delete-weapon1"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <h3>Segundero</h3>
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-segundero" autocomplete="none" data-optionid="${nothingUser.id}" value="${nothingUser.username}" readonly>
+                    <input type="text" id="entity-segundero" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" readonly>
                     <label for="entity-segundero"><i class="fa-solid fa-user-nurse"></i> Segundero</label>
+                    <button id="delete-segundero"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon2" autocomplete="none" data-optionid="${nothingWeapon.id}" value="${nothingWeapon.name}" readonly>
+                    <input type="text" id="entity-weapon2" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" readonly>
                     <label for="entity-weapon2"><i class="fa-solid fa-gun"></i> Arma Segundero</label>
+                    <button id="delete-weapon2"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <h3>Custodio 1</h3>
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-custodio1" autocomplete="none" data-optionid="${nothingUser.id}" value="${nothingUser.username}" readonly>
+                    <input type="text" id="entity-custodio1" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" readonly>
                     <label for="entity-custodio1"><i class="fa-solid fa-user"></i> Custodio 1</label>
+                    <button id="delete-custodio1"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon3" autocomplete="none" data-optionid="${nothingWeapon.id}" value="${nothingWeapon.name}" readonly>
+                    <input type="text" id="entity-weapon3" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" readonly>
                     <label for="entity-weapon3"><i class="fa-solid fa-gun"></i> Arma Custodio 1</label>
+                    <button id="delete-weapon3"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <h3>Custodio 2</h3>
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-custodio2" autocomplete="none" data-optionid="${nothingUser.id}" value="${nothingUser.username}" readonly>
+                    <input type="text" id="entity-custodio2" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" readonly>
                     <label for="entity-custodio2"><i class="fa-solid fa-user"></i> Custodio 2</label>
+                    <button id="delete-custodio2"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon4" autocomplete="none" data-optionid="${nothingWeapon.id}" value="${nothingWeapon.name}" readonly>
+                    <input type="text" id="entity-weapon4" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" readonly>
                     <label for="entity-weapon4"><i class="fa-solid fa-gun"></i> Arma Custodio 2</label>
+                    <button id="delete-weapon4"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <h3>Custodio 3</h3>
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-custodio3" autocomplete="none" data-optionid="${nothingUser.id}" value="${nothingUser.username}" readonly>
+                    <input type="text" id="entity-custodio3" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" readonly>
                     <label for="entity-custodio3"><i class="fa-solid fa-user"></i> Custodio 3</label>
+                    <button id="delete-custodio3"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon5" autocomplete="none" data-optionid="${nothingWeapon.id}" value="${nothingWeapon.name}" readonly>
+                    <input type="text" id="entity-weapon5" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" readonly>
                     <label for="entity-weapon5"><i class="fa-solid fa-gun"></i> Arma Custodio 3</label>
+                    <button id="delete-weapon5"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                 </div>
@@ -306,8 +317,9 @@ export class Crews {
             //inputSelect('Citadel', 'entity-citadel')
             //inputSelect('Crew', 'entity-customer')
             this.selectVehicle()
-            this.selectUser('INS', '')
+            this.selectUser('INS', '', '')
             this.selectWeapon()
+            this.selectDelete(nothingConfig)
             inputSelect('CrewState', 'entity-state', 'Disponible')
             //inputSelect('Department', 'entity-department')
             //inputSelect('Business', 'entity-business')
@@ -336,104 +348,104 @@ export class Crews {
                         id: inputsCollection.supervisor.dataset.optionid,
                         value: inputsCollection.supervisor.value,
                         table: "User",
-                        state: userState.id,
+                        state: nothingConfig.userState.id,
                         title: "SUPERVISOR"
                     })
-                    if(inputsCollection.weapon1.dataset.optionid != nothingWeapon.id || inputsCollection.weapon1.value != "N/A"){
+                    if(inputsCollection.weapon1.dataset.optionid != nothingConfig.nothingWeapon.id || inputsCollection.weapon1.value != "N/A [N/A]"){
                         dataArray.push({
                             id: inputsCollection.weapon1.dataset.optionid,
                             value: inputsCollection.weapon1.value,
                             table: "Weapon",
-                            state: weaponState.id,
+                            state: nothingConfig.weaponState.id,
                             title: "ARMA"
                         })
                     }
                 }else{
-                    inputsCollection.weapon1.dataset.optionid = nothingWeapon.id
+                    inputsCollection.weapon1.dataset.optionid = nothingConfig.nothingWeapon.id
                 }
 
-                if(inputsCollection.segundero.dataset.optionid != nothingUser.id || inputsCollection.segundero.value != "N/A"){
+                if(inputsCollection.segundero.dataset.optionid != nothingConfig.nothingUser.id || inputsCollection.segundero.value != "N/A"){
                     dataArray.push({
                         id: inputsCollection.segundero.dataset.optionid,
                         value: inputsCollection.segundero.value,
                         table: "User",
-                        state: userState.id,
+                        state: nothingConfig.userState.id,
                         title: "GUARDIA"
                     })
-                    if(inputsCollection.weapon2.dataset.optionid != nothingWeapon.id || inputsCollection.weapon2.value != "N/A"){
+                    if(inputsCollection.weapon2.dataset.optionid != nothingConfig.nothingWeapon.id || inputsCollection.weapon2.value != "N/A [N/A]"){
                         dataArray.push({
                             id: inputsCollection.weapon2.dataset.optionid,
                             value: inputsCollection.weapon2.value,
                             table: "Weapon",
-                            state: weaponState.id,
+                            state: nothingConfig.weaponState.id,
                             title: "ARMA"
                         })
                     }
                 }else{
-                    inputsCollection.weapon2.dataset.optionid = nothingWeapon.id
+                    inputsCollection.weapon2.dataset.optionid = nothingConfig.nothingWeapon.id
                 }
 
-                if(inputsCollection.custodio1.dataset.optionid != nothingUser.id || inputsCollection.custodio1.value != "N/A"){
+                if(inputsCollection.custodio1.dataset.optionid != nothingConfig.nothingUser.id || inputsCollection.custodio1.value != "N/A"){
                     dataArray.push({
                         id: inputsCollection.custodio1.dataset.optionid,
                         value: inputsCollection.custodio1.value,
                         table: "User",
-                        state: userState.id,
+                        state: nothingConfig.userState.id,
                         title: "GUARDIA"
                     })
-                    if(inputsCollection.weapon3.dataset.optionid != nothingWeapon.id || inputsCollection.weapon3.value != "N/A"){
+                    if(inputsCollection.weapon3.dataset.optionid != nothingConfig.nothingWeapon.id || inputsCollection.weapon3.value != "N/A [N/A]"){
                         dataArray.push({
                             id: inputsCollection.weapon3.dataset.optionid,
                             value: inputsCollection.weapon3.value,
                             table: "Weapon",
-                            state: weaponState.id,
+                            state: nothingConfig.weaponState.id,
                             title: "ARMA"
                         })
                     }
                 }else{
-                    inputsCollection.weapon3.dataset.optionid = nothingWeapon.id
+                    inputsCollection.weapon3.dataset.optionid = nothingConfig.nothingWeapon.id
                 }
 
-                if(inputsCollection.custodio2.dataset.optionid != nothingUser.id || inputsCollection.custodio2.value != "N/A"){
+                if(inputsCollection.custodio2.dataset.optionid != nothingConfig.nothingUser.id || inputsCollection.custodio2.value != "N/A"){
                     dataArray.push({
                         id: inputsCollection.custodio2.dataset.optionid,
                         value: inputsCollection.custodio2.value,
                         table: "User",
-                        state: userState.id,
+                        state: nothingConfig.userState.id,
                         title: "GUARDIA"
                     })
-                    if(inputsCollection.weapon4.dataset.optionid != nothingWeapon.id || inputsCollection.weapon4.value != "N/A"){
+                    if(inputsCollection.weapon4.dataset.optionid != nothingConfig.nothingWeapon.id || inputsCollection.weapon4.value != "N/A [N/A]"){
                         dataArray.push({
                             id: inputsCollection.weapon4.dataset.optionid,
                             value: inputsCollection.weapon4.value,
                             table: "Weapon",
-                            state: weaponState.id,
+                            state: nothingConfig.weaponState.id,
                             title: "ARMA"
                         })
                     }
                 }else{
-                    inputsCollection.weapon4.dataset.optionid = nothingWeapon.id
+                    inputsCollection.weapon4.dataset.optionid = nothingConfig.nothingWeapon.id
                 }
 
-                if(inputsCollection.custodio3.dataset.optionid != nothingUser.id || inputsCollection.custodio3.value != "N/A"){
+                if(inputsCollection.custodio3.dataset.optionid != nothingConfig.nothingUser.id || inputsCollection.custodio3.value != "N/A"){
                     dataArray.push({
                         id: inputsCollection.custodio3.dataset.optionid,
                         value: inputsCollection.custodio3.value,
                         table: "User",
-                        state: userState.id,
+                        state: nothingConfig.userState.id,
                         title: "GUARDIA"
                     })
-                    if(inputsCollection.weapon5.dataset.optionid != nothingWeapon.id || inputsCollection.weapon5.value != "N/A"){
+                    if(inputsCollection.weapon5.dataset.optionid != nothingConfig.nothingWeapon.id || inputsCollection.weapon5.value != "N/A [N/A]"){
                         dataArray.push({
                             id: inputsCollection.weapon5.dataset.optionid,
                             value: inputsCollection.weapon5.value,
                             table: "Weapon",
-                            state: weaponState.id,
+                            state: nothingConfig.weaponState.id,
                             title: "ARMA"
                         })
                     }
                 }else{
-                    inputsCollection.weapon5.dataset.optionid = nothingWeapon.id
+                    inputsCollection.weapon5.dataset.optionid = nothingConfig.nothingWeapon.id
                 }
 
                 let category = 0
@@ -505,7 +517,7 @@ export class Crews {
                         id: inputsCollection.vehicular.dataset.optionid,
                         value: inputsCollection.vehicular.value,
                         table: "Vehicular",
-                        state: vehicularState.id,
+                        state: nothingConfig.vehicularState.id,
                         title: "VEHÍCULO"
                     })
                     reg(raw, dataArray)
@@ -646,7 +658,7 @@ export class Crews {
 
                     <div class="material_input">
                     <input type="text" id="entity-weapon2" class="input_filled" data-optionid="${data.weaponTwo.id}" value="${data.weaponTwo.name} [${data.weaponTwo.licensePlate}]">
-                    <label for="entity-weapon2">Arma Supervisor</label>
+                    <label for="entity-weapon2">Arma Segundero</label>
                     <button id="delete-weapon2"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
@@ -721,7 +733,7 @@ export class Crews {
 
             inputObserver()
             this.selectVehicle()
-            this.selectUser('UPD',nothingConfig)
+            this.selectUser('UPD', nothingConfig, data)
             this.selectWeapon()
             this.selectDelete(nothingConfig)
             //inputSelect('Business', 'entity-citadel')
@@ -1976,36 +1988,38 @@ export class Crews {
 
     }
 
-    private selectUser(acc: any,nothingConfig: any): void {
+    private selectUser(acc: any, nothingConfig: any, crews: any): void {
         
-        const supervisor: InterfaceElement = document.getElementById('entity-supervisor')
-        const segundero: InterfaceElement = document.getElementById('entity-segundero')
-        const custodio1: InterfaceElement = document.getElementById('entity-custodio1')
-        const custodio2: InterfaceElement = document.getElementById('entity-custodio2')
-        const custodio3: InterfaceElement = document.getElementById('entity-custodio3')
+        const elements: InterfaceElement = {
+            supervisor: document.getElementById('entity-supervisor'),
+            segundero: document.getElementById('entity-segundero'),
+            custodio1: document.getElementById('entity-custodio1'),
+            custodio2: document.getElementById('entity-custodio2'),
+            custodio3: document.getElementById('entity-custodio3')
+        }
 
 
-            supervisor.addEventListener('click', async (): Promise<void> => {
-                modalTable(0, "", supervisor, true)
+            elements.supervisor.addEventListener('click', async (): Promise<void> => {
+                modalTable(0, "", elements.supervisor, true)
             })
 
-            segundero.addEventListener('click', async (): Promise<void> => {
-                modalTable(0, "", segundero, false)
+            elements.segundero.addEventListener('click', async (): Promise<void> => {
+                modalTable(0, "", elements.segundero, false)
             })
 
-            custodio1.addEventListener('click', async (): Promise<void> => {
-                modalTable(0, "", custodio1, false)
+            elements.custodio1.addEventListener('click', async (): Promise<void> => {
+                modalTable(0, "", elements.custodio1, false)
             })
 
-            custodio2.addEventListener('click', async (): Promise<void> => {
-                modalTable(0, "", custodio2, false)
+            elements.custodio2.addEventListener('click', async (): Promise<void> => {
+                modalTable(0, "", elements.custodio2, false)
             })
 
-            custodio3.addEventListener('click', async (): Promise<void> => {
-                modalTable(0, "", custodio3, false)
+            elements.custodio3.addEventListener('click', async (): Promise<void> => {
+                modalTable(0, "", elements.custodio3, false)
             })
 
-            async function modalTable(offset: any, search: any, element: InterfaceElement, isSupervisor: Boolean){
+            const modalTable = async (offset: any, search: any, element: InterfaceElement, isSupervisor: Boolean) =>{
                 const dialogContainer: InterfaceElement =
                 document.getElementById('app-dialogs')
                 let raw = JSON.stringify({
@@ -2105,11 +2119,11 @@ export class Crews {
                     })
                 }
                 let dataModal = await getFilterEntityData("User", raw)
-                const FSuper: Data = dataModal.filter((data: any) => data.id != supervisor.dataset.optionid)
-                const FSegun: Data = FSuper.filter((data: any) => data.id != segundero.dataset.optionid)
-                const FCust1: Data = FSegun.filter((data: any) => data.id != custodio1.dataset.optionid)
-                const FCust2: Data = FCust1.filter((data: any) => data.id != custodio2.dataset.optionid)
-                const FCust3: Data = FCust2.filter((data: any) => data.id != custodio3.dataset.optionid)
+                const FSuper: Data = dataModal.filter((data: any) => data.id != elements.supervisor.dataset.optionid)
+                const FSegun: Data = FSuper.filter((data: any) => data.id != elements.segundero.dataset.optionid)
+                const FCust1: Data = FSegun.filter((data: any) => data.id != elements.custodio1.dataset.optionid)
+                const FCust2: Data = FCust1.filter((data: any) => data.id != elements.custodio2.dataset.optionid)
+                const FCust3: Data = FCust2.filter((data: any) => data.id != elements.custodio3.dataset.optionid)
                 dialogContainer.style.display = 'block'
                 dialogContainer.innerHTML = `
                     <div class="dialog_content" id="dialog-content">
@@ -2175,11 +2189,11 @@ export class Crews {
                         let row: InterfaceElement =
                             document.createElement('tr')
                         row.innerHTML += `
-                            <td>${client?.firstName ?? ''} ${client?.lastName ?? ''} ${client?.secondLastName ?? ''}</dt>
-                            <td>${client?.username ?? ''}</dt>
-                            <td>${client?.dni ?? ''}</dt>
+                            <td>${client?.firstName ?? ''} ${client?.lastName ?? ''} ${client?.secondLastName ?? ''}</td>
+                            <td>${client?.username ?? ''}</td>
+                            <td>${client?.dni ?? ''}</td>
                             <td class="entity_options">
-                                <button class="button" id="edit-entity" data-entityId="${client.id}" data-entityName="${client.username}" data-entityType="${client.type}">
+                                <button class="button" id="edit-entity" data-entityId="${client.id}" data-entityName="${client.username}">
                                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                 </button>
                             </td>
@@ -2243,268 +2257,153 @@ export class Crews {
                     const btnListUser: InterfaceElement = document.getElementById('btnListUser')
                     btnListUser.onclick = () => {
                         //new CloseDialog().x(_dialog)
-                        userSelected()
+                        this.userSelected(acc, nothingConfig, element, elements, crews)
                     }
                 }
             }
 
-            function userSelected(): void {
-                console.log("llega")
-                const supervisor: InterfaceElement = document.getElementById('entity-supervisor')
-                const segundero: InterfaceElement = document.getElementById('entity-segundero')
-                const custodio1: InterfaceElement = document.getElementById('entity-custodio1')
-                const custodio2: InterfaceElement = document.getElementById('entity-custodio2')
-                const custodio3: InterfaceElement = document.getElementById('entity-custodio3')
-        
-                console.log(supervisor)
-                    supervisor.addEventListener('click', async (): Promise<void> => {
-                        modalTable(0, "", supervisor, true)
-                    })
-        
-                    segundero.addEventListener('click', async (): Promise<void> => {
-                        modalTable(0, "", segundero, false)
-                    })
-        
-                    custodio1.addEventListener('click', async (): Promise<void> => {
-                        modalTable(0, "", custodio1, false)
-                    })
-        
-                    custodio2.addEventListener('click', async (): Promise<void> => {
-                        modalTable(0, "", custodio2, false)
-                    })
-        
-                    custodio3.addEventListener('click', async (): Promise<void> => {
-                        modalTable(0, "", custodio3, false)
-                    })
-        
-                    async function modalTable(offset: any, search: any, element: InterfaceElement, isSupervisor: Boolean){
-                        const dialogContainer: InterfaceElement =
-                        document.getElementById('app-dialogs')
-                        let raw = JSON.stringify({
-                            "filter": {
-                                "conditions": [
-                                  {
-                                    "property": "business.id",
-                                    "operator": "=",
-                                    "value": `${businessId}`
-                                  },
-                                  {
-                                    "property": "userState.name",
-                                    "operator": "=",
-                                    "value": `Disponible`
-                                  },
-                                  {
-                                    "property": "userType",
-                                    "operator": "=",
-                                    "value": `GUARD`
-                                  },
-                                  {
-                                    "property": "isSupervisor",
-                                    "operator": "=",
-                                    "value": `${isSupervisor}`
-                                  },
-                                ],
-                                
-                            }, 
-                            sort: "-createdDate",
-                            limit: Config.modalRows,
-                            offset: offset,
-                            fetchPlan: 'full',
-                            
-                        })
-                        if(search != ""){
-                            raw = JSON.stringify({
-                                "filter": {
-                                    "conditions": [
-                                      {
-                                        "group": "OR",
-                                        "conditions": [
-                                            {
-                                            "property": "firstName",
-                                            "operator": "contains",
-                                            "value": `${search.toLowerCase()}`
-                                            },
-                                            {
-                                            "property": "lastName",
-                                            "operator": "contains",
-                                            "value": `${search.toLowerCase()}`
-                                            },
-                                            {
-                                            "property": "secondLastName",
-                                            "operator": "contains",
-                                            "value": `${search.toLowerCase()}`
-                                            },
-                                            {
-                                            "property": "username",
-                                            "operator": "contains",
-                                            "value": `${search.toLowerCase()}`
-                                            },
-                                            {
-                                            "property": "dni",
-                                            "operator": "contains",
-                                            "value": `${search.toLowerCase()}`
-                                            }
-                                        ]
-                                      },
-                                      {
-                                        "property": "business.id",
-                                        "operator": "=",
-                                        "value": `${businessId}`
-                                      },
-                                      {
-                                        "property": "userState.name",
-                                        "operator": "=",
-                                        "value": `Disponible`
-                                      },
-                                      {
-                                        "property": "userType",
-                                        "operator": "=",
-                                        "value": `GUARD`
-                                      },
-                                      {
-                                        "property": "isSupervisor",
-                                        "operator": "=",
-                                        "value": `${isSupervisor}`
-                                      },
-                                    ],
-                                    
-                                }, 
-                                sort: "-createdDate",
-                                limit: Config.modalRows,
-                                offset: offset,
-                                fetchPlan: 'full',
-                                
-                            })
-                        }
-                        let dataModal = await getFilterEntityData("User", raw)
-                        const FSuper: Data = dataModal.filter((data: any) => data.id != supervisor.dataset.optionid)
-                        const FSegun: Data = FSuper.filter((data: any) => data.id != segundero.dataset.optionid)
-                        const FCust1: Data = FSegun.filter((data: any) => data.id != custodio1.dataset.optionid)
-                        const FCust2: Data = FCust1.filter((data: any) => data.id != custodio2.dataset.optionid)
-                        const FCust3: Data = FCust2.filter((data: any) => data.id != custodio3.dataset.optionid)
-                        dialogContainer.style.display = 'block'
-                        dialogContainer.innerHTML = `
-                            <div class="dialog_content" id="dialog-content">
-                                <div class="dialog">
-                                    <div class="dialog_container padding_8">
-                                        <div class="dialog_header">
-                                            <h2>Guardias Enlistados</h2>
-                                        </div>
-        
-                                        <div class="dialog_message padding_8">
-                                            <div class="datatable_tools">
-                                                <input type="search"
-                                                class="search_input"
-                                                placeholder="Buscar"
-                                                id="search-modal">
-                                                <button
-                                                    class="datatable_button add_user"
-                                                    id="btnSearchModal">
-                                                    <i class="fa-solid fa-search"></i>
-                                                </button>
-                                            </div>
-                                            <div class="dashboard_datatable">
-                                                <table class="datatable_content margin_t_16">
-                                                <thead>
-                                                    <tr>
-                                                    <th>Nombre</th>
-                                                    <th>Usuario</th>
-                                                    <th>DNI</th>
-                                                    <th></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="datatable-modal-body">
-                                                </tbody>
-                                                </table>
-                                            </div>
-                                            <br>
-                                        </div>
-        
-                                        <div class="dialog_footer">
-                                            <button class="btn btn_primary" id="prevModal"><i class="fa-solid fa-arrow-left"></i></button>
-                                            <button class="btn btn_primary" id="nextModal"><i class="fa-solid fa-arrow-right"></i></button>
-                                            <button class="btn btn_danger" id="cancel">Cancelar</button>
-                                        </div>
-                                    </div>
-                                </div>
+    }
+
+    private userSelected(acc: any, nothingConfig: any, element: InterfaceElement, elements: InterfaceElement, crews: any): void { 
+        const dialogContainer: InterfaceElement =
+            document.getElementById('app-dialogs')
+            let title: any
+            let listCrewsNews = [
+                {info:elements.segundero, rol:"Segundero"},
+                {info:elements.custodio1, rol:"Custodio 1"},
+                {info:elements.custodio2, rol:"Custodio 2"},
+                {info:elements.custodio3, rol:"Custodio 3"}
+            ]
+            for(let i = 0; i < listCrewsNews.length; i++){
+                if(element.id == listCrewsNews[i].info.id)
+                    title = listCrewsNews[i].rol
+            }
+            
+            dialogContainer.style.display = 'block'
+            dialogContainer.innerHTML = `
+                <div class="dialog_content" id="dialog-content">
+                    <div class="dialog">
+                        <div class="dialog_container padding_8">
+                            <div class="dialog_header">
+                                <h2>Guardias en la patrulla: ${title}</h2>
                             </div>
+    
+                            <div class="dialog_message padding_8">
+                                <div class="datatable_tools">
+                                </div>
+                                <div class="dashboard_datatable">
+                                    <table class="datatable_content margin_t_16">
+                                    <thead>
+                                        <tr>
+                                        <th>Puesto</th>
+                                        <th>Usuario</th>
+                                        <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="datatable-modal-body">
+                                    </tbody>
+                                    </table>
+                                </div>
+                                <br>
+                            </div>
+    
+                            <div class="dialog_footer">
+                                <button class="btn btn_danger" id="cancel">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+            inputObserver()
+            const datetableBody: InterfaceElement = document.getElementById('datatable-modal-body')
+            let row: InterfaceElement = document.createElement('tr')
+                row.innerHTML += `
+                    <td style="color:green;">* Guardias y roles asignados inicialmente *</td>
+                    `
+                datetableBody.appendChild(row)
+            let listCrews = [
+                {info:crews?.crewTwo, rol:"Segundero"},
+                {info:crews?.crewThree, rol:"Custodio 1"},
+                {info:crews?.crewFour, rol:"Custodio 2"},
+                {info:crews?.crewFive, rol:"Custodio 3"}
+            ]
+            for(let i = 0; i < listCrews.length; i++){
+                let crew = listCrews[i]
+                if(crew.info.id != nothingConfig.nothingUser.id){
+                    row = document.createElement('tr')
+                    row.innerHTML += `
+                        <td>${crew.rol}</td>
+                        <td>${crew.info.username}</td>
+                        <td class="entity_options">
+                            <button class="button" id="edit-entity" data-entityId="${crew.info.id}" data-entityName="${crew.info.username}">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </button>
+                        </td>
+                    `
+                    datetableBody.appendChild(row)
+                }
+            }
+            row = document.createElement('tr')
+            row.innerHTML += `
+                <td style="color:blue;">* Nuevos guardias y roles seleccionados *</td>
+                `
+            datetableBody.appendChild(row)
+            
+            for(let i = 0; i < listCrewsNews.length; i++){
+                let crew = listCrews[i]
+                let crewNew = listCrewsNews[i]
+                if(crewNew.info.dataset.optionid != crew.info.id){
+                    if(crewNew.info.dataset.optionid != nothingConfig.nothingUser.id){
+                        row = document.createElement('tr')
+                        row.innerHTML += `
+                            <td>${crewNew.rol}</dt>
+                            <td>${crewNew.info.value}</dt>
+                            <td class="entity_options">
+                                <button class="button" id="edit-entity" data-entityId="${crewNew.info.dataset.optionid}" data-entityName="${crewNew.info.value}">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </button>
+                            </td>
                         `
-                        inputObserver()
-                        const datetableBody: InterfaceElement = document.getElementById('datatable-modal-body')
-                        if (FCust3.length === 0) {
-                            let row: InterfaceElement = document.createElement('tr')
-                            row.innerHTML = `
-                                <td>No hay datos</td>
-                                <td></td>
-                                <td></td>
-                            `
-                            datetableBody.appendChild(row)
-                        }
-                        else {
-                            for (let i = 0; i < FCust3.length; i++) {
-                                let client = FCust3[i]
-                                let row: InterfaceElement =
-                                    document.createElement('tr')
-                                row.innerHTML += `
-                                    <td>${client?.firstName ?? ''} ${client?.lastName ?? ''} ${client?.secondLastName ?? ''}</dt>
-                                    <td>${client?.username ?? ''}</dt>
-                                    <td>${client?.dni ?? ''}</dt>
-                                    <td class="entity_options">
-                                        <button class="button" id="edit-entity" data-entityId="${client.id}" data-entityName="${client.username}" data-entityType="${client.type}">
-                                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                        </button>
-                                    </td>
-                                `
-                                datetableBody.appendChild(row)
-                                drawTagsIntoTables()
+                        datetableBody.appendChild(row)
+                    }
+                }
+            }
+                
+
+            const _selectUser: InterfaceElement = document.querySelectorAll('#edit-entity')
+            const _closeButton: InterfaceElement = document.getElementById('cancel')
+            const _dialog: InterfaceElement = document.getElementById('dialog-content')
+    
+            _selectUser.forEach((edit: InterfaceElement) => {
+                const entityId = edit.dataset.entityid
+                const entityName = edit.dataset.entityname
+                edit.addEventListener('click', (): void => {
+                    if(element.dataset.optionid != entityId){
+                        for(let i = 0; i < listCrewsNews.length; i++){
+                            let crewNew = listCrewsNews[i]
+                            if(crewNew.info.dataset.optionid == entityId){
+                                crewNew.info.setAttribute('data-optionid', nothingConfig.nothingUser.id)
+                                crewNew.info.setAttribute('value', `${nothingConfig.nothingUser.username}`)
+                                crewNew.info.classList.add('input_filled')
                             }
                         }
-                        const modalTitle: InterfaceElement = document.getElementById('modalTitle')
-                        const txtSearch: InterfaceElement = document.getElementById('search-modal')
-                        const btnSearchModal: InterfaceElement = document.getElementById('btnSearchModal')
-                        const _selectUser: InterfaceElement = document.querySelectorAll('#edit-entity')
-                        const _closeButton: InterfaceElement = document.getElementById('cancel')
-                        const _dialog: InterfaceElement = document.getElementById('dialog-content')
-                        const prevModalButton: InterfaceElement = document.getElementById('prevModal')
-                        const nextModalButton: InterfaceElement = document.getElementById('nextModal')
-                        txtSearch.value = search ?? ''
-                        if(isSupervisor)
-                            modalTitle.innerText = "Supervisores Disponibles"
-        
-                        _selectUser.forEach((edit: InterfaceElement) => {
-                            const entityId = edit.dataset.entityid
-                            const entityName = edit.dataset.entityname
-                            edit.addEventListener('click', (): void => {
-                                element.setAttribute('data-optionid', entityId)
-                                element.setAttribute('value', `${entityName}`)
-                                element.classList.add('input_filled')
-                                new CloseDialog().x(_dialog)
-                            })
-                        
-                        })
-        
-                        btnSearchModal.onclick = () => {
-                            modalTable(0, txtSearch.value, element, isSupervisor)
-                        }
-        
-                        _closeButton.onclick = () => {
-                            new CloseDialog().x(_dialog)
-                        }
-        
-                        nextModalButton.onclick = () => {
-                            offset = Config.modalRows + (offset)
-                            modalTable(offset, search, element, isSupervisor)
-                        }
-        
-                        prevModalButton.onclick = () => {
-                            offset = Config.modalRows - (offset)
-                            modalTable(offset, search, element, isSupervisor)
-                        }
+                        element.setAttribute('data-optionid', entityId)
+                        element.setAttribute('value', `${entityName}`)
+                        element.classList.add('input_filled')
                     }
-        
-            }
+                    new CloseDialog().x(_dialog)
+                    
+                })
+            
+            })
 
+    
+            _closeButton.onclick = () => {
+                new CloseDialog().x(_dialog)
+            }
+    
     }
+    
 
     private selectDelete(nothingConfig: any): void {
         
