@@ -390,7 +390,7 @@ export class Crews {
             //inputSelect('Crew', 'entity-customer')
             this.selectVehicle();
             this.selectUser('INS', '', '');
-            this.selectWeapon();
+            this.selectWeapon('INS', '', '');
             this.selectDelete(nothingConfig);
             inputSelect('CrewState', 'entity-state', 'Disponible');
             //inputSelect('Department', 'entity-department')
@@ -812,7 +812,7 @@ export class Crews {
             inputObserver();
             this.selectVehicle();
             this.selectUser('UPD', nothingConfig, data);
-            this.selectWeapon();
+            this.selectWeapon('UPD', nothingConfig, data);
             this.selectDelete(nothingConfig);
             //inputSelect('Business', 'entity-citadel')
             //inputSelect('Crew', 'entity-customer')
@@ -1698,28 +1698,30 @@ export class Crews {
             };
         }
     }
-    selectWeapon() {
-        const waepon1 = document.getElementById('entity-weapon1');
-        const waepon2 = document.getElementById('entity-weapon2');
-        const waepon3 = document.getElementById('entity-weapon3');
-        const waepon4 = document.getElementById('entity-weapon4');
-        const waepon5 = document.getElementById('entity-weapon5');
-        waepon1.addEventListener('click', async () => {
-            modalTable(0, "", waepon1);
+    selectWeapon(acc, nothingConfig, crews) {
+        const elements = {
+            weapon1: document.getElementById('entity-weapon1'),
+            weapon2: document.getElementById('entity-weapon2'),
+            weapon3: document.getElementById('entity-weapon3'),
+            weapon4: document.getElementById('entity-weapon4'),
+            weapon5: document.getElementById('entity-weapon5')
+        };
+        elements.weapon1.addEventListener('click', async () => {
+            modalTable(0, "", elements.weapon1);
         });
-        waepon2.addEventListener('click', async () => {
-            modalTable(0, "", waepon2);
+        elements.weapon2.addEventListener('click', async () => {
+            modalTable(0, "", elements.weapon2);
         });
-        waepon3.addEventListener('click', async () => {
-            modalTable(0, "", waepon3);
+        elements.weapon3.addEventListener('click', async () => {
+            modalTable(0, "", elements.weapon3);
         });
-        waepon4.addEventListener('click', async () => {
-            modalTable(0, "", waepon4);
+        elements.weapon4.addEventListener('click', async () => {
+            modalTable(0, "", elements.weapon4);
         });
-        waepon5.addEventListener('click', async () => {
-            modalTable(0, "", waepon5);
+        elements.weapon5.addEventListener('click', async () => {
+            modalTable(0, "", elements.weapon5);
         });
-        async function modalTable(offset, search, element) {
+        const modalTable = async (offset, search, element) => {
             const dialogContainer = document.getElementById('app-dialogs');
             let raw = JSON.stringify({
                 "filter": {
@@ -1784,11 +1786,11 @@ export class Crews {
                 });
             }
             let dataModal = await getFilterEntityData("Weapon", raw);
-            const Fwaepon1 = dataModal.filter((data) => data.id != waepon1.dataset.optionid);
-            const Fwaepon2 = Fwaepon1.filter((data) => data.id != waepon2.dataset.optionid);
-            const Fwaepon3 = Fwaepon2.filter((data) => data.id != waepon3.dataset.optionid);
-            const Fwaepon4 = Fwaepon3.filter((data) => data.id != waepon4.dataset.optionid);
-            const Fwaepon5 = Fwaepon4.filter((data) => data.id != waepon5.dataset.optionid);
+            const Fweapon1 = dataModal.filter((data) => data.id != elements.weapon1.dataset.optionid);
+            const Fweapon2 = Fweapon1.filter((data) => data.id != elements.weapon2.dataset.optionid);
+            const Fweapon3 = Fweapon2.filter((data) => data.id != elements.weapon3.dataset.optionid);
+            const Fweapon4 = Fweapon3.filter((data) => data.id != elements.weapon4.dataset.optionid);
+            const Fweapon5 = Fweapon4.filter((data) => data.id != elements.weapon5.dataset.optionid);
             dialogContainer.style.display = 'block';
             dialogContainer.innerHTML = `
                     <div class="dialog_content" id="dialog-content">
@@ -1809,6 +1811,7 @@ export class Crews {
                                             id="btnSearchModal">
                                             <i class="fa-solid fa-search"></i>
                                         </button>
+                                        <div id="listWeapon"></div>
                                     </div>
                                     <div class="dashboard_datatable">
                                         <table class="datatable_content margin_t_16">
@@ -1838,7 +1841,7 @@ export class Crews {
                 `;
             inputObserver();
             const datetableBody = document.getElementById('datatable-modal-body');
-            if (Fwaepon5.length === 0) {
+            if (Fweapon5.length === 0) {
                 let row = document.createElement('tr');
                 row.innerHTML = `
                         <td>No hay datos</td>
@@ -1848,8 +1851,8 @@ export class Crews {
                 datetableBody.appendChild(row);
             }
             else {
-                for (let i = 0; i < Fwaepon5.length; i++) {
-                    let client = Fwaepon5[i];
+                for (let i = 0; i < Fweapon5.length; i++) {
+                    let client = Fweapon5[i];
                     let row = document.createElement('tr');
                     row.innerHTML += `
                             <td>${client?.name ?? ''}</dt>
@@ -1867,6 +1870,7 @@ export class Crews {
             }
             const txtSearch = document.getElementById('search-modal');
             const btnSearchModal = document.getElementById('btnSearchModal');
+            const listWeapon = document.getElementById('listWeapon');
             const _selectUser = document.querySelectorAll('#edit-entity');
             const _closeButton = document.getElementById('cancel');
             const _dialog = document.getElementById('dialog-content');
@@ -1898,7 +1902,153 @@ export class Crews {
                 offset = Config.modalRows - (offset);
                 modalTable(offset, search, element);
             };
+            if (acc == 'UPD') {
+                listWeapon.innerHTML = `
+                    <button
+                        class="datatable_button add_user"
+                        id="btnListWeapon">
+                        <i class="fa-solid fa-person-rifle"></i>
+                    </button>
+                    `;
+                const btnListWeapon = document.getElementById('btnListWeapon');
+                btnListWeapon.onclick = () => {
+                    //new CloseDialog().x(_dialog)
+                    this.weaponSelected(acc, nothingConfig, element, elements, crews);
+                };
+            }
+        };
+    }
+    weaponSelected(acc, nothingConfig, element, elements, crews) {
+        const dialogContainer = document.getElementById('app-dialogs');
+        let title;
+        let listWeaponsNews = [
+            { info: elements.weapon1, rol: "Supervisor" },
+            { info: elements.weapon2, rol: "Segundero" },
+            { info: elements.weapon3, rol: "Custodio 1" },
+            { info: elements.weapon4, rol: "Custodio 2" },
+            { info: elements.weapon5, rol: "Custodio 3" }
+        ];
+        for (let i = 0; i < listWeaponsNews.length; i++) {
+            if (element.id == listWeaponsNews[i].info.id)
+                title = listWeaponsNews[i].rol;
         }
+        dialogContainer.style.display = 'block';
+        dialogContainer.innerHTML = `
+                <div class="dialog_content" id="dialog-content">
+                    <div class="dialog">
+                        <div class="dialog_container padding_8">
+                            <div class="dialog_header">
+                                <h2>Guardias enlistados, arma: ${title}</h2>
+                            </div>
+    
+                            <div class="dialog_message padding_8">
+                                <div class="datatable_tools">
+                                </div>
+                                <div class="dashboard_datatable">
+                                    <table class="datatable_content margin_t_16">
+                                    <thead>
+                                        <tr>
+                                        <th>Puesto</th>
+                                        <th>Arma</th>
+                                        <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="datatable-modal-body">
+                                    </tbody>
+                                    </table>
+                                </div>
+                                <br>
+                            </div>
+    
+                            <div class="dialog_footer">
+                                <button class="btn btn_danger" id="cancel">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        inputObserver();
+        const datetableBody = document.getElementById('datatable-modal-body');
+        let row = document.createElement('tr');
+        row.innerHTML += `
+                    <td style="color:green;">* Armas y roles asignados inicialmente *</td>
+                    `;
+        datetableBody.appendChild(row);
+        let listWeapons = [
+            { info: crews?.weaponOne, rol: "Supervisor" },
+            { info: crews?.weaponTwo, rol: "Segundero" },
+            { info: crews?.weaponThree, rol: "Custodio 1" },
+            { info: crews?.weaponFour, rol: "Custodio 2" },
+            { info: crews?.weaponFive, rol: "Custodio 3" }
+        ];
+        for (let i = 0; i < listWeapons.length; i++) {
+            let crew = listWeapons[i];
+            if (crew.info.id != nothingConfig.nothingWeapon.id) {
+                row = document.createElement('tr');
+                row.innerHTML += `
+                        <td>${crew.rol}</td>
+                        <td>${crew.info.name} [${crew.info.licensePlate}]</td>
+                        <td class="entity_options">
+                            <button class="button" id="edit-entity" data-entityId="${crew.info.id}" data-entityName="${crew.info.name} [${crew.info.licensePlate}]">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </button>
+                        </td>
+                    `;
+                datetableBody.appendChild(row);
+            }
+        }
+        row = document.createElement('tr');
+        row.innerHTML += `
+                <td style="color:blue;">* Nuevas armas y roles seleccionados *</td>
+                `;
+        datetableBody.appendChild(row);
+        for (let i = 0; i < listWeaponsNews.length; i++) {
+            let crew = listWeapons[i];
+            let crewNew = listWeaponsNews[i];
+            if (crewNew.info.dataset.optionid != crew.info.id) {
+                if (crewNew.info.dataset.optionid != nothingConfig.nothingWeapon.id) {
+                    row = document.createElement('tr');
+                    row.innerHTML += `
+                            <td>${crewNew.rol}</dt>
+                            <td>${crewNew.info.value}</dt>
+                            <td class="entity_options">
+                                <button class="button" id="edit-entity" data-entityId="${crewNew.info.dataset.optionid}" data-entityName="${crewNew.info.value}">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </button>
+                            </td>
+                        `;
+                    datetableBody.appendChild(row);
+                }
+            }
+        }
+        const _selectUser = document.querySelectorAll('#edit-entity');
+        const _closeButton = document.getElementById('cancel');
+        const _dialog = document.getElementById('dialog-content');
+        _selectUser.forEach((edit) => {
+            const entityId = edit.dataset.entityid;
+            const entityName = edit.dataset.entityname;
+            const entityPlate = edit.dataset.entityplate;
+            console.log(entityName);
+            edit.addEventListener('click', () => {
+                if (element.dataset.optionid != entityId) {
+                    for (let i = 0; i < listWeaponsNews.length; i++) {
+                        let crewNew = listWeaponsNews[i];
+                        if (crewNew.info.dataset.optionid == entityId) {
+                            crewNew.info.setAttribute('data-optionid', nothingConfig.nothingWeapon.id);
+                            crewNew.info.setAttribute('value', `${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]`);
+                            crewNew.info.classList.add('input_filled');
+                        }
+                    }
+                    element.setAttribute('data-optionid', entityId);
+                    element.setAttribute('value', `${entityName}`);
+                    element.classList.add('input_filled');
+                }
+                new CloseDialog().x(_dialog);
+            });
+        });
+        _closeButton.onclick = () => {
+            new CloseDialog().x(_dialog);
+        };
     }
     selectUser(acc, nothingConfig, crews) {
         const elements = {
@@ -2171,7 +2321,7 @@ export class Crews {
                     <div class="dialog">
                         <div class="dialog_container padding_8">
                             <div class="dialog_header">
-                                <h2>Guardias en la patrulla: ${title}</h2>
+                                <h2>Guardias enlistados, puesto: ${title}</h2>
                             </div>
     
                             <div class="dialog_message padding_8">

@@ -389,6 +389,12 @@ export const getUpdateState = async (value: string, table: string, entityId: any
                 "id": `${value}`
             },
         })
+    }else if(table == "Service"){
+        raw = JSON.stringify({
+            "serviceState": {
+                "id": `${value}`
+            },
+        })
     }
     updateEntity(table, entityId, raw)
 }

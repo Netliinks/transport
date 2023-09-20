@@ -357,6 +357,13 @@ export const getUpdateState = async (value, table, entityId) => {
             },
         });
     }
+    else if (table == "Service") {
+        raw = JSON.stringify({
+            "serviceState": {
+                "id": `${value}`
+            },
+        });
+    }
     updateEntity(table, entityId, raw);
 };
 export const verifyUserType = (userType) => {

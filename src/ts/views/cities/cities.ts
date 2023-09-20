@@ -30,11 +30,11 @@ const getCities = async (): Promise<void> => {
     let raw = JSON.stringify({
         "filter": {
             "conditions": [
-              {
-                "property": "business.id",
-                "operator": "=",
-                "value": `${businessId}`
-              }
+                {
+                    "property": "name",
+                    "operator": "<>",
+                    "value": ``
+                }
             ],
             
         }, 
@@ -57,11 +57,6 @@ const getCities = async (): Promise<void> => {
                         "value": `${infoPage.search.toLowerCase()}`
                       }
                     ]
-                  },
-                  {
-                    "property": "business.id",
-                    "operator": "=",
-                    "value": `${businessId}`
                   }
                 ]
               },
@@ -129,13 +124,13 @@ export class Cities {
                 row.innerHTML += `
                     <td>${client.name}</dt>
                     <td class="entity_options">
-                        <button class="button" id="edit-entity" data-entityId="${client.id}">
+                        <!-- <button class="button" id="edit-entity" data-entityId="${client.id}">
                             <i class="fa-solid fa-pen"></i>
                         </button>
 
                         <button class="button" id="remove-entity" data-entityId="${client.id}" data-entityName="${client.name}" style="display:${userPermissions().style};">
                             <i class="fa-solid fa-trash"></i>
-                        </button>
+                        </button>  -->
                     </td>
                 `
                 table.appendChild(row)
@@ -228,9 +223,6 @@ export class Cities {
 
                 const raw = JSON.stringify({
                     "name": `${inputsCollection.name.value.toUpperCase()}`,
-                    "business":{
-                        "id": `${businessId}`
-                    },
                     'creationDate': `${currentDateTime().date}`,
                     'creationTime': `${currentDateTime().time}`,
                 })

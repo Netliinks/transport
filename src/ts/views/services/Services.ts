@@ -1,6 +1,6 @@
 // @filename: Departments.ts
 
-import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity } from "../../endpoints.js"
+import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity, sendMail } from "../../endpoints.js"
 import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog, getSearch, getDetails, getUpdateState } from "../../tools.js"
 import { Data, InterfaceElement } from "../../types.js"
 import { Config } from "../../Configs.js"
@@ -136,8 +136,8 @@ export class Services {
                 <td class="tag"><span>${service?.serviceState?.name ?? ''}</span></td>
                 <td class="entity_options">
 
-                    <button class="button" id="get-email" data-entityId="${service.id}">
-                        <i class="fa-solid fa-envelope"></i>
+                    <button class="button" id="get-check" data-entityId="${service.id}">
+                        <i class="fa-solid fa-check"></i>
                     </button>
 
                     <button class="button" id="get-patrols" data-entityId="${service.id}">
@@ -729,107 +729,111 @@ export class Services {
                       const containers: any = await getDetails("service.id", entityId, "Charge")
                       deleteEntity('Service', entityId)
                         .then(async res => {
-                          eventLog('DLT', 'SERVICIO', `${entityName}`, data)
-                          //Patrulla
-                          if(patrols != undefined){
-                            patrols.forEach(async (patrol: any) => {
-                                let crew: any = await getEntityData('Crew', patrol.crew.id)
-                                getUpdateState(nothingConfig.crewState.id, 'Crew', patrol.crew.id)
-                                eventLog('UPD', `PATRULLA`, `${patrol.crew.name} disponible`, '')
-                                let dataArray = []
-                                if(crew?.vehicular?.id){
-                                dataArray.push({
-                                    id: crew.vehicular.id,
-                                    value: `${crew.vehicular.type} [${crew.vehicular.licensePlate}]`,
-                                    table: "Vehicular",
-                                    state: nothingConfig.vehicularState.id,
-                                    title: "VEHÍCULO"
-                                })
-                                }
-                                if(crew?.crewOne?.id != nothingConfig.nothingUser.id || crew?.crewOne?.username != 'N/A'){
-                                    dataArray.push({
-                                        id: crew?.crewOne.id,
-                                        value: `${crew?.crewOne.username}`,
-                                        table: "User",
-                                        state: nothingConfig.userState.id,
-                                        title: "SUPERVISOR"
-                                    })
-    
-                                    if(crew?.weaponOne?.id != nothingConfig.nothingWeapon.id || crew?.weaponOne?.name != 'N/A'){
+                            setTimeout(async () => {
+                                eventLog('DLT', 'SERVICIO', `${entityName}`, data)
+                                //Patrulla
+                                if(patrols != undefined){
+                                    patrols.forEach(async (patrol: any) => {
+                                        let crew: any = await getEntityData('Crew', patrol.crew.id)
+                                        getUpdateState(nothingConfig.crewState.id, 'Crew', patrol.crew.id)
+                                        eventLog('UPD', `PATRULLA`, `${patrol.crew.name} disponible`, '')
+                                        let dataArray = []
+                                        if(crew?.vehicular?.id){
                                         dataArray.push({
-                                            id: crew?.weaponOne.id,
-                                            value: `${crew?.weaponOne.name} [${crew?.weaponOne.licensePlate}]`,
-                                            table: "Weapon",
-                                            state: nothingConfig.weaponState.id,
-                                            title: "ARMA"
+                                            id: crew.vehicular.id,
+                                            value: `${crew.vehicular.type} [${crew.vehicular.licensePlate}]`,
+                                            table: "Vehicular",
+                                            state: nothingConfig.vehicularState.id,
+                                            title: "VEHÍCULO"
                                         })
-                                    }
-                                }
-                                let users = [crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive]
-                                let weapons = [crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive]
-                                for(let i = 0; i < 4; i++){
-                                    if(users[i]?.id != nothingConfig.nothingUser.id || users[i]?.username != 'N/A'){
-                                        dataArray.push({
-                                            id: users[i].id,
-                                            value: `${users[i].username}`,
-                                            table: "User",
-                                            state: nothingConfig.userState.id,
-                                            title: "GUARDIA"
-                                        })
-        
-                                        if(weapons[i]?.id != nothingConfig.nothingWeapon.id || weapons[i]?.name != 'N/A'){
+                                        }
+                                        if(crew?.crewOne?.id != nothingConfig.nothingUser.id || crew?.crewOne?.username != 'N/A'){
                                             dataArray.push({
-                                                id: weapons[i].id,
-                                                value: `${weapons[i].name} [${weapons[i].licensePlate}]`,
+                                                id: crew?.crewOne.id,
+                                                value: `${crew?.crewOne.username}`,
+                                                table: "User",
+                                                state: nothingConfig.userState.id,
+                                                title: "SUPERVISOR"
+                                            })
+            
+                                            if(crew?.weaponOne?.id != nothingConfig.nothingWeapon.id || crew?.weaponOne?.name != 'N/A'){
+                                                dataArray.push({
+                                                    id: crew?.weaponOne.id,
+                                                    value: `${crew?.weaponOne.name} [${crew?.weaponOne.licensePlate}]`,
+                                                    table: "Weapon",
+                                                    state: nothingConfig.weaponState.id,
+                                                    title: "ARMA"
+                                                })
+                                            }
+                                        }
+                                        let users = [crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive]
+                                        let weapons = [crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive]
+                                        for(let i = 0; i < 4; i++){
+                                            if(users[i]?.id != nothingConfig.nothingUser.id || users[i]?.username != 'N/A'){
+                                                dataArray.push({
+                                                    id: users[i].id,
+                                                    value: `${users[i].username}`,
+                                                    table: "User",
+                                                    state: nothingConfig.userState.id,
+                                                    title: "GUARDIA"
+                                                })
+                
+                                                if(weapons[i]?.id != nothingConfig.nothingWeapon.id || weapons[i]?.name != 'N/A'){
+                                                    dataArray.push({
+                                                        id: weapons[i].id,
+                                                        value: `${weapons[i].name} [${weapons[i].licensePlate}]`,
+                                                        table: "Weapon",
+                                                        state: nothingConfig.weaponState.id,
+                                                        title: "ARMA"
+                                                    })
+                                                }
+                                            }
+                                        }
+            
+                                        for(let i = 0; i < dataArray.length; i++){
+                                        getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
+                                        eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
+                                        }
+                                    
+                                    })
+                                    
+                                }
+
+                                //Contenedor
+                                if(containers != undefined){
+                                    containers.forEach((container: any) => {
+                                        let dataArray = []
+                                
+                                        if(container.companion?.id != nothingConfig.nothingUser.id || container.companion?.username != 'N/A'){
+                                            dataArray.push({
+                                                id: container.companion.id,
+                                                value: `${container.companion.username}`,
+                                                table: "User",
+                                                state: nothingConfig.userContainer.id,
+                                                title: "GUARDIA"
+                                            })
+
+                                        if(container.weapon?.id != nothingConfig.nothingWeapon.id || container.weapon?.name != 'N/A'){
+                                            dataArray.push({
+                                                id: container.weapon.id,
+                                                value: `${container.weapon.name} [${container.weapon.licensePlate}]`,
                                                 table: "Weapon",
-                                                state: nothingConfig.weaponState.id,
+                                                state: nothingConfig.weaponContainer.id,
                                                 title: "ARMA"
                                             })
+                                            }
                                         }
-                                    }
-                                }
-    
-                                for(let i = 0; i < dataArray.length; i++){
-                                getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
-                                eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
-                                }
-                            })
-                          }
+                                        
 
-                          //Contenedor
-                          if(containers != undefined){
-                            containers.forEach((container: any) => {
-                                let dataArray = []
-                        
-                                if(container.companion?.id != nothingConfig.nothingUser.id || container.companion?.username != 'N/A'){
-                                    dataArray.push({
-                                        id: container.companion.id,
-                                        value: `${container.companion.username}`,
-                                        table: "User",
-                                        state: nothingConfig.userContainer.id,
-                                        title: "GUARDIA"
+                                        for(let i = 0; i < dataArray.length; i++){
+                                            getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
+                                            eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
+                                        }
                                     })
-
-                                if(container.weapon?.id != nothingConfig.nothingWeapon.id || container.weapon?.name != 'N/A'){
-                                    dataArray.push({
-                                        id: container.weapon.id,
-                                        value: `${container.weapon.name} [${container.weapon.licensePlate}]`,
-                                        table: "Weapon",
-                                        state: nothingConfig.weaponContainer.id,
-                                        title: "ARMA"
-                                    })
-                                    }
                                 }
-                                
-
-                                for(let i = 0; i < dataArray.length; i++){
-                                    getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
-                                    eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
-                                }
-                            })
-                          }
-                          
-                          new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search)
+                                    
+                                new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search)
+                            },1000)
                         })
                     }else{
                       alert("No se puede eliminar un servicio en proceso.")
@@ -1147,9 +1151,9 @@ export class Services {
                 "filter": {
                     "conditions": [
                       {
-                        "property": "business.id",
-                        "operator": "=",
-                        "value": `${businessId}`
+                        "property": "name",
+                        "operator": "<>",
+                        "value": ``
                       }
                     ],
                     
@@ -1307,8 +1311,8 @@ export class Services {
     }
     private sendEmail(): void {
        
-        const email: InterfaceElement = document.querySelectorAll('#get-email')
-        email.forEach((send: InterfaceElement) => {
+        const check: InterfaceElement = document.querySelectorAll('#get-check')
+        check.forEach((send: InterfaceElement) => {
             const entityId = send.dataset.entityid
             send.addEventListener('click', (): void => {
                 modalMail('Service', entityId)
@@ -1316,84 +1320,122 @@ export class Services {
         })
     
         async function modalMail(entity: any, entityID: any){
-            const dialogContainer: InterfaceElement =
-            document.getElementById('app-dialogs')
             let data = await getEntityData(entity, entityID)
-            const patrols: any = await getDetails("service.id", entityID, "ServiceDetailV")
-            dialogContainer.style.display = 'block'
-            dialogContainer.innerHTML = `
-                <div class="dialog_content" id="dialog-content">
-                    <div class="dialog">
-                        <div class="dialog_container padding_8">
-                            <div class="dialog_header">
-                                <h2>Confirmación</h2>
-                            </div>
+            if(data.serviceState.name == "Pendiente"){
+                const dialogContainer: InterfaceElement =
+                document.getElementById('app-dialogs')
+                const patrols: any = await getDetails("service.id", entityID, "ServiceDetailV")
+                const serviceState = await getNothing("name", "Confirmado", "ServiceState")
+                dialogContainer.style.display = 'block'
+                dialogContainer.innerHTML = `
+                    <div class="dialog_content" id="dialog-content">
+                        <div class="dialog">
+                            <div class="dialog_container padding_8">
+                                <div class="dialog_header">
+                                    <h2>Confirmación</h2>
+                                </div>
 
-                            <div class="dialog_message padding_8">
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-desktop"></i> Código de servicio: ${data.id}</label> 
+                                <div class="dialog_message padding_8">
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-desktop"></i> Código de servicio: ${data.id}</label> 
+                                    </div>
+                                    <br>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-desktop"></i> Solicitante: ${data?.name ?? ''}</label>
+                                    </div>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-buildings"></i> Cliente: ${data.customer?.name ?? ''}</label>
+                                    </div>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-envelope"></i> Email: ${data?.email ?? ''}</label>
+                                    </div>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-earth-americas"></i> Ciudad Origen: ${data.cityOrigin.name}</label>
+                                    </div>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-earth-americas"></i> Ciudad Destino: ${data.cityDestination.name}</label>
+                                    </div>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-location-arrow"></i> Lugar Origen: ${data.placeOrigin}</label>
+                                    </div>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-location-arrow"></i> Lugar Destino: ${data.placeDestination}</label>
+                                    </div>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-calendar"></i> FH_Servicio: ${data?.outputDate ?? ''} ${data?.outputTime ?? ''}</label>
+                                    </div>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-info"></i> Referencia Cliente: ${data?.reference ?? ''}</label>
+                                    </div>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-shield"></i> Tipo de Custodia: ${data?.custodyType ?? ''}</label>
+                                    </div>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-truck-container"></i> # Contenedores: ${data?.quantyContainers ?? '0'}</label>
+                                    </div>
+                                    <div class="input_detail">
+                                        <label><i class="fa-solid fa-car"></i> # Vehículos: ${data?.quantyVehiculars ?? '0'}</label>
+                                    </div>
+                                    <div id="listPatrol"></div>
                                 </div>
-                                <br>
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-earth-americas"></i> Ciudad Origen: ${data.cityOrigin.name}</label>
-                                </div>
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-earth-americas"></i> Ciudad Destino: ${data.cityDestination.name}</label>
-                                </div>
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-location-arrow"></i> Lugar Origen: ${data.placeOrigin}</label>
-                                </div>
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-location-arrow"></i> Lugar Destino: ${data.placeDestination}</label>
-                                </div>
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-buildings"></i> Cliente: ${data.customer?.name ?? ''}</label>
-                                </div>
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-desktop"></i> Solicitante: ${data?.name ?? ''}</label>
-                                </div>
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-calendar"></i> FH_Servicio: ${data?.outputDate ?? ''} ${data?.outputTime ?? ''}</label>
-                                </div>
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-info"></i> Referencia Cliente: ${data?.reference ?? ''}</label>
-                                </div>
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-shield"></i> Tipo de Custodia: ${data?.custodyType ?? ''}</label>
-                                </div>
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-truck-container"></i> # Contenedores: ${data?.quantyContainers ?? '0'}</label>
-                                </div>
-                                <div class="input_detail">
-                                    <label for="creation-date"><i class="fa-solid fa-car"></i> # Vehículos: ${data?.quantyVehiculars ?? '0'}</label>
-                                </div>
-                                <div id="listPatrol"></div>
-                            </div>
 
-                            <div class="dialog_footer">
-                                <button class="btn btn_danger" id="cancel">Cancelar</button>
+                                <div class="dialog_footer">
+                                    <button class="btn btn_danger" id="cancel">Cancelar</button>
+                                    <button class="btn btn_primary" id="email">Enviar Correo</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `
-            inputObserver()
-            
-            const _closeButton: InterfaceElement = document.getElementById('cancel')
-            const _dialog: InterfaceElement = document.getElementById('dialog-content')
-            if(patrols != undefined){
-                const _listPatrol: InterfaceElement = document.getElementById('listPatrol')
-                _listPatrol.innerHTML = `<ul>`
-                patrols.forEach(async (patrol: any) => {
-                    _listPatrol.innerHTML += `<li>${patrol.crew.name}</li>`
-                })
-                _listPatrol.innerHTML += `</ul>`
-            }
+                `
+                inputObserver()
+                
+                const _closeButton: InterfaceElement = document.getElementById('cancel')
+                const _emailButton: InterfaceElement = document.getElementById('email')
+                const _dialog: InterfaceElement = document.getElementById('dialog-content')
+                if(patrols != undefined){
+                    const _listPatrol: InterfaceElement = document.getElementById('listPatrol')
+                    _listPatrol.innerHTML = `<ul>`
+                    patrols.forEach(async (patrol: any) => {
+                        _listPatrol.innerHTML += `<li>${patrol.crew.name}</li>`
+                    })
+                    _listPatrol.innerHTML += `</ul>`
+                }
 
-            _closeButton.onclick = () => {
-                new CloseDialog().x(_dialog)
-            }
+                _closeButton.onclick = () => {
+                    new CloseDialog().x(_dialog)
+                }
 
+                _emailButton.onclick = async () => {
+                        let mailRaw = JSON.stringify({
+                            "address": data?.email,
+                            "subject": "Netliinks - Confirmación de Servicio.",
+                            "body": `Buen día, se ha confirmado el servicio con los siguientes datos:\n\n
+                                Solicitante: ${data?.name ?? ''}\n
+                                Cliente: ${data?.customer?.name ?? ''}\n
+                                Email: ${data?.email ?? ''}\n
+                                Ciudad Origen: ${data.cityOrigin.name}\n
+                                Ciudad Destino: ${data.cityDestination.name}\n
+                                Lugar Origen: ${data.placeOrigin}\n
+                                Lugar Destino: ${data.placeDestination}\n
+                                FH_Servicio: ${data?.outputDate ?? ''} ${data?.outputTime ?? ''}\n
+                                Referencia Cliente: ${data?.reference ?? ''}\n
+                                Tipo de Custodia: ${data?.custodyType ?? ''}\n
+                                # Contenedores: ${data?.quantyContainers ?? '0'}\n
+                                # Vehículos: ${data?.quantyVehiculars ?? '0'}\n
+                                \nNo responder a este correo.\nSaludos.\n\n\nNetliinks S.A.`
+                        });
+                        getUpdateState(`${serviceState.id}`, "Service", data.id).then((res) => {
+                            setTimeout(() => {
+                                sendMail(mailRaw)
+                                eventLog('UPD', 'CONFIRMACIÓN-SERVICIO', `${data.name}`, data)
+                                new CloseDialog().x(_dialog)
+                                new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search)
+                            },1000)
+                        });
+                        
+                    
+                }
+            }
             
         }
     

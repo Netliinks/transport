@@ -163,11 +163,11 @@ export class Charges {
                 let container = paginatedItems[i];
                 let row = document.createElement('tr');
                 row.innerHTML += `
-                <td>${container.name ?? ''}</dt>
-                <td>${container?.licensePlate ?? ''}</dt>
-                <td>${container?.driver ?? ''}</dt>
-                <td>${container?.dniDriver ?? ''}</dt>
-                <td>${container?.transportCompany ?? ''}</dt>
+                <td>${container.name ?? ''}</td>
+                <td>${container?.licensePlate ?? ''}</td>
+                <td>${container?.driver ?? ''}</td>
+                <td>${container?.dniDriver ?? ''}</td>
+                <td>${container?.transportCompany ?? ''}</td>
                 <td class="entity_options">
 
                     <button class="button" id="edit-entity" data-entityId="${container.id}">
@@ -715,31 +715,33 @@ export class Charges {
                     if (serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Finalizado") {
                         deleteEntity('Charge', entityId)
                             .then(async (res) => {
-                            eventLog('DLT', 'SERVICIO-CONTENEDOR', `${entityName} [${entityPlate}]`, serviceId);
-                            let dataArray = [];
-                            if (data.companion?.id != nothingConfig.nothingUser.id || data.companion?.username != 'N/A') {
-                                dataArray.push({
-                                    id: data.companion.id,
-                                    value: `${data.companion.username}`,
-                                    table: "User",
-                                    state: nothingConfig.userState.id,
-                                    title: "GUARDIA"
-                                });
-                                if (data.weapon?.id != nothingConfig.nothingWeapon.id || data.weapon?.name != 'N/A') {
+                            setTimeout(async () => {
+                                eventLog('DLT', 'SERVICIO-CONTENEDOR', `${entityName} [${entityPlate}]`, serviceId);
+                                let dataArray = [];
+                                if (data.companion?.id != nothingConfig.nothingUser.id || data.companion?.username != 'N/A') {
                                     dataArray.push({
-                                        id: data.weapon.id,
-                                        value: `${data.weapon.name} [${data.weapon.licensePlate}]`,
-                                        table: "Weapon",
-                                        state: nothingConfig.weaponState.id,
-                                        title: "ARMA"
+                                        id: data.companion.id,
+                                        value: `${data.companion.username}`,
+                                        table: "User",
+                                        state: nothingConfig.userState.id,
+                                        title: "GUARDIA"
                                     });
+                                    if (data.weapon?.id != nothingConfig.nothingWeapon.id || data.weapon?.name != 'N/A') {
+                                        dataArray.push({
+                                            id: data.weapon.id,
+                                            value: `${data.weapon.name} [${data.weapon.licensePlate}]`,
+                                            table: "Weapon",
+                                            state: nothingConfig.weaponState.id,
+                                            title: "ARMA"
+                                        });
+                                    }
                                 }
-                            }
-                            for (let i = 0; i < dataArray.length; i++) {
-                                getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id);
-                                eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '');
-                            }
-                            new Charges().render(infoPage.offset, infoPage.currentPage, infoPage.search, serviceId.id);
+                                for (let i = 0; i < dataArray.length; i++) {
+                                    getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id);
+                                    eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '');
+                                }
+                                new Charges().render(infoPage.offset, infoPage.currentPage, infoPage.search, serviceId.id);
+                            }, 1000);
                         });
                     }
                     else {
@@ -955,9 +957,9 @@ export class Charges {
                     let client = Fwaepon[i];
                     let row = document.createElement('tr');
                     row.innerHTML += `
-                          <td>${client?.name ?? ''}</dt>
-                          <td>${client?.licensePlate ?? ''}</dt>
-                          <td>${client?.nroSerie ?? ''}</dt>
+                          <td>${client?.name ?? ''}</td>
+                          <td>${client?.licensePlate ?? ''}</td>
+                          <td>${client?.nroSerie ?? ''}</td>
                           <td class="entity_options">
                               <button class="button" id="edit-entity" data-entityId="${client.id}" data-entityName="${client.name}" data-entityPlate="${client.licensePlate}">
                                   <i class="fa-solid fa-arrow-up-right-from-square"></i>
@@ -1161,9 +1163,9 @@ export class Charges {
                     let client = FGuard[i];
                     let row = document.createElement('tr');
                     row.innerHTML += `
-                          <td>${client?.firstName ?? ''} ${client?.lastName ?? ''} ${client?.secondLastName ?? ''}</dt>
-                          <td>${client?.username ?? ''}</dt>
-                          <td>${client?.dni ?? ''}</dt>
+                          <td>${client?.firstName ?? ''} ${client?.lastName ?? ''} ${client?.secondLastName ?? ''}</td>
+                          <td>${client?.username ?? ''}</td>
+                          <td>${client?.dni ?? ''}</td>
                           <td class="entity_options">
                               <button class="button" id="edit-entity" data-entityId="${client.id}" data-entityName="${client.username}" data-entityType="${client.type}">
                                   <i class="fa-solid fa-arrow-up-right-from-square"></i>
