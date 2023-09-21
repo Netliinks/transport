@@ -1,6 +1,6 @@
 // @filename: Departments.ts
 
-import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity, sendMail } from "../../endpoints.js"
+import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity, sendMail, getUserInfo } from "../../endpoints.js"
 import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog, getSearch, getDetails, getUpdateState } from "../../tools.js"
 import { Data, InterfaceElement } from "../../types.js"
 import { Config } from "../../Configs.js"
@@ -165,7 +165,7 @@ export class Services {
         this.getContainers()
         this.register()
         this.edit(this.entityDialogContainer, data)
-        this.sendEmail()
+        this.sendEmail(this.entityDialogContainer)
         this.remove()
     }
 
@@ -1309,7 +1309,7 @@ export class Services {
         }
 
     }
-    private sendEmail(): void {
+    private sendEmail(entityDialogContainer: InterfaceElement): void {
        
         const check: InterfaceElement = document.querySelectorAll('#get-check')
         check.forEach((send: InterfaceElement) => {
@@ -1427,13 +1427,281 @@ export class Services {
                         getUpdateState(`${serviceState.id}`, "Service", data.id).then((res) => {
                             setTimeout(() => {
                                 sendMail(mailRaw)
-                                eventLog('UPD', 'CONFIRMACIÓN-SERVICIO', `${data.name}`, data)
+                                eventLog('UPD', 'SERVICIO-CONFIRMACIÓN', `${data.name}`, data)
+                                const raw = JSON.stringify({
+                                    "service": {
+                                      "id": `${entityID}`
+                                    },
+                                    "business": {
+                                      "id": `${businessId}`
+                                    },
+                                    "customer": {
+                                      "id": `${data.customer.id}`
+                                    },
+                                    'creationDate': `${currentDateTime().date}`,
+                                    'creationTime': `${currentDateTime().time}`,
+                                })
+                                registerEntity(raw, 'Control')
+                                eventLog('INS', 'CONFIRMACIÓN-CONTROL', `${data.name}`, data)
                                 new CloseDialog().x(_dialog)
                                 new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search)
                             },1000)
                         });
                         
                     
+                }
+            }else{
+                let control = await getSearch("service.id", entityID, "Control")
+                if(control != undefined){
+                    let fecha = new Date(); //Fecha actual
+                    let mes: any = fecha.getMonth()+1; //obteniendo mes
+                    let dia: any = fecha.getDate(); //obteniendo dia
+                    let anio = fecha.getFullYear(); //obteniendo año
+                    let _hours = fecha.getHours();
+                    let _minutes = fecha.getMinutes();
+                    let _fixedHours = ('0' + _hours).slice(-2);
+                    let _fixedMinutes = ('0' + _minutes).slice(-2);
+                    if(dia<10)
+                        dia='0'+dia; //agrega cero si el menor de 10
+                    if(mes<10)
+                        mes='0'+mes //agrega cero si el menor de 10
+                    
+                    entityDialogContainer.innerHTML = ''
+                    entityDialogContainer.style.display = 'flex'
+                    entityDialogContainer.innerHTML = `
+                        <div class="entity_editor" id="entity-editor">
+                        <div class="entity_editor_header">
+                            <div class="user_info">
+                            <div class="avatar"><i class="fa-regular fa-clock"></i></div>
+                            <h1 class="entity_editor_title">Control <br><small>${data.name}</small></h1>
+                            </div>
+
+                            <button class="btn btn_close_editor" id="close"><i class="fa-solid fa-x"></i></button>
+                        </div>
+
+                        <!-- EDITOR BODY -->
+                        <div class="entity_editor_body">
+
+                            <h3>Arribo Origen</h3>
+                            <br>
+
+                            <div class="form_group">
+                                <div class="form_input">
+                                    <label class="form_label" for="origen-date">Fecha:</label>
+                                    <input type="date" class="input_time input_time-start" id="origen-date" name="origen-date" value="${control?.arrivalOriginDate ?? anio+"-"+mes+"-"+dia}">
+                                </div>
+
+                                <div class="form_input">
+                                    <label class="form_label" for="origen-time">Hora:</label>
+                                    <input type="time" class="input_time input_time-end" id="origen-time" name="origen-time" value="${control?.arrivalOriginTime ?? `${_fixedHours}:${_fixedMinutes}`}">
+                                </div>
+                            </div>
+                            <div class="input_detail">
+                                <label><i class="fa-solid fa-user"></i></label>
+                                <input type="text" class="input_filled" value="${control?.originUser?.username ?? ''}" readonly>
+                            </div>
+                            <br>
+
+                            <h3>Partida Inicio</h3>
+                            <br>
+
+                            <div class="form_group">
+                                <div class="form_input">
+                                    <label class="form_label" for="start-date">Fecha:</label>
+                                    <input type="date" class="input_time input_time-start" id="start-date" name="start-date" value="${control?.startingPointDate ?? ''}">
+                                </div>
+
+                                <div class="form_input">
+                                    <label class="form_label" for="start-time">Hora:</label>
+                                    <input type="time" class="input_time input_time-end" id="start-time" name="start-time" value="${control?.startingPointTime ?? ''}">
+                                </div>
+                            </div>
+                            <div class="input_detail">
+                                <label><i class="fa-solid fa-user"></i></label>
+                                <input type="text" class="input_filled" value="${control?.startUser?.username ?? ''}" readonly>
+                            </div>
+                            <br>
+
+                            <h3>Arribo Destino</h3>
+                            <br>
+
+                            <div class="form_group">
+                                <div class="form_input">
+                                    <label class="form_label" for="destination-date">Fecha:</label>
+                                    <input type="date" class="input_time input_time-start" id="destination-date" name="destination-date" value="${control?.arrivalDestinationDate ?? ''}">
+                                </div>
+
+                                <div class="form_input">
+                                    <label class="form_label" for="destination-time">Hora:</label>
+                                    <input type="time" class="input_time input_time-end" id="destination-time" name="destination-time" value="${control?.arrivalDestinationTime ?? ''}">
+                                </div>
+                            </div>
+                            <div class="input_detail">
+                                <label><i class="fa-solid fa-user"></i></label>
+                                <input type="text" class="input_filled" value="${control?.destinationUser?.username ?? ''}" readonly>
+                            </div>
+                            <br>
+
+                            <h3>Finalización</h3>
+                            <br>
+
+                            <div class="form_group">
+                                <div class="form_input">
+                                    <label class="form_label" for="finish-date">Fecha:</label>
+                                    <input type="date" class="input_time input_time-start" id="finish-date" name="finish-date" value="${control?.endServiceDate ?? ''}">
+                                </div>
+
+                                <div class="form_input">
+                                    <label class="form_label" for="finish-time">Hora:</label>
+                                    <input type="time" class="input_time input_time-end" id="finish-time" name="finish-time" value="${control?.endServiceTime ?? ''}">
+                                </div>
+                            </div>
+                            <div class="input_detail">
+                                <label><i class="fa-solid fa-user"></i></label>
+                                <input type="text" class="input_filled" value="${control?.endUser?.username ?? ''}" readonly>
+                            </div>
+                            <br>
+                            <br>
+
+                            <div class="material_input">
+                            <br>
+                            <textarea id="entity-observation" rows="4" class="input_filled">${control?.observation ?? ''}</textarea>
+                            <label for="entity-observation"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
+                            </div>
+                            <br>
+                            <br>
+
+                            <div class="input_detail">
+                                <label for="creation-date"><i class="fa-solid fa-calendar"></i></label>
+                                <input type="date" id="creation-date" class="input_filled" value="${control.creationDate}" readonly>
+                            </div>
+                            <br>
+                            <div class="input_detail">
+                                <label for="creation-time"><i class="fa-solid fa-clock"></i></label>
+                                <input type="time" id="creation-time" class="input_filled" value="${control.creationTime}" readonly>
+                            </div>
+                            <br>
+                            <div class="input_detail">
+                                <label for="log-user"><i class="fa-solid fa-user"></i></label>
+                                <input type="text" id="log-user" class="input_filled" value="${control.createdBy}" readonly>
+                            </div>
+
+                        </div>
+                        <!-- END EDITOR BODY -->
+
+                        <div class="entity_editor_footer">
+                            <button class="btn btn_primary btn_widder" id="update-changes" style="display:${userPermissions().style};">Guardar</button>
+                        </div>
+                        </div>
+                    `
+
+                    inputObserver()
+                    
+                    const inputsCollection: InterfaceElement = {
+                        origenDate: document.getElementById("origen-date"),
+                        origenTime: document.getElementById("origen-time"),
+                        startDate: document.getElementById("start-date"),
+                        startTime: document.getElementById("start-time"),
+                        destDate: document.getElementById("destination-date"),
+                        destTime: document.getElementById("destination-time"),
+                        endDate: document.getElementById("finish-date"),
+                        endTime: document.getElementById("finish-time"),
+                        observation: document.getElementById("entity-observation"),
+                    }
+                    const currentUser = await getUserInfo()
+                    
+                    if(control?.arrivalOriginTime == undefined){
+                        inputsCollection.startDate.disabled = true
+                        inputsCollection.startTime.disabled = true
+                        inputsCollection.destDate.disabled = true
+                        inputsCollection.destTime.disabled = true
+                        inputsCollection.endDate.disabled = true
+                        inputsCollection.endTime.disabled = true
+                    }else if(control?.startingPointTime == undefined){
+                        inputsCollection.startDate.value = anio+"-"+mes+"-"+dia
+                        inputsCollection.startTime.value = `${_fixedHours}:${_fixedMinutes}`
+                        inputsCollection.destDate.disabled = true
+                        inputsCollection.destTime.disabled = true
+                        inputsCollection.endDate.disabled = true
+                        inputsCollection.endTime.disabled = true
+                    }else if(control?.arrivalDestinationTime == undefined){
+                        inputsCollection.destDate.value = anio+"-"+mes+"-"+dia
+                        inputsCollection.destTime.value = `${_fixedHours}:${_fixedMinutes}`
+                        inputsCollection.endDate.disabled = true
+                        inputsCollection.endTime.disabled = true
+                    }else if(control?.endServiceTime == undefined){
+                        inputsCollection.endDate.value = anio+"-"+mes+"-"+dia
+                        inputsCollection.endTime.value = `${_fixedHours}:${_fixedMinutes}`
+                    }
+
+                    
+                    const closeButton: InterfaceElement = document.getElementById('close')
+                    const saveButton: InterfaceElement = document.getElementById('update-changes')
+                    const editor: InterfaceElement = document.getElementById('entity-editor-container')
+
+                    closeButton.addEventListener('click', () => {
+                        //console.log('close')
+                        new CloseDialog().x(editor)
+                    })
+
+                    saveButton.addEventListener('click', () => {
+                        setTimeout(async () => {
+                            let raws = []
+                            if(inputsCollection.origenTime.value != ''){       
+                                raws.push(
+                                    JSON.stringify({
+                                        "arrivalOriginDate": `${inputsCollection.origenDate.value}`,
+                                        "arrivalOriginTime": `${inputsCollection.origenTime.value}`,
+                                        "originUser": {
+                                            "id": `${currentUser.attributes.id}`
+                                        }
+                                    })
+                                )
+                            }
+
+                            if(inputsCollection.startTime.value != ''){
+                                raws.push(
+                                    JSON.stringify({
+                                        "startingPointDate": `${inputsCollection.startDate.value}`,
+                                        "startingPointTime": `${inputsCollection.startTime.value}`,
+                                        "startUser": {
+                                        "id": `${currentUser.attributes.id}`
+                                        }
+                                    })
+                                )
+                            }
+                            
+                            if(inputsCollection.destTime.value != ''){
+                                raws.push(
+                                    JSON.stringify({
+                                        "arrivalDestinationDate": `${inputsCollection.destDate.value}`,
+                                        "arrivalDestinationTime": `${inputsCollection.destTime.value}`,
+                                        "destinationUser": {
+                                        "id": `${currentUser.attributes.id}`
+                                        }
+                                    })
+                                )
+                            }
+
+                            if(inputsCollection.endTime.value != ''){
+                                raws.push(
+                                    JSON.stringify({
+                                        "endServiceDate": `${inputsCollection.endDate.value}`,
+                                        "endServiceTime": `${inputsCollection.endTime.value}`,
+                                        "endUser": {
+                                        "id": `${currentUser.attributes.id}`
+                                        }
+                                    })
+                                )
+                            }
+
+                            for(let i= 0; i < raws.length; i++){
+                                let raw = raws[i]
+                                updateEntity('Control', control.id, raw)
+                            }
+                            new CloseDialog().x(editor)
+                        },1000)
+                    })
                 }
             }
             
