@@ -712,7 +712,7 @@ export class Charges {
                 const dialogContent = document.getElementById('dialog-content');
                 deleteButton.onclick = async () => {
                     const data = await getEntityData('Charge', entityId);
-                    if (serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Finalizado") {
+                    if (serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Terminado") {
                         deleteEntity('Charge', entityId)
                             .then(async (res) => {
                             setTimeout(async () => {

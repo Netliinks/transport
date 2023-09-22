@@ -747,7 +747,7 @@ export class Charges {
 
                 deleteButton.onclick = async () => {
                     const data: any = await getEntityData('Charge', entityId)
-                    if(serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Finalizado"){
+                    if(serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Terminado"){
                       deleteEntity('Charge', entityId)
                         .then(async res => {
                             setTimeout(async () => {

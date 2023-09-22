@@ -112,6 +112,7 @@ export class Patrols {
     }
 
     public load(table: InterfaceElement, currentPage: number, data?: any) {
+        setAssigned()
         table.innerHTML = ''
         currentPage--
         let start: number = tableRows * currentPage
@@ -403,7 +404,7 @@ export class Patrols {
 
                 deleteButton.onclick = async () => {
                     const data: any = await getEntityData('ServiceDetailV', entityId)
-                    if(serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Finalizado"){
+                    if(serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Terminado"){
                       deleteEntity('ServiceDetailV', entityId)
                         .then(async res => {
                           setTimeout(async () => {
@@ -785,4 +786,18 @@ export class Patrols {
             }
 
     }
+}
+
+const setAssigned = async (): Promise<any> => {
+  if(serviceId.serviceState.name == 'Pendiente' && infoPage.count >= 1){
+    console.log("HOLA")
+    const serviceState = await getNothing("name", "Asignada", "ServiceState")
+    const raw = JSON.stringify({
+        "serviceState": {
+          "id": `${serviceState.id}`
+        },
+    })
+    getUpdateState(`${serviceState.id}`, "Service", serviceId.id)
+    eventLog('UPD', 'SERVICIO', `${serviceId.name} asignada`, serviceId)
+  }
 }

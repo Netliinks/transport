@@ -124,6 +124,7 @@ export class Patrols {
         this.pagination(data, tableRows, infoPage.currentPage);
     }
     load(table, currentPage, data) {
+        setAssigned();
         table.innerHTML = '';
         currentPage--;
         let start = tableRows * currentPage;
@@ -370,7 +371,7 @@ export class Patrols {
                 const dialogContent = document.getElementById('dialog-content');
                 deleteButton.onclick = async () => {
                     const data = await getEntityData('ServiceDetailV', entityId);
-                    if (serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Finalizado") {
+                    if (serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Terminado") {
                         deleteEntity('ServiceDetailV', entityId)
                             .then(async (res) => {
                             setTimeout(async () => {
@@ -710,3 +711,16 @@ export class Patrols {
         }
     }
 }
+const setAssigned = async () => {
+    if (serviceId.serviceState.name == 'Pendiente' && infoPage.count >= 1) {
+        console.log("HOLA");
+        const serviceState = await getNothing("name", "Asignada", "ServiceState");
+        const raw = JSON.stringify({
+            "serviceState": {
+                "id": `${serviceState.id}`
+            },
+        });
+        getUpdateState(`${serviceState.id}`, "Service", serviceId.id);
+        eventLog('UPD', 'SERVICIO', `${serviceId.name} asignada`, serviceId);
+    }
+};

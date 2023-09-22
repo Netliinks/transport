@@ -687,7 +687,7 @@ export class Services {
                 const cancelButton = document.getElementById('cancel');
                 const dialogContent = document.getElementById('dialog-content');
                 deleteButton.onclick = async () => {
-                    if (data.serviceState.name == "Pendiente" || data.serviceState.name == "Finalizado") {
+                    if (data.serviceState.name == "Pendiente" || data.serviceState.name == "Terminado") {
                         const patrols = await getDetails("service.id", entityId, "ServiceDetailV");
                         const containers = await getDetails("service.id", entityId, "Charge");
                         deleteEntity('Service', entityId)
@@ -1211,7 +1211,7 @@ export class Services {
         });
         async function modalMail(entity, entityID) {
             let data = await getEntityData(entity, entityID);
-            if (data.serviceState.name == "Pendiente") {
+            if (data.serviceState.name == "Asignada") {
                 const dialogContainer = document.getElementById('app-dialogs');
                 const patrols = await getDetails("service.id", entityID, "ServiceDetailV");
                 const serviceState = await getNothing("name", "Confirmado", "ServiceState");
@@ -1313,7 +1313,7 @@ export class Services {
                     getUpdateState(`${serviceState.id}`, "Service", data.id).then((res) => {
                         setTimeout(() => {
                             sendMail(mailRaw);
-                            eventLog('UPD', 'SERVICIO-CONFIRMACIÓN', `${data.name}`, data);
+                            eventLog('UPD', 'SERVICIO', `${data.name} confirmado`, data);
                             const raw = JSON.stringify({
                                 "service": {
                                     "id": `${entityID}`
@@ -1328,15 +1328,21 @@ export class Services {
                                 'creationTime': `${currentDateTime().time}`,
                             });
                             registerEntity(raw, 'Control');
-                            eventLog('INS', 'CONFIRMACIÓN-CONTROL', `${data.name}`, data);
+                            //eventLog('INS', 'CONTROL-CONFIRMACIÓN', `${data.name}`, data)
                             new CloseDialog().x(_dialog);
                             new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search);
                         }, 1000);
                     });
                 };
             }
-            else {
+            else if (data.serviceState.name != "Pendiente") {
                 let control = await getSearch("service.id", entityID, "Control");
+                let status = {
+                    recepcion: await getNothing("name", "Recepción", "ServiceState"),
+                    ruta: await getNothing("name", "En ruta", "ServiceState"),
+                    entregado: await getNothing("name", "Entregado", "ServiceState"),
+                    terminado: await getNothing("name", "Terminado", "ServiceState"),
+                };
                 if (control != undefined) {
                     let fecha = new Date(); //Fecha actual
                     let mes = fecha.getMonth() + 1; //obteniendo mes
@@ -1527,7 +1533,9 @@ export class Services {
                     saveButton.addEventListener('click', () => {
                         setTimeout(async () => {
                             let raws = [];
-                            if (inputsCollection.origenTime.value != '') {
+                            let rawStatus = '';
+                            let events = [];
+                            if (inputsCollection.origenTime.value != control?.arrivalOriginTime && inputsCollection.origenTime.value != '') {
                                 raws.push(JSON.stringify({
                                     "arrivalOriginDate": `${inputsCollection.origenDate.value}`,
                                     "arrivalOriginTime": `${inputsCollection.origenTime.value}`,
@@ -1535,8 +1543,27 @@ export class Services {
                                         "id": `${currentUser.attributes.id}`
                                     }
                                 }));
+                                if (data.serviceState.name == 'Confirmado') {
+                                    rawStatus = JSON.stringify({
+                                        "serviceState": {
+                                            "id": `${status.recepcion.id}`
+                                        },
+                                    });
+                                    events.push({
+                                        value: `${data.name} recepción`,
+                                        title: `SERVICIO`,
+                                        service: data
+                                    });
+                                }
+                                else {
+                                    events.push({
+                                        value: `${data.name} recepción actualizado`,
+                                        title: `SERVICIO`,
+                                        service: data
+                                    });
+                                }
                             }
-                            if (inputsCollection.startTime.value != '') {
+                            if (inputsCollection.startTime.value != control?.startingPointTime && inputsCollection.startTime.value != '') {
                                 raws.push(JSON.stringify({
                                     "startingPointDate": `${inputsCollection.startDate.value}`,
                                     "startingPointTime": `${inputsCollection.startTime.value}`,
@@ -1544,8 +1571,27 @@ export class Services {
                                         "id": `${currentUser.attributes.id}`
                                     }
                                 }));
+                                if (data.serviceState.name == 'Recepción') {
+                                    rawStatus = JSON.stringify({
+                                        "serviceState": {
+                                            "id": `${status.ruta.id}`
+                                        },
+                                    });
+                                    events.push({
+                                        value: `${data.name} en ruta`,
+                                        title: `SERVICIO`,
+                                        service: data
+                                    });
+                                }
+                                else {
+                                    events.push({
+                                        value: `${data.name} en ruta actualizado`,
+                                        title: `SERVICIO`,
+                                        service: data
+                                    });
+                                }
                             }
-                            if (inputsCollection.destTime.value != '') {
+                            if (inputsCollection.destTime.value != control?.arrivalDestinationTime && inputsCollection.destTime.value != '') {
                                 raws.push(JSON.stringify({
                                     "arrivalDestinationDate": `${inputsCollection.destDate.value}`,
                                     "arrivalDestinationTime": `${inputsCollection.destTime.value}`,
@@ -1553,8 +1599,27 @@ export class Services {
                                         "id": `${currentUser.attributes.id}`
                                     }
                                 }));
+                                if (data.serviceState.name == 'En ruta') {
+                                    rawStatus = JSON.stringify({
+                                        "serviceState": {
+                                            "id": `${status.entregado.id}`
+                                        },
+                                    });
+                                    events.push({
+                                        value: `${data.name} entregado`,
+                                        title: `SERVICIO`,
+                                        service: data
+                                    });
+                                }
+                                else {
+                                    events.push({
+                                        value: `${data.name} entregado actualizado`,
+                                        title: `SERVICIO`,
+                                        service: data
+                                    });
+                                }
                             }
-                            if (inputsCollection.endTime.value != '') {
+                            if (inputsCollection.endTime.value != control?.endServiceTime && inputsCollection.endTime.value != '') {
                                 raws.push(JSON.stringify({
                                     "endServiceDate": `${inputsCollection.endDate.value}`,
                                     "endServiceTime": `${inputsCollection.endTime.value}`,
@@ -1562,12 +1627,39 @@ export class Services {
                                         "id": `${currentUser.attributes.id}`
                                     }
                                 }));
+                                if (data.serviceState.name == 'Entregado') {
+                                    rawStatus = JSON.stringify({
+                                        "serviceState": {
+                                            "id": `${status.terminado.id}`
+                                        },
+                                    });
+                                    events.push({
+                                        value: `${data.name} terminado`,
+                                        title: `SERVICIO`,
+                                        service: data
+                                    });
+                                }
+                                else {
+                                    events.push({
+                                        value: `${data.name} terminado actualizado`,
+                                        title: `SERVICIO`,
+                                        service: data
+                                    });
+                                }
                             }
-                            for (let i = 0; i < raws.length; i++) {
+                            for (let i = 0; i < events.length; i++) {
                                 let raw = raws[i];
                                 updateEntity('Control', control.id, raw);
                             }
+                            if (rawStatus != '') {
+                                await updateEntity('Service', data.id, rawStatus);
+                            }
+                            for (let i = 0; i < raws.length; i++) {
+                                let event = events[i];
+                                eventLog('UPD', `${event.title}`, `${event.value}`, event.service);
+                            }
                             new CloseDialog().x(editor);
+                            new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search);
                         }, 1000);
                     });
                 }
