@@ -67,10 +67,20 @@ const getContainers = async (idService) => {
                                 "value": `${infoPage.search.toLowerCase()}`
                             },
                             {
-                                "property": "transportCompany",
+                                "property": "companion.username",
                                 "operator": "contains",
                                 "value": `${infoPage.search.toLowerCase()}`
-                            }
+                            },
+                            {
+                                "property": "weapon.name",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            },
+                            {
+                                "property": "weapon.licensePlate",
+                                "operator": "contains",
+                                "value": `${infoPage.search.toLowerCase()}`
+                            },
                         ]
                     },
                     {
@@ -167,7 +177,8 @@ export class Charges {
                 <td>${container?.licensePlate ?? ''}</td>
                 <td>${container?.driver ?? ''}</td>
                 <td>${container?.dniDriver ?? ''}</td>
-                <td>${container?.transportCompany ?? ''}</td>
+                <td>${container?.companion?.username ?? ''}</td>
+                <td>${container?.weapon?.name ?? ''} [${container?.weapon?.licensePlate ?? ''}]</td>
                 <td class="entity_options">
 
                     <button class="button" id="edit-entity" data-entityId="${container.id}">
@@ -221,12 +232,12 @@ export class Charges {
           <div class="entity_editor_body">
             <div class="material_input">
             <input type="text" id="entity-name" autocomplete="none">
-            <label for="entity-name"><i class="fa-solid fa-truck-container"></i> Nombre</label>
+            <label for="entity-name"><i class="fa-solid fa-truck-container"></i> ID. Contenedor</label>
             </div>
 
             <div class="material_input">
             <input type="text" id="entity-licensePlate" autocomplete="none">
-            <label for="entity-licensePlate"><i class="fa-solid fa-address-card"></i> Placa</label>
+            <label for="entity-licensePlate"><i class="fa-solid fa-address-card"></i> Placa Vehicular</label>
             </div>
 
             <div class="material_input">
@@ -373,7 +384,7 @@ export class Charges {
                     registerEntity(raw, 'Charge').then((res) => {
                         setTimeout(async () => {
                             let parse = JSON.parse(raw);
-                            eventLog('INS', 'SERVICIO-CONTENEDOR', `${parse.name} [${parse.licensePlate}]`, serviceId);
+                            eventLog('INS', 'SERVICIO-CONTENEDOR', `${parse.name} [${parse.licensePlate}], en servicio: ${serviceId.name}`, serviceId);
                             for (let i = 0; i < dataArray.length; i++) {
                                 getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id);
                                 eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} (contenedor) en servicio: ${serviceId.name}`, serviceId);
@@ -425,7 +436,7 @@ export class Charges {
               <div class="entity_editor_body">
                   <div class="material_input">
                   <input type="text" id="entity-name" class="input_filled" value="${data.name}">
-                  <label for="entity-name"><i class="fa-solid fa-truck-container"></i> Nombre</label>
+                  <label for="entity-name"><i class="fa-solid fa-truck-container"></i> ID. Contenedor</label>
                   </div>
       
                   <div class="material_input">
@@ -647,7 +658,7 @@ export class Charges {
                         let data;
                         //data = await getWeapons()
                         let parse = JSON.parse(raw);
-                        eventLog('UPD', 'SERVICIO-CONTENEDOR', `${parse.name} [${parse.licensePlate}]`, serviceId);
+                        eventLog('UPD', 'SERVICIO-CONTENEDOR', `${parse.name} [${parse.licensePlate}], en servicio: ${serviceId.name}`, serviceId);
                         dataArray.forEach((container) => {
                             getUpdateState(container.state, container.table, container.id);
                             eventLog('UPD', `${container.title}`, `${container.value} (contenedor) en servicio: ${serviceId.name}`, '');
@@ -716,7 +727,7 @@ export class Charges {
                         deleteEntity('Charge', entityId)
                             .then(async (res) => {
                             setTimeout(async () => {
-                                eventLog('DLT', 'SERVICIO-CONTENEDOR', `${entityName} [${entityPlate}]`, serviceId);
+                                eventLog('DLT', 'SERVICIO-CONTENEDOR', `${entityName} [${entityPlate}], en servicio: ${serviceId.name}`, serviceId);
                                 let dataArray = [];
                                 if (data.companion?.id != nothingConfig.nothingUser.id || data.companion?.username != 'N/A') {
                                     dataArray.push({

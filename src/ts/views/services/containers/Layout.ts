@@ -32,7 +32,7 @@ export const tableLayout = `
     <table class="datatable_content">
       <thead><tr>
         <th><span data-type="name">
-          Nombre <i class="fa-regular fa-filter"></i>
+          Contenedor <i class="fa-regular fa-filter"></i>
         </span></th>
 
         <th><span data-type="plate">
@@ -47,8 +47,12 @@ export const tableLayout = `
           DNI <i class="fa-regular fa-filter"></i>
         </span></th>
 
-        <th><span data-type="company">
-          Compañía <i class="fa-regular fa-filter"></i>
+        <th><span data-type="guardia">
+          Guardia <i class="fa-regular fa-filter"></i>
+        </span></th>
+
+        <th><span data-type="weapon">
+          Arma <i class="fa-regular fa-filter"></i>
         </span></th>
 
         <th class="header_filled"></th>

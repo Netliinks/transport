@@ -794,6 +794,9 @@ export class Services {
                                         getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
                                         eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
                                         }
+
+                                        eventLog('DLT', 'SERVICIO-PATRULLA', `${patrol.crew.name}, en servicio: ${data.name}`, data)
+                                        deleteEntity('ServiceDetailV', patrol.id)
                                     
                                     })
                                     
@@ -829,6 +832,9 @@ export class Services {
                                             getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
                                             eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
                                         }
+
+                                        eventLog('DLT', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data)
+                                        deleteEntity('Charge', container.id)
                                     })
                                 }
                                     
@@ -1457,6 +1463,14 @@ export class Services {
                     ruta: await getNothing("name", "En ruta", "ServiceState"),
                     entregado: await getNothing("name", "Entregado", "ServiceState"),
                     terminado: await getNothing("name", "Terminado", "ServiceState"),
+                    vehicularState: await getNothing("name", "Asignado", "VehicularState"),
+                    userState: await getNothing("name", "Asignado", "UserState"),
+                    weaponState: await getNothing("name", "Asignado", "WeaponState"),
+                    nothingWeapon: await getNothing("name", "N/A", "Weapon"),
+                    nothingUser: await getNothing("username", "N/A", "User"),
+                    crewState: await getNothing("name", "Disponible", "CrewState"),
+                    userContainer: await getNothing("name", "Disponible", "UserState"),
+                    weaponContainer: await getNothing("name", "Disponible", "WeaponState"),
                 }
                 
                 if(control != undefined){
@@ -1569,14 +1583,14 @@ export class Services {
                             </div>
                             <br>
                             <br>
-
+                            <!--
                             <div class="material_input">
                             <br>
                             <textarea id="entity-observation" rows="4" class="input_filled">${control?.observation ?? ''}</textarea>
                             <label for="entity-observation"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
                             </div>
                             <br>
-                            <br>
+                            <br> -->
 
                             <div class="input_detail">
                                 <label for="creation-date"><i class="fa-solid fa-calendar"></i></label>
@@ -1767,6 +1781,123 @@ export class Services {
                                         title: `SERVICIO`,
                                         service: data
                                     })
+
+                                    const patrols: any = await getDetails("service.id", data.id, "ServiceDetailV")
+                                    const containers: any = await getDetails("service.id", data.id, "Charge")
+
+                                    //Patrulla
+                                    if(patrols != undefined){
+                                        patrols.forEach(async (patrol: any) => {
+                                            let crew: any = await getEntityData('Crew', patrol.crew.id)
+                                            getUpdateState(status.crewState.id, 'Crew', patrol.crew.id)
+                                            eventLog('UPD', `PATRULLA`, `${patrol.crew.name} disponible`, '')
+                                            let dataArray = []
+                                            if(crew?.vehicular?.id){
+                                                dataArray.push({
+                                                    id: crew.vehicular.id,
+                                                    value: `${crew.vehicular.type} [${crew.vehicular.licensePlate}]`,
+                                                    table: "Vehicular",
+                                                    state: status.vehicularState.id,
+                                                    title: "VEHÍCULO"
+                                                })
+                                            }
+                                            if(crew?.crewOne?.id != status.nothingUser.id || crew?.crewOne?.username != 'N/A'){
+                                                dataArray.push({
+                                                    id: crew?.crewOne.id,
+                                                    value: `${crew?.crewOne.username}`,
+                                                    table: "User",
+                                                    state: status.userState.id,
+                                                    title: "SUPERVISOR"
+                                                })
+                
+                                                if(crew?.weaponOne?.id != status.nothingWeapon.id || crew?.weaponOne?.name != 'N/A'){
+                                                    dataArray.push({
+                                                        id: crew?.weaponOne.id,
+                                                        value: `${crew?.weaponOne.name} [${crew?.weaponOne.licensePlate}]`,
+                                                        table: "Weapon",
+                                                        state: status.weaponState.id,
+                                                        title: "ARMA"
+                                                    })
+                                                }
+                                            }
+                                            let users = [crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive]
+                                            let weapons = [crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive]
+                                            for(let i = 0; i < 4; i++){
+                                                if(users[i]?.id != status.nothingUser.id || users[i]?.username != 'N/A'){
+                                                    dataArray.push({
+                                                        id: users[i].id,
+                                                        value: `${users[i].username}`,
+                                                        table: "User",
+                                                        state: status.userState.id,
+                                                        title: "GUARDIA"
+                                                    })
+                    
+                                                    if(weapons[i]?.id != status.nothingWeapon.id || weapons[i]?.name != 'N/A'){
+                                                        dataArray.push({
+                                                            id: weapons[i].id,
+                                                            value: `${weapons[i].name} [${weapons[i].licensePlate}]`,
+                                                            table: "Weapon",
+                                                            state: status.weaponState.id,
+                                                            title: "ARMA"
+                                                        })
+                                                    }
+                                                }
+                                            }
+                                            for(let i = 0; i < dataArray.length; i++){
+                                            getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
+                                            eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
+                                            }
+                                            eventLog('DLT', 'SERVICIO-PATRULLA', `${patrol.crew.name}, en servicio: ${data.name}`, data)
+                                            deleteEntity('ServiceDetailV', patrol.id)
+                                        })
+                                    }
+
+                                    //Contenedor
+                                    if(containers != undefined){
+                                        containers.forEach((container: any) => {
+                                            let dataArray = []
+                                    
+                                            if(container.companion?.id != status.nothingUser.id || container.companion?.username != 'N/A'){
+                                                dataArray.push({
+                                                    id: container.companion.id,
+                                                    value: `${container.companion.username}`,
+                                                    table: "User",
+                                                    state: status.userContainer.id,
+                                                    title: "GUARDIA"
+                                                })
+
+                                                if(container.weapon?.id != status.nothingWeapon.id || container.weapon?.name != 'N/A'){
+                                                    dataArray.push({
+                                                        id: container.weapon.id,
+                                                        value: `${container.weapon.name} [${container.weapon.licensePlate}]`,
+                                                        table: "Weapon",
+                                                        state: status.weaponContainer.id,
+                                                        title: "ARMA"
+                                                    })
+                                                }
+
+                                                const raw = JSON.stringify({
+                                                    "companion": {
+                                                      "id": `${status.nothingUser.id}`
+                                                    },
+                                                    "weapon": {
+                                                      "id": `${status.nothingWeapon.id}`
+                                                    },
+                                                })
+                                                updateEntity('Charge', container.id, raw)
+                                                eventLog('UPD', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data)
+                                            }
+                                            
+
+                                            for(let i = 0; i < dataArray.length; i++){
+                                                getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
+                                                eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
+                                            }
+                                            
+                                            //deleteEntity('Charge', container.id)
+                                        })
+                                    }
+   
                                 }else{
                                     events.push({
                                         value: `${data.name} terminado actualizado`,

@@ -14,10 +14,12 @@ import { Operators } from "../views/users/operators/operators.js"
 import { Customers } from "../views/customers/customers.js"
 import { Vehiculars } from "../views/vehiculars/vehiculars.js"
 import { Weapons } from "../views/weapons/weapons.js"
-import { Logs } from "../views/logs/logs.js"
+
 import { Cities } from "../views/cities/cities.js"
 import { Crews } from "../views/crews/crews.js"
 import { Supervisors } from "../views/users/supervisors/supervisors.js"
+import { Logs } from "../views/logs/general/general.js"
+import { LogsServices } from "../views/logs/services/services.js"
 
 export class Sidebar {
     private sidebarContainer: InterfaceElement = document.getElementById('app-sidebar')
@@ -98,11 +100,26 @@ export class Sidebar {
                 <i class="fa-regular fa-earth-americas"></i> <div class="label">Ciudades</div>
               </span>
             </div>
-            
-            <div class="sidebar_item" id="render-logs">
+
+            <div class="sidebar_item">
               <span class="sidebar_item_label">
-                <i class="fa-regular fa-clipboard-list"></i> <div class="label">Logs</div>
+              <i class="fa-regular fa-clipboard-list"></i> <div class="label">Logs</div>
               </span>
+
+              <div class="sidebar_subitems">
+
+                <div class="sidebar_subitem">
+                  <span class="sidebar_subitem_label" id="render-log-services">
+                    <i class="fa-regular fa-desktop"></i> <div class="label">Servicios</div>
+                  </span>
+                </div>
+
+                <div class="sidebar_subitem">
+                  <span class="sidebar_subitem_label" id="render-logs">
+                    <i class="fa-regular fa-list-ul"></i> <div class="label">General</div>
+                  </span>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -170,6 +187,10 @@ export class Sidebar {
         document.getElementById('render-customers')?.addEventListener('click', (): void => {
           new Customers().render(Config.offset, Config.currentPage, "")
         })
+
+        document.getElementById('render-log-services')?.addEventListener('click', () => {
+          new LogsServices().render(Config.offset, Config.currentPage, "");
+        });
 
         document.getElementById('render-logs')?.addEventListener('click', () => {
           new Logs().render(Config.offset, Config.currentPage, "");

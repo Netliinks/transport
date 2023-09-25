@@ -279,7 +279,7 @@ export class Patrols {
                   registerEntity(raw, 'ServiceDetailV').then((res) => {
                     setTimeout(async () => {
                         //let parse = JSON.parse(raw);
-                        eventLog('INS', 'SERVICIO-PATRULLA', `${dataCrew.value}`, serviceId)
+                        eventLog('INS', 'SERVICIO-PATRULLA', `${dataCrew.value}, en servicio: ${serviceId.name}`, serviceId)
                         getUpdateState(dataCrew.state, dataCrew.table, dataCrew.id)
                         eventLog('UPD', `${dataCrew.title}`, `${dataCrew.value} en servicio: ${serviceId.name}`, '')
                         const crew: any = await getEntityData('Crew', dataCrew.id)
@@ -408,7 +408,7 @@ export class Patrols {
                       deleteEntity('ServiceDetailV', entityId)
                         .then(async res => {
                           setTimeout(async () => {
-                            eventLog('DLT', 'SERVICIO-PATRULLA', `${entityName}`, serviceId)
+                            eventLog('DLT', 'SERVICIO-PATRULLA', `${entityName}, en servicio: ${serviceId.name}`, serviceId)
                             getUpdateState(nothingConfig.crewState.id, 'Crew', data.crew.id)
                             eventLog('UPD', `PATRULLA`, `${data.crew.name} disponible`, '')
                             const crew: any = await getEntityData('Crew', data.crew.id)
@@ -790,7 +790,6 @@ export class Patrols {
 
 const setAssigned = async (): Promise<any> => {
   if(serviceId.serviceState.name == 'Pendiente' && infoPage.count >= 1){
-    console.log("HOLA")
     const serviceState = await getNothing("name", "Asignada", "ServiceState")
     const raw = JSON.stringify({
         "serviceState": {
