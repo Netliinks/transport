@@ -1265,6 +1265,9 @@ export class Crews {
                 else if (searchExist[1] != undefined || searchExist[0] != 'none') {
                     alert("Patrulla ya existe!");
                 }
+                else if (data.crewState.name != "Disponible" || data.crewState.name != "No disponible") {
+                    alert("No se puede editar una patrulla en servicio.");
+                }
                 else {
                     update(raw, dataArray, dataChangesArray);
                 }
@@ -1378,61 +1381,66 @@ export class Crews {
                     let weaponState = await getNothing("name", "Disponible", "WeaponState");
                     let vehicularState = await getNothing("name", "Disponible", "VehicularState");
                     const data = await getEntityData('Crew', entityId);
-                    deleteEntity('Crew', entityId)
-                        .then(async (res) => {
-                        setTimeout(() => {
-                            //let data = await getWeapons();
-                            eventLog('DLT', 'PATRULLA', `${entityName}`, '');
-                            if (data.vehicular.id) {
-                                getUpdateState(`${vehicularState.id}`, "Vehicular", `${data.vehicular.id}`);
-                                eventLog('UPD', `VEHÍCULO`, `${data.vehicular.licensePlate} disponible`, '');
-                            }
-                            if (data.crewOne.id != nothingUser.id || data.crewOne.username != "N/A") {
-                                getUpdateState(`${userState.id}`, "User", `${data.crewOne.id}`);
-                                eventLog('UPD', `SUPERVISOR`, `${data.crewOne.username} disponible`, '');
-                            }
-                            if (data.crewTwo.id != nothingUser.id || data.crewTwo.username != "N/A") {
-                                getUpdateState(`${userState.id}`, "User", `${data.crewTwo.id}`);
-                                eventLog('UPD', `GUARDIA`, `${data.crewTwo.username} disponible`, '');
-                            }
-                            if (data.crewThree.id != nothingUser.id || data.crewThree.username != "N/A") {
-                                getUpdateState(`${userState.id}`, "User", `${data.crewThree.id}`);
-                                eventLog('UPD', `GUARDIA`, `${data.crewThree.username} disponible`, '');
-                            }
-                            if (data.crewFour.id != nothingUser.id || data.crewFour.username != "N/A") {
-                                getUpdateState(`${userState.id}`, "User", `${data.crewFour.id}`);
-                                eventLog('UPD', `GUARDIA`, `${data.crewFour.username} disponible`, '');
-                            }
-                            if (data.crewFive.id != nothingUser.id || data.crewFive.username != "N/A") {
-                                getUpdateState(`${userState.id}`, "User", `${data.crewFive.id}`);
-                                eventLog('UPD', `GUARDIA`, `${data.crewFive.username} disponible`, '');
-                            }
-                            if (data.weaponOne.id != nothingWeapon.id || data.weaponOne.name != "N/A") {
-                                getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponOne.id}`);
-                                eventLog('UPD', `ARMA`, `${data.weaponOne.name} disponible`, '');
-                            }
-                            if (data.weaponTwo.id != nothingWeapon.id || data.weaponTwo.name != "N/A") {
-                                getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponTwo.id}`);
-                                eventLog('UPD', `ARMA`, `${data.weaponTwo.name} disponible`, '');
-                            }
-                            if (data.weaponThree.id != nothingWeapon.id || data.weaponThree.name != "N/A") {
-                                getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponThree.id}`);
-                                eventLog('UPD', `ARMA`, `${data.weaponThree.name} disponible`, '');
-                            }
-                            if (data.weaponFour.id != nothingWeapon.id || data.weaponFour.name != "N/A") {
-                                getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponFour.id}`);
-                                eventLog('UPD', `ARMA`, `${data.weaponFour.name} disponible`, '');
-                            }
-                            if (data.weaponFive.id != nothingWeapon.id || data.weaponFive.name != "N/A") {
-                                getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponFive.id}`);
-                                eventLog('UPD', `ARMA`, `${data.weaponFive.name} disponible`, '');
-                            }
-                            const tableBody = document.getElementById('datatable-body');
-                            new CloseDialog().x(dialogContent);
-                            new Crews().render(infoPage.offset, infoPage.currentPage, infoPage.search);
-                            //new Clients().load(tableBody, currentPage, data);
-                        }, 1000);
-                    });
+                    if (data.crewState.name == "Disponible" || data.crewState.name == "No disponible") {
+                        deleteEntity('Crew', entityId)
+                            .then(async (res) => {
+                            setTimeout(() => {
+                                //let data = await getWeapons();
+                                eventLog('DLT', 'PATRULLA', `${entityName}`, '');
+                                if (data.vehicular.id) {
+                                    getUpdateState(`${vehicularState.id}`, "Vehicular", `${data.vehicular.id}`);
+                                    eventLog('UPD', `VEHÍCULO`, `${data.vehicular.licensePlate} disponible`, '');
+                                }
+                                if (data.crewOne.id != nothingUser.id || data.crewOne.username != "N/A") {
+                                    getUpdateState(`${userState.id}`, "User", `${data.crewOne.id}`);
+                                    eventLog('UPD', `SUPERVISOR`, `${data.crewOne.username} disponible`, '');
+                                }
+                                if (data.crewTwo.id != nothingUser.id || data.crewTwo.username != "N/A") {
+                                    getUpdateState(`${userState.id}`, "User", `${data.crewTwo.id}`);
+                                    eventLog('UPD', `GUARDIA`, `${data.crewTwo.username} disponible`, '');
+                                }
+                                if (data.crewThree.id != nothingUser.id || data.crewThree.username != "N/A") {
+                                    getUpdateState(`${userState.id}`, "User", `${data.crewThree.id}`);
+                                    eventLog('UPD', `GUARDIA`, `${data.crewThree.username} disponible`, '');
+                                }
+                                if (data.crewFour.id != nothingUser.id || data.crewFour.username != "N/A") {
+                                    getUpdateState(`${userState.id}`, "User", `${data.crewFour.id}`);
+                                    eventLog('UPD', `GUARDIA`, `${data.crewFour.username} disponible`, '');
+                                }
+                                if (data.crewFive.id != nothingUser.id || data.crewFive.username != "N/A") {
+                                    getUpdateState(`${userState.id}`, "User", `${data.crewFive.id}`);
+                                    eventLog('UPD', `GUARDIA`, `${data.crewFive.username} disponible`, '');
+                                }
+                                if (data.weaponOne.id != nothingWeapon.id || data.weaponOne.name != "N/A") {
+                                    getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponOne.id}`);
+                                    eventLog('UPD', `ARMA`, `${data.weaponOne.name} disponible`, '');
+                                }
+                                if (data.weaponTwo.id != nothingWeapon.id || data.weaponTwo.name != "N/A") {
+                                    getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponTwo.id}`);
+                                    eventLog('UPD', `ARMA`, `${data.weaponTwo.name} disponible`, '');
+                                }
+                                if (data.weaponThree.id != nothingWeapon.id || data.weaponThree.name != "N/A") {
+                                    getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponThree.id}`);
+                                    eventLog('UPD', `ARMA`, `${data.weaponThree.name} disponible`, '');
+                                }
+                                if (data.weaponFour.id != nothingWeapon.id || data.weaponFour.name != "N/A") {
+                                    getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponFour.id}`);
+                                    eventLog('UPD', `ARMA`, `${data.weaponFour.name} disponible`, '');
+                                }
+                                if (data.weaponFive.id != nothingWeapon.id || data.weaponFive.name != "N/A") {
+                                    getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponFive.id}`);
+                                    eventLog('UPD', `ARMA`, `${data.weaponFive.name} disponible`, '');
+                                }
+                                const tableBody = document.getElementById('datatable-body');
+                                new CloseDialog().x(dialogContent);
+                                new Crews().render(infoPage.offset, infoPage.currentPage, infoPage.search);
+                                //new Clients().load(tableBody, currentPage, data);
+                            }, 1000);
+                        });
+                    }
+                    else {
+                        alert("No se puede eliminar una patrulla en servicio.");
+                    }
                 };
                 cancelButton.onclick = () => {
                     new CloseDialog().x(dialogContent);

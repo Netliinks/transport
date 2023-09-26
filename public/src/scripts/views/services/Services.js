@@ -628,8 +628,10 @@ export class Services {
         const patrols = document.querySelectorAll('#get-patrols');
         patrols.forEach((patrol) => {
             const entityId = patrol.dataset.entityid;
-            patrol.addEventListener('click', () => {
-                new Patrols().render(Config.offset, Config.currentPage, "", entityId);
+            patrol.addEventListener('click', async () => {
+                const data = await getEntityData('Service', entityId);
+                if (data.serviceState.name != 'Terminado')
+                    new Patrols().render(Config.offset, Config.currentPage, "", entityId);
             });
         });
     }
@@ -1085,11 +1087,6 @@ export class Services {
                                         "value": `${search.toLowerCase()}`
                                     }
                                 ]
-                            },
-                            {
-                                "property": "business.id",
-                                "operator": "=",
-                                "value": `${businessId}`
                             }
                         ],
                     },
@@ -1106,7 +1103,7 @@ export class Services {
                     <div class="dialog">
                         <div class="dialog_container padding_8">
                             <div class="dialog_header">
-                                <h2>Clientes disponibles</h2>
+                                <h2>Ciudades disponibles</h2>
                             </div>
 
                             <div class="dialog_message padding_8">
