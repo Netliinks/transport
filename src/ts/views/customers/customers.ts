@@ -201,7 +201,7 @@ export class Customers {
                 <div class="entity_editor_header">
                     <div class="user_info">
                     <div class="avatar"><i class="fa-regular fa-buildings"></i></div>
-                    <h1 class="entity_editor_title">Registrar <br><small>Empresa</small></h1>
+                    <h1 class="entity_editor_title">Registrar <br><small>Cliente</small></h1>
                     </div>
 
                     <button class="btn btn_close_editor" id="close"><i class="fa-regular fa-x"></i></button>
@@ -271,7 +271,7 @@ export class Customers {
                 if(inputsCollection.name.value === '' || inputsCollection.name.value === undefined){
                     alert("¡Nombre vacío!")
                 }else if(searchExist != undefined){
-                    alert("Empresa ya existe!")
+                    alert("Cliente ya existe!")
                 }else{
                     reg(raw)
                 }
@@ -285,7 +285,7 @@ export class Customers {
                     setTimeout(async () => {
                         //let data = await getUsers()
                         let parse = JSON.parse(raw);
-                        eventLog('INS', 'EMPRESA', `${parse.name}`, '')
+                        eventLog('INS', 'CLIENTE', `${parse.name}`, '')
                         const tableBody: InterfaceElement = document.getElementById('datatable-body')
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
@@ -307,7 +307,7 @@ export class Customers {
               <div class="entity_editor_header">
                 <div class="user_info">
                   <div class="avatar"><i class="fa-regular fa-up-from-line"></i></div>
-                  <h1 class="entity_editor_title">Importar <br><small>Empresas</small></h1>
+                  <h1 class="entity_editor_title">Importar <br><small>Clientes</small></h1>
                 </div>
 
                 <button class="btn btn_close_editor" id="close"><i class="fa-solid fa-x"></i></button>
@@ -386,7 +386,7 @@ export class Customers {
                                 setTimeout(async () => {
                                     //let data = await getUsers()
                                     let parse = JSON.parse(el);
-                                    eventLog('INS', 'EMPRESA', `${parse.name}, importación`, '')
+                                    eventLog('INS', 'CLIENTE', `${parse.name}, importación`, '')
                                     const tableBody = document.getElementById('datatable-body')
                                     const container = document.getElementById('entity-editor-container')
                                     new CloseDialog().x(container)
@@ -514,7 +514,7 @@ export class Customers {
                 if ($value.name.value === '' || $value.name.value === undefined) {
                     alert("Nombre vacío!");
                 }else if(searchExist[1] != undefined || searchExist[0] != 'none'){
-                    alert("¡Empresa ya existe!")
+                    alert("Cliente ya existe!")
                 }else{
                     update(raw)
                 }
@@ -529,7 +529,7 @@ export class Customers {
                             
                             //data = await getUsers()
                             let parse = JSON.parse(raw);
-                            eventLog('UPD', 'EMPRESA', `${parse.name}`, '')
+                            eventLog('UPD', 'CLIENTE', `${parse.name}`, '')
                             new CloseDialog()
                                 .x(container =
                                     document.getElementById('entity-editor-container')
@@ -561,7 +561,7 @@ export class Customers {
                         <div class="dialog dialog_danger">
                         <div class="dialog_container">
                             <div class="dialog_header">
-                            <h2>¿Deseas eliminar esta empresa?</h2>
+                            <h2>¿Deseas eliminar esta cliente?</h2>
                             </div>
 
                             <div class="dialog_message">
@@ -585,7 +585,7 @@ export class Customers {
                     .then((res) => {
                         setTimeout(async () => {
                             //let data = await getUsers();
-                            eventLog('DLT', 'EMPRESA', `${entityName}`, '')
+                            eventLog('DLT', 'CLIENTE', `${entityName}`, '')
                             const tableBody = document.getElementById('datatable-body');
                             new CloseDialog().x(dialogContent);
                             new Customers().render(infoPage.offset, infoPage.currentPage, infoPage.search)

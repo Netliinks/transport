@@ -1559,14 +1559,14 @@ export class Services {
                                         },
                                     });
                                     events.push({
-                                        value: `${data.name} recepción`,
+                                        value: `${data.name} recepción: ${inputsCollection.origenDate.value} ${inputsCollection.origenTime.value}`,
                                         title: `SERVICIO`,
                                         service: data
                                     });
                                 }
                                 else {
                                     events.push({
-                                        value: `${data.name} recepción actualizado`,
+                                        value: `${data.name} recepción actualizado: ${inputsCollection.origenDate.value} ${inputsCollection.origenTime.value}`,
                                         title: `SERVICIO`,
                                         service: data
                                     });
@@ -1587,14 +1587,14 @@ export class Services {
                                         },
                                     });
                                     events.push({
-                                        value: `${data.name} en ruta`,
+                                        value: `${data.name} en ruta: ${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`,
                                         title: `SERVICIO`,
                                         service: data
                                     });
                                 }
                                 else {
                                     events.push({
-                                        value: `${data.name} en ruta actualizado`,
+                                        value: `${data.name} en ruta actualizado: ${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`,
                                         title: `SERVICIO`,
                                         service: data
                                     });
@@ -1615,14 +1615,14 @@ export class Services {
                                         },
                                     });
                                     events.push({
-                                        value: `${data.name} entregado`,
+                                        value: `${data.name} entregado: ${inputsCollection.destDate.value} ${inputsCollection.destTime.value}`,
                                         title: `SERVICIO`,
                                         service: data
                                     });
                                 }
                                 else {
                                     events.push({
-                                        value: `${data.name} entregado actualizado`,
+                                        value: `${data.name} entregado actualizado: ${inputsCollection.destDate.value} ${inputsCollection.destTime.value}`,
                                         title: `SERVICIO`,
                                         service: data
                                     });
@@ -1643,7 +1643,7 @@ export class Services {
                                         },
                                     });
                                     events.push({
-                                        value: `${data.name} terminado`,
+                                        value: `${data.name} terminado: ${inputsCollection.endDate.value} ${inputsCollection.endTime.value}`,
                                         title: `SERVICIO`,
                                         service: data
                                     });
@@ -1755,7 +1755,7 @@ export class Services {
                                 }
                                 else {
                                     events.push({
-                                        value: `${data.name} terminado actualizado`,
+                                        value: `${data.name} terminado actualizado: ${inputsCollection.endDate.value} ${inputsCollection.endTime.value}`,
                                         title: `SERVICIO`,
                                         service: data
                                     });

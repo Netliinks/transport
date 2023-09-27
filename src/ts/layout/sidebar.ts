@@ -79,7 +79,7 @@ export class Sidebar {
 
             <div class="sidebar_item" id="render-customers">
               <span class="sidebar_item_label">
-                <i class="fa-regular fa-buildings"></i> <div class="label">Empresas</div>
+                <i class="fa-regular fa-buildings"></i> <div class="label">Clientes</div>
               </span>
             </div>
 
