@@ -1540,241 +1540,252 @@ export class Services {
                         new CloseDialog().x(editor);
                     });
                     saveButton.addEventListener('click', () => {
-                        setTimeout(async () => {
-                            let raws = [];
-                            let rawStatus = '';
-                            let events = [];
-                            if (inputsCollection.origenTime.value != control?.arrivalOriginTime && inputsCollection.origenTime.value != '') {
-                                raws.push(JSON.stringify({
-                                    "arrivalOriginDate": `${inputsCollection.origenDate.value}`,
-                                    "arrivalOriginTime": `${inputsCollection.origenTime.value}`,
-                                    "originUser": {
-                                        "id": `${currentUser.attributes.id}`
+                        if ((Date.parse(`${inputsCollection.origenDate.value} ${inputsCollection.origenTime.value}`) > Date.parse(`${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`)) && (control?.startingPointTime != undefined || inputsCollection.startTime.value != '')) {
+                            alert("Fecha origen mayor a la de inicio");
+                        }
+                        else if ((Date.parse(`${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`) > Date.parse(`${inputsCollection.destDate.value} ${inputsCollection.destTime.value}`)) && (control?.arrivalDestinationTime != undefined || inputsCollection.destTime.value != '')) {
+                            alert("Fecha inicio mayor a la de destino");
+                        }
+                        else if ((Date.parse(`${inputsCollection.destDate.value} ${inputsCollection.destTime.value}`) > Date.parse(`${inputsCollection.endDate.value} ${inputsCollection.endTime.value}`)) && (control?.endServiceTime != undefined || inputsCollection.endTime.value != '')) {
+                            alert("Fecha destino mayor a la de finalización");
+                        }
+                        else {
+                            setTimeout(async () => {
+                                let raws = [];
+                                let rawStatus = '';
+                                let events = [];
+                                if (inputsCollection.origenTime.value != control?.arrivalOriginTime && inputsCollection.origenTime.value != '') {
+                                    raws.push(JSON.stringify({
+                                        "arrivalOriginDate": `${inputsCollection.origenDate.value}`,
+                                        "arrivalOriginTime": `${inputsCollection.origenTime.value}`,
+                                        "originUser": {
+                                            "id": `${currentUser.attributes.id}`
+                                        }
+                                    }));
+                                    if (data.serviceState.name == 'Confirmado') {
+                                        rawStatus = JSON.stringify({
+                                            "serviceState": {
+                                                "id": `${status.recepcion.id}`
+                                            },
+                                        });
+                                        events.push({
+                                            value: `${data.name} recepción: ${inputsCollection.origenDate.value} ${inputsCollection.origenTime.value}`,
+                                            title: `SERVICIO`,
+                                            service: data
+                                        });
                                     }
-                                }));
-                                if (data.serviceState.name == 'Confirmado') {
-                                    rawStatus = JSON.stringify({
-                                        "serviceState": {
-                                            "id": `${status.recepcion.id}`
-                                        },
-                                    });
-                                    events.push({
-                                        value: `${data.name} recepción: ${inputsCollection.origenDate.value} ${inputsCollection.origenTime.value}`,
-                                        title: `SERVICIO`,
-                                        service: data
-                                    });
-                                }
-                                else {
-                                    events.push({
-                                        value: `${data.name} recepción actualizado: ${inputsCollection.origenDate.value} ${inputsCollection.origenTime.value}`,
-                                        title: `SERVICIO`,
-                                        service: data
-                                    });
-                                }
-                            }
-                            if (inputsCollection.startTime.value != control?.startingPointTime && inputsCollection.startTime.value != '') {
-                                raws.push(JSON.stringify({
-                                    "startingPointDate": `${inputsCollection.startDate.value}`,
-                                    "startingPointTime": `${inputsCollection.startTime.value}`,
-                                    "startUser": {
-                                        "id": `${currentUser.attributes.id}`
+                                    else {
+                                        events.push({
+                                            value: `${data.name} recepción actualizado: ${inputsCollection.origenDate.value} ${inputsCollection.origenTime.value}`,
+                                            title: `SERVICIO`,
+                                            service: data
+                                        });
                                     }
-                                }));
-                                if (data.serviceState.name == 'Recepción') {
-                                    rawStatus = JSON.stringify({
-                                        "serviceState": {
-                                            "id": `${status.ruta.id}`
-                                        },
-                                    });
-                                    events.push({
-                                        value: `${data.name} en ruta: ${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`,
-                                        title: `SERVICIO`,
-                                        service: data
-                                    });
                                 }
-                                else {
-                                    events.push({
-                                        value: `${data.name} en ruta actualizado: ${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`,
-                                        title: `SERVICIO`,
-                                        service: data
-                                    });
-                                }
-                            }
-                            if (inputsCollection.destTime.value != control?.arrivalDestinationTime && inputsCollection.destTime.value != '') {
-                                raws.push(JSON.stringify({
-                                    "arrivalDestinationDate": `${inputsCollection.destDate.value}`,
-                                    "arrivalDestinationTime": `${inputsCollection.destTime.value}`,
-                                    "destinationUser": {
-                                        "id": `${currentUser.attributes.id}`
+                                if (inputsCollection.startTime.value != control?.startingPointTime && inputsCollection.startTime.value != '') {
+                                    raws.push(JSON.stringify({
+                                        "startingPointDate": `${inputsCollection.startDate.value}`,
+                                        "startingPointTime": `${inputsCollection.startTime.value}`,
+                                        "startUser": {
+                                            "id": `${currentUser.attributes.id}`
+                                        }
+                                    }));
+                                    if (data.serviceState.name == 'Recepción') {
+                                        rawStatus = JSON.stringify({
+                                            "serviceState": {
+                                                "id": `${status.ruta.id}`
+                                            },
+                                        });
+                                        events.push({
+                                            value: `${data.name} en ruta: ${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`,
+                                            title: `SERVICIO`,
+                                            service: data
+                                        });
                                     }
-                                }));
-                                if (data.serviceState.name == 'En ruta') {
-                                    rawStatus = JSON.stringify({
-                                        "serviceState": {
-                                            "id": `${status.entregado.id}`
-                                        },
-                                    });
-                                    events.push({
-                                        value: `${data.name} entregado: ${inputsCollection.destDate.value} ${inputsCollection.destTime.value}`,
-                                        title: `SERVICIO`,
-                                        service: data
-                                    });
-                                }
-                                else {
-                                    events.push({
-                                        value: `${data.name} entregado actualizado: ${inputsCollection.destDate.value} ${inputsCollection.destTime.value}`,
-                                        title: `SERVICIO`,
-                                        service: data
-                                    });
-                                }
-                            }
-                            if (inputsCollection.endTime.value != control?.endServiceTime && inputsCollection.endTime.value != '') {
-                                raws.push(JSON.stringify({
-                                    "endServiceDate": `${inputsCollection.endDate.value}`,
-                                    "endServiceTime": `${inputsCollection.endTime.value}`,
-                                    "endUser": {
-                                        "id": `${currentUser.attributes.id}`
+                                    else {
+                                        events.push({
+                                            value: `${data.name} en ruta actualizado: ${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`,
+                                            title: `SERVICIO`,
+                                            service: data
+                                        });
                                     }
-                                }));
-                                if (data.serviceState.name == 'Entregado') {
-                                    rawStatus = JSON.stringify({
-                                        "serviceState": {
-                                            "id": `${status.terminado.id}`
-                                        },
-                                    });
-                                    events.push({
-                                        value: `${data.name} terminado: ${inputsCollection.endDate.value} ${inputsCollection.endTime.value}`,
-                                        title: `SERVICIO`,
-                                        service: data
-                                    });
-                                    const patrols = await getDetails("service.id", data.id, "ServiceDetailV");
-                                    const containers = await getDetails("service.id", data.id, "Charge");
-                                    //Patrulla
-                                    if (patrols != undefined) {
-                                        patrols.forEach(async (patrol) => {
-                                            let crew = await getEntityData('Crew', patrol.crew.id);
-                                            getUpdateState(status.crewState.id, 'Crew', patrol.crew.id);
-                                            eventLog('UPD', `PATRULLA`, `${patrol.crew.name} disponible`, '');
-                                            let dataArray = [];
-                                            if (crew?.vehicular?.id) {
-                                                dataArray.push({
-                                                    id: crew.vehicular.id,
-                                                    value: `${crew.vehicular.type} [${crew.vehicular.licensePlate}]`,
-                                                    table: "Vehicular",
-                                                    state: status.vehicularState.id,
-                                                    title: "VEHÍCULO"
-                                                });
-                                            }
-                                            if (crew?.crewOne?.id != status.nothingUser.id || crew?.crewOne?.username != 'N/A') {
-                                                dataArray.push({
-                                                    id: crew?.crewOne.id,
-                                                    value: `${crew?.crewOne.username}`,
-                                                    table: "User",
-                                                    state: status.userState.id,
-                                                    title: "SUPERVISOR"
-                                                });
-                                                if (crew?.weaponOne?.id != status.nothingWeapon.id || crew?.weaponOne?.name != 'N/A') {
+                                }
+                                if (inputsCollection.destTime.value != control?.arrivalDestinationTime && inputsCollection.destTime.value != '') {
+                                    raws.push(JSON.stringify({
+                                        "arrivalDestinationDate": `${inputsCollection.destDate.value}`,
+                                        "arrivalDestinationTime": `${inputsCollection.destTime.value}`,
+                                        "destinationUser": {
+                                            "id": `${currentUser.attributes.id}`
+                                        }
+                                    }));
+                                    if (data.serviceState.name == 'En ruta') {
+                                        rawStatus = JSON.stringify({
+                                            "serviceState": {
+                                                "id": `${status.entregado.id}`
+                                            },
+                                        });
+                                        events.push({
+                                            value: `${data.name} entregado: ${inputsCollection.destDate.value} ${inputsCollection.destTime.value}`,
+                                            title: `SERVICIO`,
+                                            service: data
+                                        });
+                                    }
+                                    else {
+                                        events.push({
+                                            value: `${data.name} entregado actualizado: ${inputsCollection.destDate.value} ${inputsCollection.destTime.value}`,
+                                            title: `SERVICIO`,
+                                            service: data
+                                        });
+                                    }
+                                }
+                                if (inputsCollection.endTime.value != control?.endServiceTime && inputsCollection.endTime.value != '') {
+                                    raws.push(JSON.stringify({
+                                        "endServiceDate": `${inputsCollection.endDate.value}`,
+                                        "endServiceTime": `${inputsCollection.endTime.value}`,
+                                        "endUser": {
+                                            "id": `${currentUser.attributes.id}`
+                                        }
+                                    }));
+                                    if (data.serviceState.name == 'Entregado') {
+                                        rawStatus = JSON.stringify({
+                                            "serviceState": {
+                                                "id": `${status.terminado.id}`
+                                            },
+                                        });
+                                        events.push({
+                                            value: `${data.name} terminado: ${inputsCollection.endDate.value} ${inputsCollection.endTime.value}`,
+                                            title: `SERVICIO`,
+                                            service: data
+                                        });
+                                        const patrols = await getDetails("service.id", data.id, "ServiceDetailV");
+                                        const containers = await getDetails("service.id", data.id, "Charge");
+                                        //Patrulla
+                                        if (patrols != undefined) {
+                                            patrols.forEach(async (patrol) => {
+                                                let crew = await getEntityData('Crew', patrol.crew.id);
+                                                getUpdateState(status.crewState.id, 'Crew', patrol.crew.id);
+                                                eventLog('UPD', `PATRULLA`, `${patrol.crew.name} disponible`, '');
+                                                let dataArray = [];
+                                                if (crew?.vehicular?.id) {
                                                     dataArray.push({
-                                                        id: crew?.weaponOne.id,
-                                                        value: `${crew?.weaponOne.name} [${crew?.weaponOne.licensePlate}]`,
-                                                        table: "Weapon",
-                                                        state: status.weaponState.id,
-                                                        title: "ARMA"
+                                                        id: crew.vehicular.id,
+                                                        value: `${crew.vehicular.type} [${crew.vehicular.licensePlate}]`,
+                                                        table: "Vehicular",
+                                                        state: status.vehicularState.id,
+                                                        title: "VEHÍCULO"
                                                     });
                                                 }
-                                            }
-                                            let users = [crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive];
-                                            let weapons = [crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive];
-                                            for (let i = 0; i < 4; i++) {
-                                                if (users[i]?.id != status.nothingUser.id || users[i]?.username != 'N/A') {
+                                                if (crew?.crewOne?.id != status.nothingUser.id || crew?.crewOne?.username != 'N/A') {
                                                     dataArray.push({
-                                                        id: users[i].id,
-                                                        value: `${users[i].username}`,
+                                                        id: crew?.crewOne.id,
+                                                        value: `${crew?.crewOne.username}`,
                                                         table: "User",
                                                         state: status.userState.id,
-                                                        title: "GUARDIA"
+                                                        title: "SUPERVISOR"
                                                     });
-                                                    if (weapons[i]?.id != status.nothingWeapon.id || weapons[i]?.name != 'N/A') {
+                                                    if (crew?.weaponOne?.id != status.nothingWeapon.id || crew?.weaponOne?.name != 'N/A') {
                                                         dataArray.push({
-                                                            id: weapons[i].id,
-                                                            value: `${weapons[i].name} [${weapons[i].licensePlate}]`,
+                                                            id: crew?.weaponOne.id,
+                                                            value: `${crew?.weaponOne.name} [${crew?.weaponOne.licensePlate}]`,
                                                             table: "Weapon",
                                                             state: status.weaponState.id,
                                                             title: "ARMA"
                                                         });
                                                     }
                                                 }
-                                            }
-                                            for (let i = 0; i < dataArray.length; i++) {
-                                                getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id);
-                                                eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '');
-                                            }
-                                            eventLog('DLT', 'SERVICIO-PATRULLA', `${patrol.crew.name}, en servicio: ${data.name}`, data);
-                                            deleteEntity('ServiceDetailV', patrol.id);
-                                        });
-                                    }
-                                    //Contenedor
-                                    if (containers != undefined) {
-                                        containers.forEach((container) => {
-                                            let dataArray = [];
-                                            if (container.companion?.id != status.nothingUser.id || container.companion?.username != 'N/A') {
-                                                dataArray.push({
-                                                    id: container.companion.id,
-                                                    value: `${container.companion.username}`,
-                                                    table: "User",
-                                                    state: status.userContainer.id,
-                                                    title: "GUARDIA"
-                                                });
-                                                if (container.weapon?.id != status.nothingWeapon.id || container.weapon?.name != 'N/A') {
-                                                    dataArray.push({
-                                                        id: container.weapon.id,
-                                                        value: `${container.weapon.name} [${container.weapon.licensePlate}]`,
-                                                        table: "Weapon",
-                                                        state: status.weaponContainer.id,
-                                                        title: "ARMA"
-                                                    });
+                                                let users = [crew?.crewTwo, crew?.crewThree, crew?.crewFour, crew?.crewFive];
+                                                let weapons = [crew?.weaponTwo, crew?.weaponThree, crew?.weaponFour, crew?.weaponFive];
+                                                for (let i = 0; i < 4; i++) {
+                                                    if (users[i]?.id != status.nothingUser.id || users[i]?.username != 'N/A') {
+                                                        dataArray.push({
+                                                            id: users[i].id,
+                                                            value: `${users[i].username}`,
+                                                            table: "User",
+                                                            state: status.userState.id,
+                                                            title: "GUARDIA"
+                                                        });
+                                                        if (weapons[i]?.id != status.nothingWeapon.id || weapons[i]?.name != 'N/A') {
+                                                            dataArray.push({
+                                                                id: weapons[i].id,
+                                                                value: `${weapons[i].name} [${weapons[i].licensePlate}]`,
+                                                                table: "Weapon",
+                                                                state: status.weaponState.id,
+                                                                title: "ARMA"
+                                                            });
+                                                        }
+                                                    }
                                                 }
-                                                const raw = JSON.stringify({
-                                                    "companion": {
-                                                        "id": `${status.nothingUser.id}`
-                                                    },
-                                                    "weapon": {
-                                                        "id": `${status.nothingWeapon.id}`
-                                                    },
-                                                });
-                                                updateEntity('Charge', container.id, raw);
-                                                eventLog('UPD', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data);
-                                            }
-                                            for (let i = 0; i < dataArray.length; i++) {
-                                                getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id);
-                                                eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '');
-                                            }
-                                            //deleteEntity('Charge', container.id)
+                                                for (let i = 0; i < dataArray.length; i++) {
+                                                    getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id);
+                                                    eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '');
+                                                }
+                                                eventLog('DLT', 'SERVICIO-PATRULLA', `${patrol.crew.name}, en servicio: ${data.name}`, data);
+                                                deleteEntity('ServiceDetailV', patrol.id);
+                                            });
+                                        }
+                                        //Contenedor
+                                        if (containers != undefined) {
+                                            containers.forEach((container) => {
+                                                let dataArray = [];
+                                                if (container.companion?.id != status.nothingUser.id || container.companion?.username != 'N/A') {
+                                                    dataArray.push({
+                                                        id: container.companion.id,
+                                                        value: `${container.companion.username}`,
+                                                        table: "User",
+                                                        state: status.userContainer.id,
+                                                        title: "GUARDIA"
+                                                    });
+                                                    if (container.weapon?.id != status.nothingWeapon.id || container.weapon?.name != 'N/A') {
+                                                        dataArray.push({
+                                                            id: container.weapon.id,
+                                                            value: `${container.weapon.name} [${container.weapon.licensePlate}]`,
+                                                            table: "Weapon",
+                                                            state: status.weaponContainer.id,
+                                                            title: "ARMA"
+                                                        });
+                                                    }
+                                                    const raw = JSON.stringify({
+                                                        "companion": {
+                                                            "id": `${status.nothingUser.id}`
+                                                        },
+                                                        "weapon": {
+                                                            "id": `${status.nothingWeapon.id}`
+                                                        },
+                                                    });
+                                                    updateEntity('Charge', container.id, raw);
+                                                    eventLog('UPD', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data);
+                                                }
+                                                for (let i = 0; i < dataArray.length; i++) {
+                                                    getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id);
+                                                    eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '');
+                                                }
+                                                //deleteEntity('Charge', container.id)
+                                            });
+                                        }
+                                    }
+                                    else {
+                                        events.push({
+                                            value: `${data.name} terminado actualizado: ${inputsCollection.endDate.value} ${inputsCollection.endTime.value}`,
+                                            title: `SERVICIO`,
+                                            service: data
                                         });
                                     }
                                 }
-                                else {
-                                    events.push({
-                                        value: `${data.name} terminado actualizado: ${inputsCollection.endDate.value} ${inputsCollection.endTime.value}`,
-                                        title: `SERVICIO`,
-                                        service: data
-                                    });
+                                for (let i = 0; i < events.length; i++) {
+                                    let raw = raws[i];
+                                    updateEntity('Control', control.id, raw);
                                 }
-                            }
-                            for (let i = 0; i < events.length; i++) {
-                                let raw = raws[i];
-                                updateEntity('Control', control.id, raw);
-                            }
-                            if (rawStatus != '') {
-                                await updateEntity('Service', data.id, rawStatus);
-                            }
-                            for (let i = 0; i < raws.length; i++) {
-                                let event = events[i];
-                                eventLog('UPD', `${event.title}`, `${event.value}`, event.service);
-                            }
-                            new CloseDialog().x(editor);
-                            new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search);
-                        }, 1000);
+                                if (rawStatus != '') {
+                                    await updateEntity('Service', data.id, rawStatus);
+                                }
+                                for (let i = 0; i < raws.length; i++) {
+                                    let event = events[i];
+                                    eventLog('UPD', `${event.title}`, `${event.value}`, event.service);
+                                }
+                                new CloseDialog().x(editor);
+                                new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search);
+                            }, 1000);
+                        }
                     });
                 }
             }

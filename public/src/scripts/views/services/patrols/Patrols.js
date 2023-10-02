@@ -261,7 +261,7 @@ export class Patrols {
                             //let parse = JSON.parse(raw);
                             eventLog('INS', 'SERVICIO-PATRULLA', `${dataCrew.value}, en servicio: ${serviceId.name}`, serviceId);
                             getUpdateState(dataCrew.state, dataCrew.table, dataCrew.id);
-                            eventLog('UPD', `${dataCrew.title}`, `${dataCrew.value} en servicio: ${serviceId.name}`, '');
+                            eventLog('UPD', `${dataCrew.title}`, `${dataCrew.value} en servicio: ${serviceId.name}`, serviceId);
                             const crew = await getEntityData('Crew', dataCrew.id);
                             let dataArray = [];
                             if (crew?.vehicular?.id) {

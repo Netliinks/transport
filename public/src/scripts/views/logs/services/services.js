@@ -8,7 +8,7 @@ import { drawTagsIntoTables, inputObserver, CloseDialog, renderRightSidebar, fil
 import { Config } from "../../../Configs.js";
 import { UIRightSidebar, tableLayout } from "./Layout.js";
 import { tableLayoutTemplate } from "./Templates.js";
-import { exportClientCsv, exportClientPdf, exportClientXls } from "../../../exportFiles/clients.js";
+import { exportLogServiceCsv, exportLogServiceXls } from "../../../exportFiles/logs_services.js";
 const tableRows = Config.tableRows;
 const currentPage = Config.currentPage;
 const businessId = localStorage.getItem('business_id');
@@ -136,6 +136,16 @@ export class LogsServices {
 
                             <div class="dialog_message padding_8">
                                 <div class="form_group">
+                                    <div class="form_input">
+                                        <label class="form_label" for="start-date">Desde:</label>
+                                        <input type="date" class="input_date input_date-start" id="start-date" name="start-date">
+                                    </div>
+                    
+                                    <div class="form_input">
+                                        <label class="form_label" for="end-date">Hasta:</label>
+                                        <input type="date" class="input_date input_date-end" id="end-date" name="end-date">
+                                    </div>
+
                                     <label for="exportCsv">
                                         <input type="radio" id="exportCsv" name="exportOption" value="csv" /> CSV
                                     </label>
@@ -144,9 +154,9 @@ export class LogsServices {
                                         <input type="radio" id="exportXls" name="exportOption" value="xls" checked /> XLS
                                     </label>
 
-                                    <label for="exportPdf">
+                                    <!-- <label for="exportPdf">
                                         <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
-                                    </label>
+                                    </label> -->
                                 </div>
                             </div>
 
@@ -158,6 +168,18 @@ export class LogsServices {
                     </div>
                 </div>
             `;
+                let fecha = new Date(); //Fecha actual
+                let mes = fecha.getMonth() + 1; //obteniendo mes
+                let dia = fecha.getDate(); //obteniendo dia
+                let anio = fecha.getFullYear(); //obteniendo año
+                if (dia < 10)
+                    dia = '0' + dia; //agrega cero si el menor de 10
+                if (mes < 10)
+                    mes = '0' + mes; //agrega cero si el menor de 10
+                // @ts-ignore
+                document.getElementById("start-date").value = anio + "-" + mes + "-" + dia;
+                // @ts-ignore
+                document.getElementById("end-date").value = anio + "-" + mes + "-" + dia;
                 inputObserver();
                 const _closeButton = document.getElementById('cancel');
                 const exportButton = document.getElementById('export-data');
@@ -175,36 +197,91 @@ export class LogsServices {
                                     "value": `${businessId}`
                                 },
                                 {
-                                    "property": "userType",
-                                    "operator": "=",
-                                    "value": `GUARD`
+                                    "property": "description",
+                                    "operator": "contains",
+                                    "value": `SERVICIO`
                                 },
                                 {
-                                    "property": "isSuper",
-                                    "operator": "=",
-                                    "value": `${false}`
+                                    "property": "creationDate",
+                                    "operator": ">=",
+                                    "value": `${_values.start.value}`
+                                },
+                                {
+                                    "property": "creationDate",
+                                    "operator": "<=",
+                                    "value": `${_values.end.value}`
                                 }
                             ],
                         },
                         sort: "-createdDate",
                         fetchPlan: 'full',
                     });
-                    const users = await getFilterEntityData("Log", rawExport); //await getLogs()
+                    if (infoPage.search != "") {
+                        rawExport = JSON.stringify({
+                            "filter": {
+                                "conditions": [
+                                    {
+                                        "group": "OR",
+                                        "conditions": [
+                                            {
+                                                "property": "name",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            },
+                                            {
+                                                "property": "description",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            },
+                                            {
+                                                "property": "user.username",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "property": "business.id",
+                                        "operator": "=",
+                                        "value": `${businessId}`
+                                    },
+                                    {
+                                        "property": "description",
+                                        "operator": "contains",
+                                        "value": `SERVICIO`
+                                    },
+                                    {
+                                        "property": "creationDate",
+                                        "operator": ">=",
+                                        "value": `${_values.start.value}`
+                                    },
+                                    {
+                                        "property": "creationDate",
+                                        "operator": "<=",
+                                        "value": `${_values.end.value}`
+                                    }
+                                ]
+                            },
+                            sort: "-createdDate",
+                            fetchPlan: 'full',
+                        });
+                    }
+                    const logs = await getFilterEntityData("Log", rawExport); //await getLogs()
                     for (let i = 0; i < _values.exportOption.length; i++) {
                         let ele = _values.exportOption[i];
                         if (ele.type = "radio") {
                             if (ele.checked) {
                                 if (ele.value == "xls") {
                                     // @ts-ignore
-                                    exportClientXls(users);
+                                    exportLogServiceXls(logs);
                                 }
                                 else if (ele.value == "csv") {
                                     // @ts-ignore
-                                    exportClientCsv(users);
+                                    exportLogServiceCsv(logs);
                                 }
                                 else if (ele.value == "pdf") {
                                     // @ts-ignore
-                                    exportClientPdf(users);
+                                    //exportClientPdf(logs)
                                 }
                             }
                         }
