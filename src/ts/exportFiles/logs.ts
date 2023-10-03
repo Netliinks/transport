@@ -1,4 +1,4 @@
-export const exportVisitPdf = (ar: any, start: any, end: any) => {
+/*export const exportLogServicePdf = (ar: any, start: any, end: any) => {
     // @ts-ignore
     window.jsPDF = window.jspdf.jsPDF;
     // @ts-ignore
@@ -91,74 +91,50 @@ export const exportVisitPdf = (ar: any, start: any, end: any) => {
     var title = "log_Visitas_"+ d.getDate() + "_" + (d.getMonth()+1) + "_" + d.getFullYear() +`.pdf`;
     doc.save(title);
 
-}
+}*/
 
-export const exportVisitCsv = (ar: any, start: any, end: any) => {
+export const exportLogCsv = (ar: any, start: any, end: any) => {
     let rows = [];
     for(let i=0; i < ar.length; i++){
-        let visit = ar[i]
+        let log = ar[i]
         // @ts-ignore
         //if(visit.creationDate >= start && visit.creationDate <= end){
             let obj = {
-                "Nombre": `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`,
-                "DNI": `${visit.dni}`,
-                "Fecha Creación": `${visit.creationDate}`,
-                "Hora Creación": `${visit.creationTime}`,
-                "Usuario": `${visit.user?.firstName ?? ''} ${visit.user?.lastName ?? ''}`,
-                "Tipo": `${verifyUserType(visit.user.userType)}`,
-                "Departamento": `${visit.department?.name ?? ''}`,
-                "Estado": `${visit.visitState?.name ?? ''}`,
-                "Verificado": `${visit.verifiedDocument ? 'Si' : 'No'}`,
-                "Favorita": `${visit.favorite ? 'Si' : 'No'}`,
-                "Teléfono": `${visit?.phoneNumber ?? ''}`,
-                "Autorizado": `${visit?.authorizer ?? ''}`,
-                "Fecha Ingreso": `${visit.ingressDate}`,
-                "Hora Ingreso": `${visit.ingressTime}`,
-                "Emitido Ingreso": `${visit.ingressIssuedId?.firstName ?? ''} ${visit.ingressIssuedId?.lastName ?? ''}`,
-                "Fecha Salida": `${visit?.egressDate ?? ''}`,
-                "Hora Salida": `${visit?.egressTime ?? ''}`,
-                "Emitido Salida": `${visit.egressIssuedId?.firstName ?? ''} ${visit.egressIssuedId?.lastName ?? ''}`,
-                "Asunto": `${visit.reason.split("\n").join("(salto)")}`,
+                "Acción": `${log?.name ?? ''}`,
+                "Fecha": `${log?.creationDate ?? ''}`,
+                "Hora": `${log?.creationTime ?? ''}`,
+                "Usuario": `${log?.user?.username ?? ''}`,
+                "Servicio": `${log?.service?.name ?? ''}`,
+                "Empresa": `${log?.customer?.name ?? ''}`,
+                "Descripción": `${log?.description ?? ''}`,
               }
               rows.push(obj);
         //}
         
     }
-    generateFile(rows, "Visitas", "csv");
+    generateFile(rows, "Logs", "csv");
 }
 
-export const exportVisitXls = (ar: any, start: any, end: any) => {
+export const exportLogXls = (ar: any, start: any, end: any) => {
     let rows = [];
     for(let i=0; i < ar.length; i++){
-        let visit = ar[i]
+        let log = ar[i]
         // @ts-ignore
         //if(visit.creationDate >= start && visit.creationDate <= end){
             let obj = {
-                "Nombre": `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`,
-                "DNI": `${visit.dni}`,
-                "Fecha Creación": `${visit.creationDate}`,
-                "Hora Creación": `${visit.creationTime}`,
-                "Usuario": `${visit.user?.firstName ?? ''} ${visit.user?.lastName ?? ''}`,
-                "Tipo": `${verifyUserType(visit.user.userType)}`,
-                "Departamento": `${visit.department?.name ?? ''}`,
-                "Estado": `${visit.visitState?.name ?? ''}`,
-                "Verificado": `${visit.verifiedDocument ? 'Si' : 'No'}`,
-                "Favorita": `${visit.favorite ? 'Si' : 'No'}`,
-                "Teléfono": `${visit?.phoneNumber ?? ''}`,
-                "Autorizado": `${visit?.authorizer ?? ''}`,
-                "Fecha Ingreso": `${visit.ingressDate}`,
-                "Hora Ingreso": `${visit.ingressTime}`,
-                "Emitido Ingreso": `${visit.ingressIssuedId?.firstName ?? ''} ${visit.ingressIssuedId?.lastName ?? ''}`,
-                "Fecha Salida": `${visit?.egressDate ?? ''}`,
-                "Hora Salida": `${visit?.egressTime ?? ''}`,
-                "Emitido Salida": `${visit.egressIssuedId?.firstName ?? ''} ${visit.egressIssuedId?.lastName ?? ''}`,
-                "Asunto": `${visit.reason.split("\n").join("(salto)")}`,
-              }
-              rows.push(obj);
+              "Acción": `${log?.name ?? ''}`,
+              "Fecha": `${log?.creationDate ?? ''}`,
+              "Hora": `${log?.creationTime ?? ''}`,
+              "Usuario": `${log?.user?.username ?? ''}`,
+              "Servicio": `${log?.service?.name ?? ''}`,
+              "Empresa": `${log?.customer?.name ?? ''}`,
+              "Descripción": `${log?.description ?? ''}`,
+            }
+            rows.push(obj);
         //}
         
     }
-    generateFile(rows, "Visitas", "xls");
+    generateFile(rows, "Logs", "xls");
 }
 
 const generateFile = (ar: any, title: string, extension: string) => {
@@ -218,18 +194,4 @@ const generateFile = (ar: any, title: string, extension: string) => {
         alert("Su navegador no permite esta acción");
       }
 
-}
-
-const verifyUserType = (userType: string) =>{
-    if(userType == 'CUSTOMER'){
-      return 'Cliente'
-    }else if(userType == 'GUARD'){
-      return 'Guardia'
-    }else if(userType == 'EMPLOYEE'){
-      return 'Empleado'
-    }else if(userType == 'CONTRACTOR'){
-      return 'Contratista'
-    }else{
-      return userType
-    }
 }

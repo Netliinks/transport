@@ -186,7 +186,9 @@ export class LogsServices {
                 const _dialog = document.getElementById('dialog-content');
                 exportButton.addEventListener('click', async () => {
                     const _values = {
-                        exportOption: document.getElementsByName('exportOption')
+                        exportOption: document.getElementsByName('exportOption'),
+                        start: document.getElementById('start-date'),
+                        end: document.getElementById('end-date'),
                     };
                     let rawExport = JSON.stringify({
                         "filter": {

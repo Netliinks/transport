@@ -9,7 +9,6 @@ import { Data, InterfaceElement } from "../../../types.js"
 import { Config } from "../../../Configs.js"
 import { UIRightSidebar, tableLayout } from "./Layout.js"
 import { tableLayoutTemplate } from "./Templates.js"
-import { exportClientCsv, exportClientPdf, exportClientXls } from "../../../exportFiles/clients.js"
 import { exportLogServiceCsv, exportLogServiceXls } from "../../../exportFiles/logs_services.js"
 
 const tableRows = Config.tableRows
@@ -302,7 +301,9 @@ export class LogsServices {
             const _dialog: InterfaceElement = document.getElementById('dialog-content');
             exportButton.addEventListener('click', async() => {
                 const _values: any = {
-                    exportOption: document.getElementsByName('exportOption')
+                    exportOption: document.getElementsByName('exportOption'),
+                    start: document.getElementById('start-date'),
+                    end: document.getElementById('end-date'),
                 }
                 let rawExport = JSON.stringify({
                     "filter": {

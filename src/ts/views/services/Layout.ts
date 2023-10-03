@@ -23,6 +23,7 @@ export const tableLayout = `
           id="new-entity" style="display:${userPermissions().style};">
           <i class="fa-solid fa-add"></i>
         </button>
+        <button class="datatable_button import_user" id="export-entities">Exportar</button>
       </div>
     </div>
 

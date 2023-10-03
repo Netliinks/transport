@@ -6,6 +6,7 @@ import { tableLayout } from "./Layout.js";
 import { tableLayoutTemplate } from "./Template.js";
 import { Patrols } from "./patrols/Patrols.js";
 import { Charges } from "./containers/Containers.js";
+import { exportServiceCsv, exportServiceXls } from "../../exportFiles/services.js";
 const tableRows = Config.tableRows;
 const currentPage = Config.currentPage;
 const businessId = localStorage.getItem('business_id');
@@ -104,6 +105,168 @@ export class Services {
                 new Services().render(Config.offset, Config.currentPage, search.value.toLowerCase().trim());
             });
         };
+        this.export = () => {
+            const exportLogs = document.getElementById('export-entities');
+            exportLogs.addEventListener('click', async () => {
+                this.dialogContainer.style.display = 'block';
+                this.dialogContainer.innerHTML = `
+                <div class="dialog_content" id="dialog-content">
+                    <div class="dialog">
+                        <div class="dialog_container padding_8">
+                            <div class="dialog_header">
+                                <h2>Seleccione un tipo</h2>
+                            </div>
+
+                            <div class="dialog_message padding_8">
+                                <div class="form_group">
+                                    <div class="form_input">
+                                        <label class="form_label" for="start-date">Desde:</label>
+                                        <input type="date" class="input_date input_date-start" id="start-date" name="start-date">
+                                    </div>
+                    
+                                    <div class="form_input">
+                                        <label class="form_label" for="end-date">Hasta:</label>
+                                        <input type="date" class="input_date input_date-end" id="end-date" name="end-date">
+                                    </div>
+
+                                    <label for="exportCsv">
+                                        <input type="radio" id="exportCsv" name="exportOption" value="csv" /> CSV
+                                    </label>
+
+                                    <label for="exportXls">
+                                        <input type="radio" id="exportXls" name="exportOption" value="xls" checked /> XLS
+                                    </label>
+
+                                    <!-- <label for="exportPdf">
+                                        <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
+                                    </label> -->
+                                </div>
+                            </div>
+
+                            <div class="dialog_footer">
+                                <button class="btn btn_primary" id="cancel">Cancelar</button>
+                                <button class="btn btn_danger" id="export-data">Exportar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+                let fecha = new Date(); //Fecha actual
+                let mes = fecha.getMonth() + 1; //obteniendo mes
+                let dia = fecha.getDate(); //obteniendo dia
+                let anio = fecha.getFullYear(); //obteniendo año
+                if (dia < 10)
+                    dia = '0' + dia; //agrega cero si el menor de 10
+                if (mes < 10)
+                    mes = '0' + mes; //agrega cero si el menor de 10
+                // @ts-ignore
+                document.getElementById("start-date").value = anio + "-" + mes + "-" + dia;
+                // @ts-ignore
+                document.getElementById("end-date").value = anio + "-" + mes + "-" + dia;
+                inputObserver();
+                const _closeButton = document.getElementById('cancel');
+                const exportButton = document.getElementById('export-data');
+                const _dialog = document.getElementById('dialog-content');
+                exportButton.addEventListener('click', async () => {
+                    const _values = {
+                        exportOption: document.getElementsByName('exportOption'),
+                        start: document.getElementById('start-date'),
+                        end: document.getElementById('end-date'),
+                    };
+                    let rawExport = JSON.stringify({
+                        "filter": {
+                            "conditions": [
+                                {
+                                    "property": "business.id",
+                                    "operator": "=",
+                                    "value": `${businessId}`
+                                },
+                                {
+                                    "property": "creationDate",
+                                    "operator": ">=",
+                                    "value": `${_values.start.value}`
+                                },
+                                {
+                                    "property": "creationDate",
+                                    "operator": "<=",
+                                    "value": `${_values.end.value}`
+                                }
+                            ],
+                        },
+                        sort: "-createdDate",
+                        fetchPlan: 'full',
+                    });
+                    if (infoPage.search != "") {
+                        rawExport = JSON.stringify({
+                            "filter": {
+                                "conditions": [
+                                    {
+                                        "group": "OR",
+                                        "conditions": [
+                                            {
+                                                "property": "name",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            },
+                                            {
+                                                "property": "customer.name",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            },
+                                            {
+                                                "property": "serviceState.name",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "property": "business.id",
+                                        "operator": "=",
+                                        "value": `${businessId}`
+                                    },
+                                    {
+                                        "property": "creationDate",
+                                        "operator": ">=",
+                                        "value": `${_values.start.value}`
+                                    },
+                                    {
+                                        "property": "creationDate",
+                                        "operator": "<=",
+                                        "value": `${_values.end.value}`
+                                    }
+                                ]
+                            },
+                            sort: "-createdDate",
+                            fetchPlan: 'full',
+                        });
+                    }
+                    const logs = await getFilterEntityData("Service", rawExport); //await getLogs()
+                    for (let i = 0; i < _values.exportOption.length; i++) {
+                        let ele = _values.exportOption[i];
+                        if (ele.type = "radio") {
+                            if (ele.checked) {
+                                if (ele.value == "xls") {
+                                    // @ts-ignore
+                                    exportServiceXls(logs);
+                                }
+                                else if (ele.value == "csv") {
+                                    // @ts-ignore
+                                    exportServiceCsv(logs);
+                                }
+                                else if (ele.value == "pdf") {
+                                    // @ts-ignore
+                                    //exportClientPdf(logs)
+                                }
+                            }
+                        }
+                    }
+                });
+                _closeButton.onclick = () => {
+                    new CloseDialog().x(_dialog);
+                };
+            });
+        };
     }
     async render(offset, actualPage, search) {
         infoPage.offset = offset;
@@ -176,6 +339,7 @@ export class Services {
         this.register();
         this.edit(this.entityDialogContainer, data);
         this.sendEmail(this.entityDialogContainer);
+        this.export();
         this.remove();
     }
     register() {
