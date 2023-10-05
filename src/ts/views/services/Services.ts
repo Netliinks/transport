@@ -418,7 +418,7 @@ export class Services {
                   registerEntity(raw, 'Service').then((res) => {
                     setTimeout(() => {
                         let parse = JSON.parse(raw);
-                        eventLog('INS', 'SERVICIO', `${parse.name}`, '')
+                        eventLog('INS', 'SERVICIO', `${parse.name}`, '', `${nothingConfig.serviceState.name}`)
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
                         new CloseDialog().x(container)
@@ -635,7 +635,7 @@ export class Services {
                           
                           //data = await getWeapons()
                           let parse = JSON.parse(raw);
-                          eventLog('UPD', 'SERVICIO', `${parse.name}`, service)
+                          eventLog('UPD', 'SERVICIO', `${parse.name}`, service, `${service.ServiceState.name}`)
                           new CloseDialog()
                               .x(container =
                                   document.getElementById('entity-editor-container')
@@ -734,7 +734,7 @@ export class Services {
                       deleteEntity('Service', entityId)
                         .then(async res => {
                             setTimeout(async () => {
-                                eventLog('DLT', 'SERVICIO', `${entityName}`, data)
+                                eventLog('DLT', 'SERVICIO', `${entityName}`, data, `${data.serviceState.name}`)
                                 //Patrulla
                                 if(patrols != undefined){
                                     patrols.forEach(async (patrol: any) => {
@@ -799,7 +799,7 @@ export class Services {
                                         eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
                                         }
 
-                                        eventLog('DLT', 'SERVICIO-PATRULLA', `${patrol.crew.name}, en servicio: ${data.name}`, data)
+                                        eventLog('DLT', 'SERVICIO-PATRULLA', `${patrol.crew.name}, en servicio: ${data.name}`, data, `${data.serviceState.name}`)
                                         deleteEntity('ServiceDetailV', patrol.id)
                                     
                                     })
@@ -837,7 +837,7 @@ export class Services {
                                             eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
                                         }
 
-                                        eventLog('DLT', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data)
+                                        eventLog('DLT', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data, `${data.serviceState.name}`)
                                         deleteEntity('Charge', container.id)
                                     })
                                 }
@@ -1598,7 +1598,7 @@ export class Services {
                         getUpdateState(`${serviceState.id}`, "Service", data.id).then((res) => {
                             setTimeout(() => {
                                 sendMail(mailRaw)
-                                eventLog('UPD', 'SERVICIO', `${data.name} confirmado`, data)
+                                eventLog('UPD', 'SERVICIO', `${data.name} confirmado`, data, `${serviceState.name}`)
                                 const raw = JSON.stringify({
                                     "service": {
                                       "id": `${entityID}`
@@ -1687,6 +1687,12 @@ export class Services {
                                 <input type="text" class="input_filled" value="${control?.originUser?.username ?? ''}" readonly>
                             </div>
                             <br>
+                            <div class="material_input">
+                            <br>
+                            <textarea id="entity-observation" rows="2" class="input_filled">${control?.observation ?? ''}</textarea>
+                            <label for="entity-observation"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
+                            </div>
+                            <br>
 
                             <h3>Partida Inicio</h3>
                             <br>
@@ -1705,6 +1711,12 @@ export class Services {
                             <div class="input_detail">
                                 <label><i class="fa-solid fa-user"></i></label>
                                 <input type="text" class="input_filled" value="${control?.startUser?.username ?? ''}" readonly>
+                            </div>
+                            <br>
+                            <div class="material_input">
+                            <br>
+                            <textarea id="entity-observation2" rows="2" class="input_filled">${control?.observation2 ?? ''}</textarea>
+                            <label for="entity-observation2"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
                             </div>
                             <br>
 
@@ -1727,6 +1739,12 @@ export class Services {
                                 <input type="text" class="input_filled" value="${control?.destinationUser?.username ?? ''}" readonly>
                             </div>
                             <br>
+                            <div class="material_input">
+                            <br>
+                            <textarea id="entity-observation3" rows="2" class="input_filled">${control?.observation3 ?? ''}</textarea>
+                            <label for="entity-observation3"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
+                            </div>
+                            <br>
 
                             <h3>Finalización</h3>
                             <br>
@@ -1747,15 +1765,13 @@ export class Services {
                                 <input type="text" class="input_filled" value="${control?.endUser?.username ?? ''}" readonly>
                             </div>
                             <br>
-                            <br>
-                            <!--
                             <div class="material_input">
                             <br>
-                            <textarea id="entity-observation" rows="4" class="input_filled">${control?.observation ?? ''}</textarea>
-                            <label for="entity-observation"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
+                            <textarea id="entity-observation4" rows="2" class="input_filled">${control?.observation4 ?? ''}</textarea>
+                            <label for="entity-observation4"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
                             </div>
                             <br>
-                            <br> -->
+                            <br>
 
                             <div class="input_detail">
                                 <label for="creation-date"><i class="fa-solid fa-calendar"></i></label>
@@ -1793,6 +1809,9 @@ export class Services {
                         endDate: document.getElementById("finish-date"),
                         endTime: document.getElementById("finish-time"),
                         observation: document.getElementById("entity-observation"),
+                        observation2: document.getElementById("entity-observation2"),
+                        observation3: document.getElementById("entity-observation3"),
+                        observation4: document.getElementById("entity-observation4"),
                     }
                     const currentUser = await getUserInfo()
                     
@@ -1803,6 +1822,10 @@ export class Services {
                         inputsCollection.destTime.disabled = true
                         inputsCollection.endDate.disabled = true
                         inputsCollection.endTime.disabled = true
+                        inputsCollection.observation2.disabled = true
+                        inputsCollection.observation3.disabled = true
+                        inputsCollection.observation4.disabled = true
+                        //inputsCollection.origenDate.focus()
                     }else if(control?.startingPointTime == undefined){
                         inputsCollection.startDate.value = anio+"-"+mes+"-"+dia
                         inputsCollection.startTime.value = `${_fixedHours}:${_fixedMinutes}`
@@ -1810,14 +1833,20 @@ export class Services {
                         inputsCollection.destTime.disabled = true
                         inputsCollection.endDate.disabled = true
                         inputsCollection.endTime.disabled = true
+                        inputsCollection.observation3.disabled = true
+                        inputsCollection.observation4.disabled = true
+                       //inputsCollection.startDate.focus()
                     }else if(control?.arrivalDestinationTime == undefined){
                         inputsCollection.destDate.value = anio+"-"+mes+"-"+dia
                         inputsCollection.destTime.value = `${_fixedHours}:${_fixedMinutes}`
                         inputsCollection.endDate.disabled = true
                         inputsCollection.endTime.disabled = true
+                        inputsCollection.observation4.disabled = true
+                        //inputsCollection.destDate.focus()
                     }else if(control?.endServiceTime == undefined){
                         inputsCollection.endDate.value = anio+"-"+mes+"-"+dia
                         inputsCollection.endTime.value = `${_fixedHours}:${_fixedMinutes}`
+                        //inputsCollection.endDate.focus()
                     }
 
                     
@@ -1842,14 +1871,15 @@ export class Services {
                                 let raws = []
                                 let rawStatus = ''
                                 let events = []
-                                if(inputsCollection.origenTime.value != control?.arrivalOriginTime && inputsCollection.origenTime.value != ''){       
+                                if((inputsCollection.origenTime.value != control?.arrivalOriginTime && inputsCollection.origenTime.value != '') || (inputsCollection.observation.value != control?.observation && inputsCollection.observation.value != '')){       
                                     raws.push(
                                         JSON.stringify({
                                             "arrivalOriginDate": `${inputsCollection.origenDate.value}`,
                                             "arrivalOriginTime": `${inputsCollection.origenTime.value}`,
                                             "originUser": {
                                                 "id": `${currentUser.attributes.id}`
-                                            }
+                                            },
+                                            "observation": `${inputsCollection.observation.value}`,
                                         })
                                     )
                                     if(data.serviceState.name == 'Confirmado'){
@@ -1861,25 +1891,36 @@ export class Services {
                                         events.push({
                                             value: `${data.name} recepción: ${inputsCollection.origenDate.value} ${inputsCollection.origenTime.value}`,
                                             title: `SERVICIO`,
-                                            service: data
+                                            service: data,
+                                            aditionalData: {
+                                                status: `${status.recepcion.name}`,
+                                                statusDate: `${inputsCollection.origenDate.value}`,
+                                                statusTime: `${inputsCollection.origenTime.value}`
+                                            }
                                         })
                                     }else{
                                         events.push({
                                             value: `${data.name} recepción actualizado: ${inputsCollection.origenDate.value} ${inputsCollection.origenTime.value}`,
                                             title: `SERVICIO`,
-                                            service: data
+                                            service: data,
+                                            aditionalData: {
+                                                status: `${status.recepcion.name}`,
+                                                statusDate: `${inputsCollection.origenDate.value}`,
+                                                statusTime: `${inputsCollection.origenTime.value}`
+                                            }
                                         })
                                     }
                                 }
 
-                                if(inputsCollection.startTime.value != control?.startingPointTime && inputsCollection.startTime.value != ''){
+                                if((inputsCollection.startTime.value != control?.startingPointTime && inputsCollection.startTime.value != '') || (inputsCollection.observation2.value != control?.observation2 && inputsCollection.observation2.value != '')){
                                     raws.push(
                                         JSON.stringify({
                                             "startingPointDate": `${inputsCollection.startDate.value}`,
                                             "startingPointTime": `${inputsCollection.startTime.value}`,
                                             "startUser": {
-                                            "id": `${currentUser.attributes.id}`
-                                            }
+                                                "id": `${currentUser.attributes.id}`
+                                            },
+                                            "observation2": `${inputsCollection.observation2.value}`,
                                         })
                                     )
                                     if(data.serviceState.name == 'Recepción'){
@@ -1891,25 +1932,36 @@ export class Services {
                                         events.push({
                                             value: `${data.name} en ruta: ${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`,
                                             title: `SERVICIO`,
-                                            service: data
+                                            service: data,
+                                            aditionalData: {
+                                                status: `${status.ruta.name}`,
+                                                statusDate: `${inputsCollection.startDate.value}`,
+                                                statusTime: `${inputsCollection.startTime.value}`
+                                            }
                                         })
                                     }else{
                                         events.push({
                                             value: `${data.name} en ruta actualizado: ${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`,
                                             title: `SERVICIO`,
-                                            service: data
+                                            service: data,
+                                            aditionalData: {
+                                                status: `${status.ruta.name}`,
+                                                statusDate: `${inputsCollection.startDate.value}`,
+                                                statusTime: `${inputsCollection.startTime.value}`
+                                            }
                                         })
                                     }
                                 }
                                 
-                                if(inputsCollection.destTime.value != control?.arrivalDestinationTime && inputsCollection.destTime.value != ''){
+                                if((inputsCollection.destTime.value != control?.arrivalDestinationTime && inputsCollection.destTime.value != '') || (inputsCollection.observation3.value != control?.observation3 && inputsCollection.observation3.value != '')){
                                     raws.push(
                                         JSON.stringify({
                                             "arrivalDestinationDate": `${inputsCollection.destDate.value}`,
                                             "arrivalDestinationTime": `${inputsCollection.destTime.value}`,
                                             "destinationUser": {
-                                            "id": `${currentUser.attributes.id}`
-                                            }
+                                                "id": `${currentUser.attributes.id}`
+                                            },
+                                            "observation3": `${inputsCollection.observation3.value}`,
                                         })
                                     )
                                     if(data.serviceState.name == 'En ruta'){
@@ -1921,25 +1973,36 @@ export class Services {
                                         events.push({
                                             value: `${data.name} entregado: ${inputsCollection.destDate.value} ${inputsCollection.destTime.value}`,
                                             title: `SERVICIO`,
-                                            service: data
+                                            service: data,
+                                            aditionalData: {
+                                                status: `${status.entregado.name}`,
+                                                statusDate: `${inputsCollection.destDate.value}`,
+                                                statusTime: `${inputsCollection.destTime.value}`
+                                            }
                                         })
                                     }else{
                                         events.push({
                                             value: `${data.name} entregado actualizado: ${inputsCollection.destDate.value} ${inputsCollection.destTime.value}`,
                                             title: `SERVICIO`,
-                                            service: data
+                                            service: data,
+                                            aditionalData: {
+                                                status: `${status.entregado.name}`,
+                                                statusDate: `${inputsCollection.destDate.value}`,
+                                                statusTime: `${inputsCollection.destTime.value}`
+                                            }
                                         })
                                     }
                                 }
 
-                                if(inputsCollection.endTime.value != control?.endServiceTime && inputsCollection.endTime.value != ''){
+                                if((inputsCollection.endTime.value != control?.endServiceTime && inputsCollection.endTime.value != '') || (inputsCollection.observation4.value != control?.observation4 && inputsCollection.observation4.value != '')){
                                     raws.push(
                                         JSON.stringify({
                                             "endServiceDate": `${inputsCollection.endDate.value}`,
                                             "endServiceTime": `${inputsCollection.endTime.value}`,
                                             "endUser": {
-                                            "id": `${currentUser.attributes.id}`
-                                            }
+                                                "id": `${currentUser.attributes.id}`
+                                            },
+                                            "observation4": `${inputsCollection.observation4.value}`,
                                         })
                                     )
                                     if(data.serviceState.name == 'Entregado'){
@@ -1951,9 +2014,19 @@ export class Services {
                                         events.push({
                                             value: `${data.name} terminado: ${inputsCollection.endDate.value} ${inputsCollection.endTime.value}`,
                                             title: `SERVICIO`,
-                                            service: data
+                                            service: data,
+                                            aditionalData: {
+                                                status: `${status.terminado.name}`,
+                                                statusDate: `${inputsCollection.endDate.value}`,
+                                                statusTime: `${inputsCollection.endTime.value}`
+                                            }
                                         })
 
+                                        const aditionalData = {
+                                            status: `${status.terminado.name}`,
+                                            statusDate: `${inputsCollection.endDate.value}`,
+                                            statusTime: `${inputsCollection.endTime.value}`
+                                        }
                                         const patrols: any = await getDetails("service.id", data.id, "ServiceDetailV")
                                         const containers: any = await getDetails("service.id", data.id, "Charge")
 
@@ -2019,7 +2092,7 @@ export class Services {
                                                 getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
                                                 eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
                                                 }
-                                                eventLog('DLT', 'SERVICIO-PATRULLA', `${patrol.crew.name}, en servicio: ${data.name}`, data)
+                                                eventLog('DLT', 'SERVICIO-PATRULLA', `${patrol.crew.name}, en servicio: ${data.name}`, data, aditionalData)
                                                 deleteEntity('ServiceDetailV', patrol.id)
                                             })
                                         }
@@ -2057,7 +2130,7 @@ export class Services {
                                                         },
                                                     })
                                                     updateEntity('Charge', container.id, raw)
-                                                    eventLog('UPD', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data)
+                                                    eventLog('UPD', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data, aditionalData)
                                                 }
                                                 
 
@@ -2074,7 +2147,12 @@ export class Services {
                                         events.push({
                                             value: `${data.name} terminado actualizado: ${inputsCollection.endDate.value} ${inputsCollection.endTime.value}`,
                                             title: `SERVICIO`,
-                                            service: data
+                                            service: data,
+                                            aditionalData: {
+                                                status: `${status.terminado.name}`,
+                                                statusDate: `${inputsCollection.endDate.value}`,
+                                                statusTime: `${inputsCollection.endTime.value}`
+                                            }
                                         })
                                     }
                                 }
@@ -2088,7 +2166,7 @@ export class Services {
                                 }
                                 for(let i= 0; i < raws.length; i++){
                                     let event = events[i]
-                                    eventLog('UPD', `${event.title}`, `${event.value}`, event.service)
+                                    eventLog('UPD', `${event.title}`, `${event.value}`, event.service, event.aditionalData)
                                 }
                                 
                                 new CloseDialog().x(editor)

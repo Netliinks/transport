@@ -125,15 +125,19 @@ export const exportServiceCsv = async (ar, start, end) => {
                 "Origen Fecha": `${control?.arrivalOriginDate ?? ''}`,
                 "Origen Hora": ` ${control?.arrivalOriginTime ?? ''}`,
                 "Origen Usuario": ` ${control?.originUser?.username ?? ''}`,
+                "Observación 1": ` ${control?.observation ?? ''}`,
                 "Inicio Fecha": `${control?.startingPointDate ?? ''}`,
                 "Inicio Hora": ` ${control?.startingPointTime ?? ''}`,
                 "Inicio Usuario": ` ${control?.startUser?.username ?? ''}`,
+                "Observación 2": ` ${control?.observation2 ?? ''}`,
                 "Destino Fecha": `${control?.arrivalDestinationDate ?? ''}`,
                 "Destino Hora": ` ${control?.arrivalDestinationTime ?? ''}`,
                 "Destino Usuario": ` ${control?.destinationUser?.username ?? ''}`,
+                "Observación 3": ` ${control?.observation3 ?? ''}`,
                 "Fin Fecha": `${control?.endServiceDate ?? ''}`,
                 "Fin Hora": ` ${control?.endServiceTime ?? ''}`,
                 "Fin Usuario": ` ${control?.endUser?.username ?? ''}`,
+                "Observación 4": ` ${control?.observation4 ?? ''}`,
             };
             obj = Object.assign(obj, obj1);
         }
@@ -174,15 +178,19 @@ export const exportServiceXls = async (ar, start, end) => {
                 "Origen Fecha": `${control?.arrivalOriginDate ?? ''}`,
                 "Origen Hora": ` ${control?.arrivalOriginTime ?? ''}`,
                 "Origen Usuario": ` ${control?.originUser?.username ?? ''}`,
+                "Observación 1": ` ${control?.observation ?? ''}`,
                 "Inicio Fecha": `${control?.startingPointDate ?? ''}`,
                 "Inicio Hora": ` ${control?.startingPointTime ?? ''}`,
                 "Inicio Usuario": ` ${control?.startUser?.username ?? ''}`,
+                "Observación 2": ` ${control?.observation2 ?? ''}`,
                 "Destino Fecha": `${control?.arrivalDestinationDate ?? ''}`,
                 "Destino Hora": ` ${control?.arrivalDestinationTime ?? ''}`,
                 "Destino Usuario": ` ${control?.destinationUser?.username ?? ''}`,
+                "Observación 3": ` ${control?.observation3 ?? ''}`,
                 "Fin Fecha": `${control?.endServiceDate ?? ''}`,
                 "Fin Hora": ` ${control?.endServiceTime ?? ''}`,
                 "Fin Usuario": ` ${control?.endUser?.username ?? ''}`,
+                "Observación 4": ` ${control?.observation4 ?? ''}`,
             };
             obj = Object.assign(obj, obj1);
         }

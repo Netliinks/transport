@@ -541,7 +541,7 @@ export const currentDateTime: any = () => {
     }
 }
 
-export const eventLog: any = async (mode: string, table: string, message: any, service: any) => {
+export const eventLog: any = async (mode: string, table: string, message: any, service: any, aditionalData: any) => {
     let logConfing = {
         name: '', 
         word: '',
@@ -561,37 +561,86 @@ export const eventLog: any = async (mode: string, table: string, message: any, s
     }
 
     if(service == '' || service == undefined || service == null){
-        logConfing.raw = JSON.stringify({
-            "name": `${logConfing.name}`,
-            "description": `Se ha ${logConfing.word} un ${table}: ${message}.`,
-            "user":{
-                "id": `${currentUser.attributes.id}`
-            },
-            "business":{
-                "id": `${businessId}`
-            },
-            'creationDate': `${currentDateTime().date}`,
-            'creationTime': `${currentDateTime().time}`,
-        })
+        if(table != "SERVICIO"){
+            logConfing.raw = JSON.stringify({
+                "name": `${logConfing.name}`,
+                "description": `Se ha ${logConfing.word} un ${table}: ${message}.`,
+                "user":{
+                    "id": `${currentUser.attributes.id}`
+                },
+                "business":{
+                    "id": `${businessId}`
+                },
+                'creationDate': `${currentDateTime().date}`,
+                'creationTime': `${currentDateTime().time}`,
+            })
+        }else{
+            logConfing.raw = JSON.stringify({
+                "name": `${logConfing.name}`,
+                "description": `Se ha ${logConfing.word} un ${table}: ${message}.`,
+                "user":{
+                    "id": `${currentUser.attributes.id}`
+                },
+                "business":{
+                    "id": `${businessId}`
+                },
+                'creationDate': `${currentDateTime().date}`,
+                'creationTime': `${currentDateTime().time}`,
+                'serviceName': `${message}`,
+                'status': `${aditionalData ?? ''}`,
+                'statusDate': `${currentDateTime().date}`,
+                'statusTime': `${currentDateTime().time}`,
+            })
+        }
     }else{
-        logConfing.raw = JSON.stringify({
-            "name": `${logConfing.name}`,
-            "description": `Se ha ${logConfing.word} un ${table}: ${message}.`,
-            "user":{
-                "id": `${currentUser.attributes.id}`
-            },
-            "business":{
-                "id": `${businessId}`
-            },
-            "customer":{
-                "id": `${service?.customer?.id}`
-            },
-            "service":{
-                "id": `${service?.id}`
-            },
-            'creationDate': `${currentDateTime().date}`,
-            'creationTime': `${currentDateTime().time}`,
-        })
+        if(aditionalData.statusDate == '' || aditionalData.statusDate == undefined || aditionalData.statusDate == null){
+            logConfing.raw = JSON.stringify({
+                "name": `${logConfing.name}`,
+                "description": `Se ha ${logConfing.word} un ${table}: ${message}.`,
+                "user":{
+                    "id": `${currentUser.attributes.id}`
+                },
+                "business":{
+                    "id": `${businessId}`
+                },
+                "customer":{
+                    "id": `${service?.customer?.id}`
+                },
+                "service":{
+                    "id": `${service?.id}`
+                },
+                'creationDate': `${currentDateTime().date}`,
+                'creationTime': `${currentDateTime().time}`,
+                'statusDate': `${currentDateTime().date}`,
+                'statusTime': `${currentDateTime().time}`,
+                'status': `${aditionalData ?? ''}`,
+                'serviceName': `${service?.name}`,
+            })
+        }else{
+            logConfing.raw = JSON.stringify({
+                "name": `${logConfing.name}`,
+                "description": `Se ha ${logConfing.word} un ${table}: ${message}.`,
+                "user":{
+                    "id": `${currentUser.attributes.id}`
+                },
+                "business":{
+                    "id": `${businessId}`
+                },
+                "customer":{
+                    "id": `${service?.customer?.id}`
+                },
+                "service":{
+                    "id": `${service?.id}`
+                },
+                'creationDate': `${currentDateTime().date}`,
+                'creationTime': `${currentDateTime().time}`,
+                'statusDate': `${aditionalData?.statusDate}`,
+                'statusTime': `${aditionalData?.statusTime}`,
+                'status': `${aditionalData?.status ?? ''}`,
+                'serviceName': `${service?.name}`,
+            })
+        }
+        
     }
 
     registerEntity(logConfing.raw, 'Log')

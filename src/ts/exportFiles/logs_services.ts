@@ -1,3 +1,4 @@
+import { getEntitiesData } from "../endpoints.js"
 /*export const exportLogServicePdf = (ar: any, start: any, end: any) => {
     // @ts-ignore
     window.jsPDF = window.jspdf.jsPDF;
@@ -95,6 +96,8 @@
 
 export const exportLogServiceCsv = (ar: any, start: any, end: any) => {
     let rows = [];
+    //const status = await getEntitiesData('ServiceState')
+    const atributos=["Acción",'Fecha', 'Hora','Usuario','Servicio','Empresa','Descripción','Pendiente','Asignada','Confirmado','Recepción','En ruta','Entregado','Terminado'];
     for(let i=0; i < ar.length; i++){
         let log = ar[i]
         // @ts-ignore
@@ -107,34 +110,61 @@ export const exportLogServiceCsv = (ar: any, start: any, end: any) => {
                 "Servicio": `${log?.service?.name ?? ''}`,
                 "Empresa": `${log?.customer?.name ?? ''}`,
                 "Descripción": `${log?.description ?? ''}`,
+                "Pendiente": '',
+                "Asignada": '',
+                "Confirmado": '',
+                "Recepción": '',
+                "En ruta": '',
+                "Entregado": '',
+                "Terminado": '',
               }
+              atributos.forEach((attr) => {
+                if(log?.status == attr){
+                  // @ts-ignore
+                  obj[attr] = `${log?.statusDate ?? ''} ${log?.statusTime ?? ''}`
+                }
+              });
               rows.push(obj);
         //}
         
     }
-    generateFile(rows, "Log_Servicios", "csv");
+    generateFile(rows, "LogServicios", "csv");
 }
 
 export const exportLogServiceXls = (ar: any, start: any, end: any) => {
     let rows = [];
+    const atributos=["Acción",'Fecha', 'Hora','Usuario','Servicio','Empresa','Descripción','Pendiente','Asignada','Confirmado','Recepción','En ruta','Entregado','Terminado'];
     for(let i=0; i < ar.length; i++){
         let log = ar[i]
         // @ts-ignore
         //if(visit.creationDate >= start && visit.creationDate <= end){
-            let obj = {
-              "Acción": `${log?.name ?? ''}`,
-              "Fecha": `${log?.creationDate ?? ''}`,
-              "Hora": `${log?.creationTime ?? ''}`,
-              "Usuario": `${log?.user?.username ?? ''}`,
-              "Servicio": `${log?.service?.name ?? ''}`,
-              "Empresa": `${log?.customer?.name ?? ''}`,
-              "Descripción": `${log?.description ?? ''}`,
+          let obj = {
+            "Acción": `${log?.name ?? ''}`,
+            "Fecha": `${log?.creationDate ?? ''}`,
+            "Hora": `${log?.creationTime ?? ''}`,
+            "Usuario": `${log?.user?.username ?? ''}`,
+            "Servicio": `${log?.service?.name ?? ''}`,
+            "Empresa": `${log?.customer?.name ?? ''}`,
+            "Descripción": `${log?.description ?? ''}`,
+            "Pendiente": '',
+            "Asignada": '',
+            "Confirmado": '',
+            "Recepción": '',
+            "En ruta": '',
+            "Entregado": '',
+            "Terminado": '',
+          }
+          atributos.forEach((attr) => {
+            if(log?.status == attr){
+              // @ts-ignore
+              obj[attr] = `${log?.statusDate ?? ''} ${log?.statusTime ?? ''}`
             }
-            rows.push(obj);
+          });
+          rows.push(obj);
         //}
         
     }
-    generateFile(rows, "Log_Servicios", "xls");
+    generateFile(rows, "LogServicios", "xls");
 }
 
 const generateFile = (ar: any, title: string, extension: string) => {

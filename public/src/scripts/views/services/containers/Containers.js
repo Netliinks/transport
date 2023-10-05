@@ -384,10 +384,10 @@ export class Charges {
                     registerEntity(raw, 'Charge').then((res) => {
                         setTimeout(async () => {
                             let parse = JSON.parse(raw);
-                            eventLog('INS', 'SERVICIO-CONTENEDOR', `${parse.name} [${parse.licensePlate}], en servicio: ${serviceId.name}`, serviceId);
+                            eventLog('INS', 'SERVICIO-CONTENEDOR', `${parse.name} [${parse.licensePlate}], en servicio: ${serviceId.name}`, serviceId, `${serviceId.serviceState.name}`);
                             for (let i = 0; i < dataArray.length; i++) {
                                 getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id);
-                                eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} (contenedor) en servicio: ${serviceId.name}`, serviceId);
+                                eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} (contenedor) en servicio: ${serviceId.name}`, serviceId, `${serviceId.serviceState.name}`);
                             }
                             const container = document.getElementById('entity-editor-container');
                             new CloseDialog().x(container);
@@ -658,10 +658,10 @@ export class Charges {
                         let data;
                         //data = await getWeapons()
                         let parse = JSON.parse(raw);
-                        eventLog('UPD', 'SERVICIO-CONTENEDOR', `${parse.name} [${parse.licensePlate}], en servicio: ${serviceId.name}`, serviceId);
+                        eventLog('UPD', 'SERVICIO-CONTENEDOR', `${parse.name} [${parse.licensePlate}], en servicio: ${serviceId.name}`, serviceId, `${serviceId.serviceState.name}`);
                         dataArray.forEach((container) => {
                             getUpdateState(container.state, container.table, container.id);
-                            eventLog('UPD', `${container.title}`, `${container.value} (contenedor) en servicio: ${serviceId.name}`, '');
+                            eventLog('UPD', `${container.title}`, `${container.value} (contenedor) en servicio: ${serviceId.name}`, serviceId, `${serviceId.serviceState.name}`);
                         });
                         dataChangesArray.forEach((container) => {
                             getUpdateState(container.state, container.table, container.id);
@@ -727,7 +727,7 @@ export class Charges {
                         deleteEntity('Charge', entityId)
                             .then(async (res) => {
                             setTimeout(async () => {
-                                eventLog('DLT', 'SERVICIO-CONTENEDOR', `${entityName} [${entityPlate}], en servicio: ${serviceId.name}`, serviceId);
+                                eventLog('DLT', 'SERVICIO-CONTENEDOR', `${entityName} [${entityPlate}], en servicio: ${serviceId.name}`, serviceId, `${serviceId.serviceState.name}`);
                                 let dataArray = [];
                                 if (data.companion?.id != nothingConfig.nothingUser.id || data.companion?.username != 'N/A') {
                                     dataArray.push({

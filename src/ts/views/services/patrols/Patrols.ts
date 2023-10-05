@@ -279,9 +279,9 @@ export class Patrols {
                   registerEntity(raw, 'ServiceDetailV').then((res) => {
                     setTimeout(async () => {
                         //let parse = JSON.parse(raw);
-                        eventLog('INS', 'SERVICIO-PATRULLA', `${dataCrew.value}, en servicio: ${serviceId.name}`, serviceId)
+                        eventLog('INS', 'SERVICIO-PATRULLA', `${dataCrew.value}, en servicio: ${serviceId.name}`, serviceId, `${serviceId.serviceState.name}`)
                         getUpdateState(dataCrew.state, dataCrew.table, dataCrew.id)
-                        eventLog('UPD', `${dataCrew.title}`, `${dataCrew.value} en servicio: ${serviceId.name}`, serviceId)
+                        eventLog('UPD', `${dataCrew.title}`, `${dataCrew.value} en servicio: ${serviceId.name}`, serviceId, `${serviceId.serviceState.name}`)
                         const crew: any = await getEntityData('Crew', dataCrew.id)
                         let dataArray = []
                         if(crew?.vehicular?.id){
@@ -340,7 +340,7 @@ export class Patrols {
 
                         for(let i = 0; i < dataArray.length; i++){
                           getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
-                          eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} en servicio: ${serviceId.name}`, serviceId)
+                          eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} en servicio: ${serviceId.name}`, serviceId, `${serviceId.serviceState.name}`)
                         }
                         const container: InterfaceElement = document.getElementById('entity-editor-container')
 
@@ -408,7 +408,7 @@ export class Patrols {
                       deleteEntity('ServiceDetailV', entityId)
                         .then(async res => {
                           setTimeout(async () => {
-                            eventLog('DLT', 'SERVICIO-PATRULLA', `${entityName}, en servicio: ${serviceId.name}`, serviceId)
+                            eventLog('DLT', 'SERVICIO-PATRULLA', `${entityName}, en servicio: ${serviceId.name}`, serviceId, `${serviceId.serviceState.name}`)
                             getUpdateState(nothingConfig.crewState.id, 'Crew', data.crew.id)
                             eventLog('UPD', `PATRULLA`, `${data.crew.name} disponible`, '')
                             const crew: any = await getEntityData('Crew', data.crew.id)
@@ -797,6 +797,6 @@ const setAssigned = async (): Promise<any> => {
         },
     })
     getUpdateState(`${serviceState.id}`, "Service", serviceId.id)
-    eventLog('UPD', 'SERVICIO', `${serviceId.name} asignada`, serviceId)
+    eventLog('UPD', 'SERVICIO', `${serviceId.name} asignada`, serviceId, `${serviceState.name}`)
   }
 }

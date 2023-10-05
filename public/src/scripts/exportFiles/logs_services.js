@@ -94,6 +94,8 @@
 }*/
 export const exportLogServiceCsv = (ar, start, end) => {
     let rows = [];
+    //const status = await getEntitiesData('ServiceState')
+    const atributos = ["Acción", 'Fecha', 'Hora', 'Usuario', 'Servicio', 'Empresa', 'Descripción', 'Pendiente', 'Asignada', 'Confirmado', 'Recepción', 'En ruta', 'Entregado', 'Terminado'];
     for (let i = 0; i < ar.length; i++) {
         let log = ar[i];
         // @ts-ignore
@@ -106,14 +108,28 @@ export const exportLogServiceCsv = (ar, start, end) => {
             "Servicio": `${log?.service?.name ?? ''}`,
             "Empresa": `${log?.customer?.name ?? ''}`,
             "Descripción": `${log?.description ?? ''}`,
+            "Pendiente": '',
+            "Asignada": '',
+            "Confirmado": '',
+            "Recepción": '',
+            "En ruta": '',
+            "Entregado": '',
+            "Terminado": '',
         };
+        atributos.forEach((attr) => {
+            if (log?.status == attr) {
+                // @ts-ignore
+                obj[attr] = `${log?.statusDate ?? ''} ${log?.statusTime ?? ''}`;
+            }
+        });
         rows.push(obj);
         //}
     }
-    generateFile(rows, "Log_Servicios", "csv");
+    generateFile(rows, "LogServicios", "csv");
 };
 export const exportLogServiceXls = (ar, start, end) => {
     let rows = [];
+    const atributos = ["Acción", 'Fecha', 'Hora', 'Usuario', 'Servicio', 'Empresa', 'Descripción', 'Pendiente', 'Asignada', 'Confirmado', 'Recepción', 'En ruta', 'Entregado', 'Terminado'];
     for (let i = 0; i < ar.length; i++) {
         let log = ar[i];
         // @ts-ignore
@@ -126,11 +142,24 @@ export const exportLogServiceXls = (ar, start, end) => {
             "Servicio": `${log?.service?.name ?? ''}`,
             "Empresa": `${log?.customer?.name ?? ''}`,
             "Descripción": `${log?.description ?? ''}`,
+            "Pendiente": '',
+            "Asignada": '',
+            "Confirmado": '',
+            "Recepción": '',
+            "En ruta": '',
+            "Entregado": '',
+            "Terminado": '',
         };
+        atributos.forEach((attr) => {
+            if (log?.status == attr) {
+                // @ts-ignore
+                obj[attr] = `${log?.statusDate ?? ''} ${log?.statusTime ?? ''}`;
+            }
+        });
         rows.push(obj);
         //}
     }
-    generateFile(rows, "Log_Servicios", "xls");
+    generateFile(rows, "LogServicios", "xls");
 };
 const generateFile = (ar, title, extension) => {
     //comprobamos compatibilidad
