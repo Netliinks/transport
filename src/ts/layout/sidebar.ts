@@ -67,12 +67,12 @@ export class Sidebar {
                     <i class="fa-regular fa-user-tie"></i> <div class="label">Admins</div>
                   </span>
                 </div>
-
+                <!--
                 <div class="sidebar_subitem">
                   <span class="sidebar_subitem_label" id="render-operators">
                     <i class="fa-regular fa-user-headset"></i> <div class="label">Operadores</div>
                   </span>
-                </div>
+                </div> -->
 
               </div>
             </div>

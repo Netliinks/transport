@@ -93,46 +93,68 @@
 
 }*/
 
-export const exportClientCsv = async (ar: any, start: any, end: any) => {
+export const exportPatrolCsv = (ar: any, start: any, end: any) => {
     let rows = [];
     for(let i=0; i < ar.length; i++){
-        let customer = ar[i]
-        // @ts-ignore
-        //if(visit.creationDate >= start && visit.creationDate <= end){
-          let obj = {
-            "Nombre": `${customer?.name ?? ''}`,
-            "Estado": `${customer?.state?.name ?? ''}`,
-            "RUC": `${customer?.ruc ?? ''}`,
-            "Fecha Creación": `${customer?.creationDate ?? ''}`,
-            "Hora Creación": `${customer?.creationTime ?? ''}`,
-            "Creado por": `${customer?.createdBy ?? ''}`,
-          }
-          rows.push(obj);
-        //}
-        
-    }
-    generateFile(rows, "Clientes", "csv");
-}
-
-export const exportClientXls = async (ar: any, start: any, end: any) => {
-    let rows = [];
-    for(let i=0; i < ar.length; i++){
-        let customer = ar[i]
+        let crew = ar[i]
         // @ts-ignore
         //if(visit.creationDate >= start && visit.creationDate <= end){
             let obj = {
-              "Nombre": `${customer?.name ?? ''}`,
-              "Estado": `${customer?.state?.name ?? ''}`,
-              "RUC": `${customer?.ruc ?? ''}`,
-              "Fecha Creación": `${customer?.creationDate ?? ''}`,
-              "Hora Creación": `${customer?.creationTime ?? ''}`,
-              "Creado por": `${customer?.createdBy ?? ''}`,
+                "Nombre": `${crew?.name ?? ''}`,
+                "Estado": `${crew?.crewState?.name ?? ''}`,
+                "Vehículo": `${crew?.vehicular?.type ?? ''} [${crew?.vehicular?.licensePlate ?? ''}]`,
+                "Categoría": `${crew?.category ?? ''}`,
+                "Supervisor": `${crew?.crewOne?.username ?? ''}`,
+                "Arma 1": `${crew?.weaponOne?.name ?? ''} [${crew?.weaponOne?.licensePlate ?? ''}]`,
+                "Segundero": `${crew?.crewTwo?.username ?? ''}`,
+                "Arma 2": `${crew?.weaponTwo?.name ?? ''} [${crew?.weaponTwo?.licensePlate ?? ''}]`,
+                "Custodio 1": `${crew?.crewThree?.username ?? ''}`,
+                "Arma 3": `${crew?.weaponThree?.name ?? ''} [${crew?.weaponThree?.licensePlate ?? ''}]`,
+                "Custodio 2": `${crew?.crewFour?.username ?? ''}`,
+                "Arma 4": `${crew?.weaponFour?.name ?? ''} [${crew?.weaponFour?.licensePlate ?? ''}]`,
+                "Custodio 3": `${crew?.crewFive?.username ?? ''}`,
+                "Arma 5": `${crew?.weaponFive?.name ?? ''} [${crew?.weaponFive?.licensePlate ?? ''}]`,
+                "Fecha": `${crew?.creationDate ?? ''}`,
+                "Hora": `${crew?.creationTime ?? ''}`,
+                "Creado por": `${crew?.createdBy ?? ''}`,
+              }
+              rows.push(obj);
+        //}
+        
+    }
+    generateFile(rows, "Patrullas", "csv");
+}
+
+export const exportPatrolXls = (ar: any, start: any, end: any) => {
+    let rows = [];
+    for(let i=0; i < ar.length; i++){
+        let crew = ar[i]
+        // @ts-ignore
+        //if(visit.creationDate >= start && visit.creationDate <= end){
+            let obj = {
+              "Nombre": `${crew?.name ?? ''}`,
+                "Estado": `${crew?.crewState?.name ?? ''}`,
+                "Vehículo": `${crew?.vehicular?.type ?? ''} [${crew?.vehicular?.licensePlate ?? ''}]`,
+                "Categoría": `${crew?.category ?? ''}`,
+                "Supervisor": `${crew?.crewOne?.username ?? ''}`,
+                "Arma 1": `${crew?.weaponOne?.name ?? ''} [${crew?.weaponOne?.licensePlate ?? ''}]`,
+                "Segundero": `${crew?.crewTwo?.username ?? ''}`,
+                "Arma 2": `${crew?.weaponTwo?.name ?? ''} [${crew?.weaponTwo?.licensePlate ?? ''}]`,
+                "Custodio 1": `${crew?.crewThree?.username ?? ''}`,
+                "Arma 3": `${crew?.weaponThree?.name ?? ''} [${crew?.weaponThree?.licensePlate ?? ''}]`,
+                "Custodio 2": `${crew?.crewFour?.username ?? ''}`,
+                "Arma 4": `${crew?.weaponFour?.name ?? ''} [${crew?.weaponFour?.licensePlate ?? ''}]`,
+                "Custodio 3": `${crew?.crewFive?.username ?? ''}`,
+                "Arma 5": `${crew?.weaponFive?.name ?? ''} [${crew?.weaponFive?.licensePlate ?? ''}]`,
+                "Fecha": `${crew?.creationDate ?? ''}`,
+                "Hora": `${crew?.creationTime ?? ''}`,
+                "Usuario": `${crew?.createdBy ?? ''}`,
             }
             rows.push(obj);
         //}
         
     }
-    generateFile(rows, "Clientes", "xls");
+    generateFile(rows, "Patrullas", "xls");
 }
 
 const generateFile = (ar: any, title: string, extension: string) => {

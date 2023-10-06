@@ -87,43 +87,45 @@
     var title = "log_Vehicular_" + d.getDate() + "_" + (d.getMonth() + 1) + "_" + d.getFullYear() + `.pdf`;
     doc.save(title);
 };*/
-export const exportVehicularCsv = (ar: any, start: any, end: any) => {
+export const exportWeaponCsv = (ar: any, start: any, end: any) => {
     let rows = [];
     for (let i = 0; i < ar.length; i++) {
-        let vehicular = ar[i];
+        let weapon = ar[i];
         // @ts-ignore
         //if (vehicular.ingressDate >= start && vehicular.ingressDate <= end) {
             let obj = {
-                "Placa": `${vehicular?.licensePlate.split("\n").join("(salto)") ?? ''}`,
-                "Tipo": `${vehicular?.type ?? ''}`,
-                "Estado": `${vehicular?.vehicularState?.name ?? ''}`,
-                "Fecha Creación": `${vehicular?.creationDate ?? ''}`,
-                "Hora Creación": `${vehicular?.creationTime ?? ''}`,
-                "Creado por": `${vehicular?.createdBy ?? ''}`,
+                "Nombre": `${weapon?.name.split("\n").join("(salto)") ?? ''}`,
+                "Placa": `${weapon?.licensePlate.split("\n").join("(salto)") ?? ''}`,
+                "Serie": `${weapon?.nroSerie.split("\n").join("(salto)") ?? ''}`,
+                "Estado": `${weapon?.weaponState?.name ?? ''}`,
+                "Fecha Creación": `${weapon?.creationDate ?? ''}`,
+                "Hora Creación": `${weapon?.creationTime ?? ''}`,
+                "Creado por": `${weapon?.createdBy ?? ''}`,
               }
               rows.push(obj);
         //}
     }
-    generateFile(rows, "Vehicular", "csv");
+    generateFile(rows, "Armas", "csv");
 };
-export const exportVehicularXls = (ar: any, start: any, end: any) => {
+export const exportWeaponXls = (ar: any, start: any, end: any) => {
     let rows = [];
     for (let i = 0; i < ar.length; i++) {
-        let vehicular = ar[i];
+        let weapon = ar[i];
         // @ts-ignore
         //if (vehicular.ingressDate >= start && vehicular.ingressDate <= end) {
             let obj = {
-                "Placa": `${vehicular?.licensePlate.split("\n").join("(salto)") ?? ''}`,
-                "Tipo": `${vehicular?.type ?? ''}`,
-                "Estado": `${vehicular?.vehicularState?.name ?? ''}`,
-                "Fecha Creación": `${vehicular?.creationDate ?? ''}`,
-                "Hora Creación": `${vehicular?.creationTime ?? ''}`,
-                "Creado por": `${vehicular?.createdBy ?? ''}`,
+                "Nombre": `${weapon?.name.split("\n").join("(salto)") ?? ''}`,
+                "Placa": `${weapon?.licensePlate.split("\n").join("(salto)") ?? ''}`,
+                "Serie": `${weapon?.nroSerie.split("\n").join("(salto)") ?? ''}`,
+                "Estado": `${weapon?.weaponState?.name ?? ''}`,
+                "Fecha Creación": `${weapon?.creationDate ?? ''}`,
+                "Hora Creación": `${weapon?.creationTime ?? ''}`,
+                "Creado por": `${weapon?.createdBy ?? ''}`,
             };
             rows.push(obj);
         //}
     }
-    generateFile(rows, "Vehicular", "xls");
+    generateFile(rows, "Armas", "xls");
 };
 const generateFile = (ar: any, title: any, extension: any) => {
     //comprobamos compatibilidad

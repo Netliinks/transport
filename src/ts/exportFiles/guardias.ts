@@ -1,4 +1,4 @@
-export const exportSuperPdf = (ar: any) => {
+/*export const exportClientPdf = (ar: any) => {
     let fecha = new Date(); //Fecha actual
     let mes: any = fecha.getMonth()+1; //obteniendo mes
     let dia: any = fecha.getDate(); //obteniendo dia
@@ -16,7 +16,7 @@ export const exportSuperPdf = (ar: any) => {
     doc.setFont(undefined, 'bold')
     doc.setTextColor(0,0,128)
     doc.setFontSize(25)
-    doc.text(10, 40, `Superusuarios`)
+    doc.text(10, 40, `Clientes`)
     doc.setFontSize(10)
     doc.setTextColor(0,0,0);
     doc.setFont(undefined, 'italic')
@@ -32,7 +32,6 @@ export const exportSuperPdf = (ar: any) => {
     doc.text(160, 50, "Email")
     doc.text(220, 50, "Teléfono")
     doc.text(240, 50, "Creado")
-    doc.text(280, 50, "Tipo")
     doc.line(5, 55, 290, 55);
     
     let row = 60
@@ -52,7 +51,6 @@ export const exportSuperPdf = (ar: any) => {
         doc.text(160, row, `${user?.email ?? ''}`)
         doc.text(220, row, `${user?.phone ?? ''}`)
         doc.text(240, row, `${user.createdDate}`)
-        doc.text(280, row, `${verifyUserType(user.userType)}`)
         row += 5
         let limitLineas = 33
         if(pagina == 1) limitLineas = 26
@@ -74,7 +72,6 @@ export const exportSuperPdf = (ar: any) => {
             doc.text(160, 20, "Email")
             doc.text(220, 20, "Teléfono")
             doc.text(240, 20, "Creado")  
-            doc.text(280, 20, "Tipo")
             doc.line(5, 25, 290, 25)
             doc.setTextColor(0,0,128)
             doc.text(10, 200, `Página ${pagina}`)
@@ -84,12 +81,12 @@ export const exportSuperPdf = (ar: any) => {
     }
     // Save the PDF
     var d = new Date()
-    var title = "log_Superusuarios_"+ d.getDate() + "_" + (d.getMonth()+1) + "_" + d.getFullYear() +`.pdf`;
+    var title = "log_Clientes_"+ d.getDate() + "_" + (d.getMonth()+1) + "_" + d.getFullYear() +`.pdf`;
     doc.save(title);
 
-}
+}*/
 
-export const exportSuperCsv = (ar: any) => {
+export const exportGuardCsv = (ar: any) => {
     let rows = [];
     for(let i=0; i < ar.length; i++){
         let user = ar[i]
@@ -99,19 +96,21 @@ export const exportSuperCsv = (ar: any) => {
             "Apellido 1": `${user?.lastName.split("\n").join("(salto)") ?? ''}`,
             "Apellido 2": `${user?.secondLastName.split("\n").join("(salto)") ?? ''}`,
             "Usuario": `${user.username}`,
+            "Estado": `${user.userState.name}`,
             "DNI": `${user?.dni ?? ''}`,
             "Email": `${user?.email ?? ''}`,
             "Teléfono": `${user?.phone ?? ''}`,
-            "Creado": `${user.createdDate}`,
-            "Tipo": `${verifyUserType(user.userType)}`
+            "Fecha Creación": `${user?.creationDate ?? ''}`,
+            "Hora Creación": `${user?.creationTime ?? ''}`,
+            "Creado por": `${user.createdBy}`
         }
         rows.push(obj)
     
     }
-    generateFile(rows, "Superusuarios", "csv");
+    generateFile(rows, "Guardias", "csv");
 }
 
-export const exportSuperXls = (ar: any) => {
+export const exportGuardXls = (ar: any) => {
     let rows = [];
     for(let i=0; i < ar.length; i++){
         let user = ar[i]
@@ -121,16 +120,18 @@ export const exportSuperXls = (ar: any) => {
             "Apellido 1": `${user?.lastName.split("\n").join("(salto)") ?? ''}`,
             "Apellido 2": `${user?.secondLastName.split("\n").join("(salto)") ?? ''}`,
             "Usuario": `${user.username}`,
+            "Estado": `${user.userState.name}`,
             "DNI": `${user?.dni ?? ''}`,
             "Email": `${user?.email ?? ''}`,
             "Teléfono": `${user?.phone ?? ''}`,
-            "Creado": `${user.createdDate}`,
-            "Tipo": `${verifyUserType(user.userType)}`
+            "Fecha Creación": `${user?.creationDate ?? ''}`,
+            "Hora Creación": `${user?.creationTime ?? ''}`,
+            "Creado por": `${user.createdBy}`
         }
         rows.push(obj)
         
     }
-    generateFile(rows, "Superusuarios", "xls");
+    generateFile(rows, "Guardias", "xls");
 }
 
 const generateFile = (ar: any, title: string, extension: string) => {
@@ -194,13 +195,13 @@ const generateFile = (ar: any, title: string, extension: string) => {
 
 const verifyUserType = (userType: string) =>{
     if(userType == 'CUSTOMER'){
-      return 'Cli.'
+      return 'Cliente'
     }else if(userType == 'GUARD'){
-      return 'Guard.'
+      return 'Guardia'
     }else if(userType == 'EMPLOYEE'){
-      return 'Empl.'
+      return 'Empleado'
     }else if(userType == 'CONTRACTOR'){
-      return 'Contr.'
+      return 'Contratista'
     }else{
       return userType
     }

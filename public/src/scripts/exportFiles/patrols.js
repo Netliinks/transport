@@ -92,45 +92,65 @@
     doc.save(title);
 
 }*/
-export const exportLogServiceCsv = (ar, start, end) => {
+export const exportPatrolCsv = (ar, start, end) => {
     let rows = [];
     for (let i = 0; i < ar.length; i++) {
-        let log = ar[i];
+        let crew = ar[i];
         // @ts-ignore
         //if(visit.creationDate >= start && visit.creationDate <= end){
         let obj = {
-            "Acción": `${log?.name ?? ''}`,
-            "Fecha": `${log?.creationDate ?? ''}`,
-            "Hora": `${log?.creationTime ?? ''}`,
-            "Usuario": `${log?.user?.username ?? ''}`,
-            "Servicio": `${log?.service?.name ?? ''}`,
-            "Empresa": `${log?.customer?.name ?? ''}`,
-            "Descripción": `${log?.description ?? ''}`,
+            "Nombre": `${crew?.name ?? ''}`,
+            "Estado": `${crew?.crewState?.name ?? ''}`,
+            "Vehículo": `${crew?.vehicular?.type ?? ''} [${crew?.vehicular?.licensePlate ?? ''}]`,
+            "Categoría": `${crew?.category ?? ''}`,
+            "Supervisor": `${crew?.crewOne?.username ?? ''}`,
+            "Arma 1": `${crew?.weaponOne?.name ?? ''} [${crew?.weaponOne?.licensePlate ?? ''}]`,
+            "Segundero": `${crew?.crewTwo?.username ?? ''}`,
+            "Arma 2": `${crew?.weaponTwo?.name ?? ''} [${crew?.weaponTwo?.licensePlate ?? ''}]`,
+            "Custodio 1": `${crew?.crewThree?.username ?? ''}`,
+            "Arma 3": `${crew?.weaponThree?.name ?? ''} [${crew?.weaponThree?.licensePlate ?? ''}]`,
+            "Custodio 2": `${crew?.crewFour?.username ?? ''}`,
+            "Arma 4": `${crew?.weaponFour?.name ?? ''} [${crew?.weaponFour?.licensePlate ?? ''}]`,
+            "Custodio 3": `${crew?.crewFive?.username ?? ''}`,
+            "Arma 5": `${crew?.weaponFive?.name ?? ''} [${crew?.weaponFive?.licensePlate ?? ''}]`,
+            "Fecha": `${crew?.creationDate ?? ''}`,
+            "Hora": `${crew?.creationTime ?? ''}`,
+            "Creado por": `${crew?.createdBy ?? ''}`,
         };
         rows.push(obj);
         //}
     }
-    generateFile(rows, "Log_Servicios", "csv");
+    generateFile(rows, "Patrullas", "csv");
 };
-export const exportLogServiceXls = (ar, start, end) => {
+export const exportPatrolXls = (ar, start, end) => {
     let rows = [];
     for (let i = 0; i < ar.length; i++) {
-        let log = ar[i];
+        let crew = ar[i];
         // @ts-ignore
         //if(visit.creationDate >= start && visit.creationDate <= end){
         let obj = {
-            "Acción": `${log?.name ?? ''}`,
-            "Fecha": `${log?.creationDate ?? ''}`,
-            "Hora": `${log?.creationTime ?? ''}`,
-            "Usuario": `${log?.user?.username ?? ''}`,
-            "Servicio": `${log?.service?.name ?? ''}`,
-            "Empresa": `${log?.customer?.name ?? ''}`,
-            "Descripción": `${log?.description ?? ''}`,
+            "Nombre": `${crew?.name ?? ''}`,
+            "Estado": `${crew?.crewState?.name ?? ''}`,
+            "Vehículo": `${crew?.vehicular?.type ?? ''} [${crew?.vehicular?.licensePlate ?? ''}]`,
+            "Categoría": `${crew?.category ?? ''}`,
+            "Supervisor": `${crew?.crewOne?.username ?? ''}`,
+            "Arma 1": `${crew?.weaponOne?.name ?? ''} [${crew?.weaponOne?.licensePlate ?? ''}]`,
+            "Segundero": `${crew?.crewTwo?.username ?? ''}`,
+            "Arma 2": `${crew?.weaponTwo?.name ?? ''} [${crew?.weaponTwo?.licensePlate ?? ''}]`,
+            "Custodio 1": `${crew?.crewThree?.username ?? ''}`,
+            "Arma 3": `${crew?.weaponThree?.name ?? ''} [${crew?.weaponThree?.licensePlate ?? ''}]`,
+            "Custodio 2": `${crew?.crewFour?.username ?? ''}`,
+            "Arma 4": `${crew?.weaponFour?.name ?? ''} [${crew?.weaponFour?.licensePlate ?? ''}]`,
+            "Custodio 3": `${crew?.crewFive?.username ?? ''}`,
+            "Arma 5": `${crew?.weaponFive?.name ?? ''} [${crew?.weaponFive?.licensePlate ?? ''}]`,
+            "Fecha": `${crew?.creationDate ?? ''}`,
+            "Hora": `${crew?.creationTime ?? ''}`,
+            "Usuario": `${crew?.createdBy ?? ''}`,
         };
         rows.push(obj);
         //}
     }
-    generateFile(rows, "Log_Servicios", "xls");
+    generateFile(rows, "Patrullas", "xls");
 };
 const generateFile = (ar, title, extension) => {
     //comprobamos compatibilidad

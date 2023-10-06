@@ -1,91 +1,91 @@
-export const exportSuperPdf = (ar) => {
+/*export const exportClientPdf = (ar: any) => {
     let fecha = new Date(); //Fecha actual
-    let mes = fecha.getMonth() + 1; //obteniendo mes
-    let dia = fecha.getDate(); //obteniendo dia
-    let anio = fecha.getFullYear(); //obteniendo año
-    if (dia < 10)
-        dia = '0' + dia; //agrega cero si el menor de 10
-    if (mes < 10)
-        mes = '0' + mes; //agrega cero si el menor de 10
+    let mes: any = fecha.getMonth()+1; //obteniendo mes
+    let dia: any = fecha.getDate(); //obteniendo dia
+    let anio: any = fecha.getFullYear(); //obteniendo año
+    if(dia<10)
+        dia='0'+dia; //agrega cero si el menor de 10
+    if(mes<10)
+        mes='0'+mes //agrega cero si el menor de 10
     // @ts-ignore
     window.jsPDF = window.jspdf.jsPDF;
     // @ts-ignore
-    var doc = new jsPDF('l');
+    var doc = new jsPDF('l')
     doc.addImage("./public/src/assets/pictures/report.png", "PNG", 10, 10, 50, 15);
     doc.setDrawColor(0, 0, 128);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(0, 0, 128);
-    doc.setFontSize(25);
-    doc.text(10, 40, `Superusuarios`);
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    doc.setFont(undefined, 'italic');
-    doc.text(240, 40, `Fecha: Generado el ${anio}-${mes}-${dia}`);
+    doc.setFont(undefined, 'bold')
+    doc.setTextColor(0,0,128)
+    doc.setFontSize(25)
+    doc.text(10, 40, `Clientes`)
+    doc.setFontSize(10)
+    doc.setTextColor(0,0,0);
+    doc.setFont(undefined, 'italic')
+    doc.text(240, 40, `Fecha: Generado el ${anio}-${mes}-${dia}`)
     //construimos cabecera del csv
-    doc.setFont(undefined, 'bold');
+    doc.setFont(undefined, 'bold')
     doc.line(5, 45, 290, 45);
-    doc.setFillColor(210, 210, 210);
-    doc.rect(5, 45, 285, 10, 'F');
-    doc.text(10, 50, "Nombre");
-    doc.text(80, 50, "DNI");
-    doc.text(100, 50, "Usuario");
-    doc.text(160, 50, "Email");
-    doc.text(220, 50, "Teléfono");
-    doc.text(240, 50, "Creado");
-    doc.text(280, 50, "Tipo");
+    doc.setFillColor(210,210,210)
+    doc.rect(5, 45, 285, 10, 'F')
+    doc.text(10, 50, "Nombre")
+    doc.text(80, 50, "DNI")
+    doc.text(100, 50, "Usuario")
+    doc.text(160, 50, "Email")
+    doc.text(220, 50, "Teléfono")
+    doc.text(240, 50, "Creado")
     doc.line(5, 55, 290, 55);
-    let row = 60;
-    let lineas = 0;
-    let pagina = 1;
-    doc.setTextColor(0, 0, 128);
-    doc.text(10, 200, `Página ${pagina}`);
+    
+    let row = 60
+    let lineas = 0
+    let pagina = 1
+    doc.setTextColor(0,0,128)
+    doc.text(10, 200, `Página ${pagina}`)
     //resto del contenido
     for (let i = 0; i < ar.length; i++) {
-        let user = ar[i];
-        doc.setFontSize(9);
-        doc.setFont(undefined, 'normal');
-        doc.setTextColor(0, 0, 0);
-        doc.text(10, row, `${user?.firstName ?? ''} ${user?.lastName ?? ''} ${user?.secondLastName ?? ''}`);
-        doc.text(80, row, `${user?.dni ?? ''}`);
-        doc.text(100, row, `${user.username}`);
-        doc.text(160, row, `${user?.email ?? ''}`);
-        doc.text(220, row, `${user?.phone ?? ''}`);
-        doc.text(240, row, `${user.createdDate}`);
-        doc.text(280, row, `${verifyUserType(user.userType)}`);
-        row += 5;
-        let limitLineas = 33;
-        if (pagina == 1)
-            limitLineas = 26;
-        if (lineas >= limitLineas) {
-            doc.addPage();
-            lineas = 0;
-            row = 30;
-            pagina += 1;
-            doc.setFont(undefined, 'bold');
-            doc.setFontSize(10);
+        let user = ar[i]
+        doc.setFontSize(9)
+        doc.setFont(undefined, 'normal')
+        doc.setTextColor(0,0,0)
+        doc.text(10, row, `${user?.firstName ?? ''} ${user?.lastName ?? ''} ${user?.secondLastName ?? ''}`)
+        doc.text(80, row, `${user?.dni ?? ''}`)
+        doc.text(100, row, `${user.username}`)
+        doc.text(160, row, `${user?.email ?? ''}`)
+        doc.text(220, row, `${user?.phone ?? ''}`)
+        doc.text(240, row, `${user.createdDate}`)
+        row += 5
+        let limitLineas = 33
+        if(pagina == 1) limitLineas = 26
+        if(lineas >= limitLineas){
+            
+            doc.addPage()
+            lineas=0
+            row = 30
+            pagina+=1
+            doc.setFont(undefined, 'bold')
+            doc.setFontSize(10)
             //construimos cabecera del csv
-            doc.line(5, 15, 290, 15);
-            doc.setFillColor(210, 210, 210);
+            doc.line(5, 15, 290, 15)
+            doc.setFillColor(210,210,210);
             doc.rect(5, 15, 285, 10, 'F');
-            doc.text(10, 20, "Nombre");
-            doc.text(80, 20, "DNI");
-            doc.text(100, 20, "Usuario");
-            doc.text(160, 20, "Email");
-            doc.text(220, 20, "Teléfono");
-            doc.text(240, 20, "Creado");
-            doc.text(280, 20, "Tipo");
-            doc.line(5, 25, 290, 25);
-            doc.setTextColor(0, 0, 128);
-            doc.text(10, 200, `Página ${pagina}`);
+            doc.text(10, 20, "Nombre")
+            doc.text(80, 20, "DNI")
+            doc.text(100, 20, "Usuario")
+            doc.text(160, 20, "Email")
+            doc.text(220, 20, "Teléfono")
+            doc.text(240, 20, "Creado")
+            doc.line(5, 25, 290, 25)
+            doc.setTextColor(0,0,128)
+            doc.text(10, 200, `Página ${pagina}`)
         }
-        lineas++;
+        lineas++
+
     }
     // Save the PDF
-    var d = new Date();
-    var title = "log_Superusuarios_" + d.getDate() + "_" + (d.getMonth() + 1) + "_" + d.getFullYear() + `.pdf`;
+    var d = new Date()
+    var title = "log_Clientes_"+ d.getDate() + "_" + (d.getMonth()+1) + "_" + d.getFullYear() +`.pdf`;
     doc.save(title);
-};
-export const exportSuperCsv = (ar) => {
+
+}*/
+export const exportAdminCsv = (ar) => {
     let rows = [];
     for (let i = 0; i < ar.length; i++) {
         let user = ar[i];
@@ -95,17 +95,19 @@ export const exportSuperCsv = (ar) => {
             "Apellido 1": `${user?.lastName.split("\n").join("(salto)") ?? ''}`,
             "Apellido 2": `${user?.secondLastName.split("\n").join("(salto)") ?? ''}`,
             "Usuario": `${user.username}`,
+            "Estado": `${user.state.name}`,
             "DNI": `${user?.dni ?? ''}`,
             "Email": `${user?.email ?? ''}`,
             "Teléfono": `${user?.phone ?? ''}`,
-            "Creado": `${user.createdDate}`,
-            "Tipo": `${verifyUserType(user.userType)}`
+            "Fecha Creación": `${user?.creationDate ?? ''}`,
+            "Hora Creación": `${user?.creationTime ?? ''}`,
+            "Creado por": `${user.createdBy}`
         };
         rows.push(obj);
     }
-    generateFile(rows, "Superusuarios", "csv");
+    generateFile(rows, "Admins", "csv");
 };
-export const exportSuperXls = (ar) => {
+export const exportAdminXls = (ar) => {
     let rows = [];
     for (let i = 0; i < ar.length; i++) {
         let user = ar[i];
@@ -115,15 +117,17 @@ export const exportSuperXls = (ar) => {
             "Apellido 1": `${user?.lastName.split("\n").join("(salto)") ?? ''}`,
             "Apellido 2": `${user?.secondLastName.split("\n").join("(salto)") ?? ''}`,
             "Usuario": `${user.username}`,
+            "Estado": `${user.state.name}`,
             "DNI": `${user?.dni ?? ''}`,
             "Email": `${user?.email ?? ''}`,
             "Teléfono": `${user?.phone ?? ''}`,
-            "Creado": `${user.createdDate}`,
-            "Tipo": `${verifyUserType(user.userType)}`
+            "Fecha Creación": `${user?.creationDate ?? ''}`,
+            "Hora Creación": `${user?.creationTime ?? ''}`,
+            "Creado por": `${user.createdBy}`
         };
         rows.push(obj);
     }
-    generateFile(rows, "Superusuarios", "xls");
+    generateFile(rows, "Admins", "xls");
 };
 const generateFile = (ar, title, extension) => {
     //comprobamos compatibilidad
@@ -181,16 +185,16 @@ const generateFile = (ar, title, extension) => {
 };
 const verifyUserType = (userType) => {
     if (userType == 'CUSTOMER') {
-        return 'Cli.';
+        return 'Cliente';
     }
     else if (userType == 'GUARD') {
-        return 'Guard.';
+        return 'Guardia';
     }
     else if (userType == 'EMPLOYEE') {
-        return 'Empl.';
+        return 'Empleado';
     }
     else if (userType == 'CONTRACTOR') {
-        return 'Contr.';
+        return 'Contratista';
     }
     else {
         return userType;

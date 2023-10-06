@@ -9,7 +9,7 @@ import { Data, InterfaceElement } from "../../types.js"
 import { Config } from "../../Configs.js"
 import { UIConvertToSU, tableLayout } from "./Layout.js"
 import { tableLayoutTemplate } from "./Templates.js"
-import { exportClientCsv, exportClientPdf, exportClientXls } from "../../exportFiles/clients.js"
+import { exportWeaponCsv, exportWeaponXls } from "../../exportFiles/weapons.js"
 
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
@@ -714,10 +714,10 @@ export class Weapons {
                                     <label for="exportXls">
                                         <input type="radio" id="exportXls" name="exportOption" value="xls" checked /> XLS
                                     </label>
-
+                                    <!--
                                     <label for="exportPdf">
                                         <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
-                                    </label>
+                                    </label> -->
                                 </div>
                             </div>
 
@@ -744,16 +744,6 @@ export class Weapons {
                             "property": "business.id",
                             "operator": "=",
                             "value": `${businessId}`
-                          },
-                          {
-                            "property": "userType",
-                            "operator": "=",
-                            "value": `GUARD`
-                          },
-                          {
-                            "property": "isSuper",
-                            "operator": "=",
-                            "value": `${false}`
                           }
                         ],
                         
@@ -762,7 +752,48 @@ export class Weapons {
                     fetchPlan: 'full',
                     
                 })
-                const users: any = await getFilterEntityData("Weapon", rawExport) //await getWeapons()
+                if(infoPage.search != ""){
+                    rawExport = JSON.stringify({
+                        "filter": {
+                            "conditions": [
+                              {
+                                "group": "OR",
+                                "conditions": [
+                                  {
+                                    "property": "licensePlate",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  },
+                                  {
+                                    "property": "name",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  },
+                                  {
+                                    "property": "nroSerie",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  },
+                                  {
+                                    "property": "weaponState.name",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  }
+                                ]
+                              },
+                              {
+                                "property": "business.id",
+                                "operator": "=",
+                                "value": `${businessId}`
+                              }
+                            ]
+                          },
+                        sort: "-createdDate",
+                        fetchPlan: 'full',
+                        
+                    })
+                }
+                const weapons: any = await getFilterEntityData("Weapon", rawExport) //await getWeapons()
                 for (let i = 0; i < _values.exportOption.length; i++) {
                     let ele: any = _values.exportOption[i]
                     if (ele.type = "radio") {
@@ -770,10 +801,10 @@ export class Weapons {
                         if (ele.checked){
                             if(ele.value == "xls"){
                                 // @ts-ignore
-                                exportClientXls(users)
+                                exportWeaponXls(weapons)
                             }else if(ele.value == "csv"){
                                 // @ts-ignore
-                                exportClientCsv(users)
+                                exportWeaponCsv(weapons)
                             }else if(ele.value == "pdf"){
                                 // @ts-ignore
                                 exportClientPdf(users)

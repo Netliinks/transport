@@ -9,7 +9,7 @@ import { Data, InterfaceElement } from "../../types.js"
 import { Config } from "../../Configs.js"
 import { UIConvertToSU, tableLayout } from "./Layout.js"
 import { tableLayoutTemplate } from "./Templates.js"
-import { exportClientCsv, exportClientPdf, exportClientXls } from "../../exportFiles/clients.js"
+import { exportClientCsv, exportClientXls } from "../../exportFiles/clients.js"
 
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
@@ -624,10 +624,10 @@ export class Customers {
                                     <label for="exportXls">
                                         <input type="radio" id="exportXls" name="exportOption" value="xls" checked /> XLS
                                     </label>
-
+                                    <!--
                                     <label for="exportPdf">
                                         <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
-                                    </label>
+                                    </label> -->
                                 </div>
                             </div>
 
@@ -654,16 +654,6 @@ export class Customers {
                             "property": "business.id",
                             "operator": "=",
                             "value": `${businessId}`
-                          },
-                          {
-                            "property": "userType",
-                            "operator": "=",
-                            "value": `GUARD`
-                          },
-                          {
-                            "property": "isSuper",
-                            "operator": "=",
-                            "value": `${false}`
                           }
                         ],
                         
@@ -672,7 +662,38 @@ export class Customers {
                     fetchPlan: 'full',
                     
                 })
-                const users: any = await getFilterEntityData("User", rawExport) //await getUsers()
+                if(infoPage.search != ""){
+                    rawExport = JSON.stringify({
+                        "filter": {
+                            "conditions": [
+                              {
+                                "group": "OR",
+                                "conditions": [
+                                  {
+                                    "property": "ruc",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  },
+                                  {
+                                    "property": "name",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  }
+                                ]
+                              },
+                              {
+                                "property": "business.id",
+                                "operator": "=",
+                                "value": `${businessId}`
+                              }
+                            ]
+                          },
+                        sort: "-createdDate",
+                        fetchPlan: 'full',
+                        
+                    })
+                }
+                const customers: any = await getFilterEntityData("Customer", rawExport) //await getUsers()
                 for (let i = 0; i < _values.exportOption.length; i++) {
                     let ele: any = _values.exportOption[i]
                     if (ele.type = "radio") {
@@ -680,10 +701,10 @@ export class Customers {
                         if (ele.checked){
                             if(ele.value == "xls"){
                                 // @ts-ignore
-                                exportClientXls(users)
+                                exportClientXls(customers)
                             }else if(ele.value == "csv"){
                                 // @ts-ignore
-                                exportClientCsv(users)
+                                exportClientCsv(customers)
                             }else if(ele.value == "pdf"){
                                 // @ts-ignore
                                 exportClientPdf(users)

@@ -9,7 +9,7 @@ import { Data, InterfaceElement } from "../../types.js"
 import { Config } from "../../Configs.js"
 import { UIConvertToSU, tableLayout } from "./Layout.js"
 import { tableLayoutTemplate } from "./Templates.js"
-import { exportClientCsv, exportClientPdf, exportClientXls } from "../../exportFiles/clients.js"
+//import { exportClientCsv, exportClientPdf, exportClientXls } from "../../exportFiles/clients.js"
 
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage

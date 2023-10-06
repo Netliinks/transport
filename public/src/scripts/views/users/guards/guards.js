@@ -8,7 +8,8 @@ import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, filterData
 import { Config } from "../../../Configs.js";
 import { tableLayout } from "./Layout.js";
 import { tableLayoutTemplate } from "./Templates.js";
-import { exportClientCsv, exportClientPdf, exportClientXls } from "../../../exportFiles/clients.js";
+import { exportGuardCsv, exportGuardXls } from "../../../exportFiles/guardias.js";
+//import { exportClientCsv, exportClientPdf, exportClientXls } from "../../../exportFiles/clients.js"
 const tableRows = Config.tableRows;
 const currentPage = Config.currentPage;
 const businessId = localStorage.getItem('business_id');
@@ -209,10 +210,10 @@ export class Guards {
                                     <label for="exportXls">
                                         <input type="radio" id="exportXls" name="exportOption" value="xls" checked /> XLS
                                     </label>
-
+                                    <!--
                                     <label for="exportPdf">
                                         <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
-                                    </label>
+                                    </label> -->
                                 </div>
                             </div>
 
@@ -249,12 +250,82 @@ export class Guards {
                                     "property": "isSuper",
                                     "operator": "=",
                                     "value": `${false}`
+                                },
+                                {
+                                    "property": "isSupervisor",
+                                    "operator": "=",
+                                    "value": `${false}`
                                 }
                             ],
                         },
                         sort: "-createdDate",
                         fetchPlan: 'full',
                     });
+                    if (infoPage.search != "") {
+                        rawExport = JSON.stringify({
+                            "filter": {
+                                "conditions": [
+                                    {
+                                        "group": "OR",
+                                        "conditions": [
+                                            {
+                                                "property": "dni",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            },
+                                            {
+                                                "property": "firstName",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            },
+                                            {
+                                                "property": "lastName",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            },
+                                            {
+                                                "property": "secondLastName",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            },
+                                            {
+                                                "property": "username",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            },
+                                            {
+                                                "property": "email",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "property": "business.id",
+                                        "operator": "=",
+                                        "value": `${businessId}`
+                                    },
+                                    {
+                                        "property": "userType",
+                                        "operator": "=",
+                                        "value": `GUARD`
+                                    },
+                                    {
+                                        "property": "isSuper",
+                                        "operator": "=",
+                                        "value": `${false}`
+                                    },
+                                    {
+                                        "property": "isSupervisor",
+                                        "operator": "=",
+                                        "value": `${false}`
+                                    }
+                                ]
+                            },
+                            sort: "-createdDate",
+                            fetchPlan: 'full',
+                        });
+                    }
                     const users = await getFilterEntityData("User", rawExport); //await getUsers()
                     for (let i = 0; i < _values.exportOption.length; i++) {
                         let ele = _values.exportOption[i];
@@ -262,15 +333,15 @@ export class Guards {
                             if (ele.checked) {
                                 if (ele.value == "xls") {
                                     // @ts-ignore
-                                    exportClientXls(users);
+                                    exportGuardXls(users);
                                 }
                                 else if (ele.value == "csv") {
                                     // @ts-ignore
-                                    exportClientCsv(users);
+                                    exportGuardCsv(users);
                                 }
                                 else if (ele.value == "pdf") {
                                     // @ts-ignore
-                                    exportClientPdf(users);
+                                    //exportClientPdf(users)
                                 }
                             }
                         }

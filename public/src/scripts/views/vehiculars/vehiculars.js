@@ -8,7 +8,8 @@ import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, filterData
 import { Config } from "../../Configs.js";
 import { tableLayout } from "./Layout.js";
 import { tableLayoutTemplate } from "./Templates.js";
-import { exportClientCsv, exportClientPdf, exportClientXls } from "../../exportFiles/clients.js";
+import { exportVehicularCsv, exportVehicularXls } from "../../exportFiles/vehiculars.js";
+//import { exportClientCsv, exportClientPdf, exportClientXls } from "../../exportFiles/clients.js"
 const tableRows = Config.tableRows;
 const currentPage = Config.currentPage;
 const businessId = localStorage.getItem('business_id');
@@ -128,10 +129,10 @@ export class Vehiculars {
                                     <label for="exportXls">
                                         <input type="radio" id="exportXls" name="exportOption" value="xls" checked /> XLS
                                     </label>
-
+                                    <!--
                                     <label for="exportPdf">
                                         <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
-                                    </label>
+                                    </label> -->
                                 </div>
                             </div>
 
@@ -158,38 +159,58 @@ export class Vehiculars {
                                     "property": "business.id",
                                     "operator": "=",
                                     "value": `${businessId}`
-                                },
-                                {
-                                    "property": "userType",
-                                    "operator": "=",
-                                    "value": `GUARD`
-                                },
-                                {
-                                    "property": "isSuper",
-                                    "operator": "=",
-                                    "value": `${false}`
                                 }
                             ],
                         },
                         sort: "-createdDate",
                         fetchPlan: 'full',
                     });
-                    const users = await getFilterEntityData("Vehicular", rawExport); //await getVehiculars()
+                    if (infoPage.search != "") {
+                        rawExport = JSON.stringify({
+                            "filter": {
+                                "conditions": [
+                                    {
+                                        "group": "OR",
+                                        "conditions": [
+                                            {
+                                                "property": "licensePlate",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            },
+                                            {
+                                                "property": "vehicularState.name",
+                                                "operator": "contains",
+                                                "value": `${infoPage.search.toLowerCase()}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "property": "business.id",
+                                        "operator": "=",
+                                        "value": `${businessId}`
+                                    }
+                                ]
+                            },
+                            sort: "-createdDate",
+                            fetchPlan: 'full',
+                        });
+                    }
+                    const vehiculars = await getFilterEntityData("Vehicular", rawExport); //await getVehiculars()
                     for (let i = 0; i < _values.exportOption.length; i++) {
                         let ele = _values.exportOption[i];
                         if (ele.type = "radio") {
                             if (ele.checked) {
                                 if (ele.value == "xls") {
                                     // @ts-ignore
-                                    exportClientXls(users);
+                                    exportVehicularXls(vehiculars);
                                 }
                                 else if (ele.value == "csv") {
                                     // @ts-ignore
-                                    exportClientCsv(users);
+                                    exportVehicularCsv(vehiculars);
                                 }
                                 else if (ele.value == "pdf") {
                                     // @ts-ignore
-                                    exportClientPdf(users);
+                                    //exportClientPdf(users)
                                 }
                             }
                         }

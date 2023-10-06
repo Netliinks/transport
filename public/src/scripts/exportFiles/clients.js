@@ -1,122 +1,132 @@
-export const exportClientPdf = (ar) => {
-    let fecha = new Date(); //Fecha actual
-    let mes = fecha.getMonth() + 1; //obteniendo mes
-    let dia = fecha.getDate(); //obteniendo dia
-    let anio = fecha.getFullYear(); //obteniendo año
-    if (dia < 10)
-        dia = '0' + dia; //agrega cero si el menor de 10
-    if (mes < 10)
-        mes = '0' + mes; //agrega cero si el menor de 10
+/*export const exportLogServicePdf = (ar: any, start: any, end: any) => {
     // @ts-ignore
     window.jsPDF = window.jspdf.jsPDF;
     // @ts-ignore
-    var doc = new jsPDF('l');
+    var doc = new jsPDF('l')
     doc.addImage("./public/src/assets/pictures/report.png", "PNG", 10, 10, 50, 15);
     doc.setDrawColor(0, 0, 128);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(0, 0, 128);
-    doc.setFontSize(25);
-    doc.text(10, 40, `Clientes`);
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    doc.setFont(undefined, 'italic');
-    doc.text(240, 40, `Fecha: Generado el ${anio}-${mes}-${dia}`);
+    doc.setFont(undefined, 'bold')
+    doc.setTextColor(0,0,128)
+    doc.setFontSize(25)
+    doc.text(10, 40, `Visitas`)
+    doc.setFontSize(10)
+    doc.setTextColor(0,0,0);
+    doc.setFont(undefined, 'italic')
+    doc.text(220, 40, `Fecha: Desde ${start} Hasta ${end}`)
     //construimos cabecera del csv
-    doc.setFont(undefined, 'bold');
+    doc.setFont(undefined, 'bold')
     doc.line(5, 45, 290, 45);
-    doc.setFillColor(210, 210, 210);
-    doc.rect(5, 45, 285, 10, 'F');
-    doc.text(10, 50, "Nombre");
-    doc.text(80, 50, "DNI");
-    doc.text(100, 50, "Usuario");
-    doc.text(160, 50, "Email");
-    doc.text(220, 50, "Teléfono");
-    doc.text(240, 50, "Creado");
+    doc.setFillColor(210,210,210)
+    doc.rect(5, 45, 285, 10, 'F')
+    doc.text(10, 50, "Nombre")
+    doc.text(60, 50, "DNI")
+    doc.text(90, 50, "Fecha")
+    doc.text(110, 50, "Hora")
+    doc.text(130, 50, "Usuario")
+    doc.text(170, 50, "Tipo")
+    doc.text(190, 50, "Departamento")
+    doc.text(230, 50, "Estado")
+    doc.text(250, 50, "Inicio")
+    doc.text(270, 50, "Fin")
     doc.line(5, 55, 290, 55);
-    let row = 60;
-    let lineas = 0;
-    let pagina = 1;
-    doc.setTextColor(0, 0, 128);
-    doc.text(10, 200, `Página ${pagina}`);
+    
+    let row = 60
+    let lineas = 0
+    let pagina = 1
+    doc.setTextColor(0,0,128)
+    doc.text(10, 200, `Página ${pagina}`)
     //resto del contenido
     for (let i = 0; i < ar.length; i++) {
-        let user = ar[i];
-        doc.setFontSize(9);
-        doc.setFont(undefined, 'normal');
-        doc.setTextColor(0, 0, 0);
-        doc.text(10, row, `${user?.firstName ?? ''} ${user?.lastName ?? ''} ${user?.secondLastName ?? ''}`);
-        doc.text(80, row, `${user?.dni ?? ''}`);
-        doc.text(100, row, `${user.username}`);
-        doc.text(160, row, `${user?.email ?? ''}`);
-        doc.text(220, row, `${user?.phone ?? ''}`);
-        doc.text(240, row, `${user.createdDate}`);
-        row += 5;
-        let limitLineas = 33;
-        if (pagina == 1)
-            limitLineas = 26;
-        if (lineas >= limitLineas) {
-            doc.addPage();
-            lineas = 0;
-            row = 30;
-            pagina += 1;
-            doc.setFont(undefined, 'bold');
-            doc.setFontSize(10);
-            //construimos cabecera del csv
-            doc.line(5, 15, 290, 15);
-            doc.setFillColor(210, 210, 210);
-            doc.rect(5, 15, 285, 10, 'F');
-            doc.text(10, 20, "Nombre");
-            doc.text(80, 20, "DNI");
-            doc.text(100, 20, "Usuario");
-            doc.text(160, 20, "Email");
-            doc.text(220, 20, "Teléfono");
-            doc.text(240, 20, "Creado");
-            doc.line(5, 25, 290, 25);
-            doc.setTextColor(0, 0, 128);
-            doc.text(10, 200, `Página ${pagina}`);
-        }
-        lineas++;
+        let visit = ar[i]
+        // @ts-ignore
+        //if(visit.creationDate >= start && visit.creationDate <= end){
+            doc.setFontSize(9)
+            doc.setFont(undefined, 'normal')
+            doc.setTextColor(0,0,0)
+            doc.text(10, row, `${visit.firstName} ${visit.firstLastName} ${visit.secondLastName}`)
+            doc.text(60, row, `${visit.dni}`)
+            doc.text(90, row, `${visit.creationDate}`)
+            doc.text(110, row, `${visit.creationTime}`)
+            doc.text(130, row, `${visit.user?.firstName ?? ''} ${visit.user?.lastName ?? ''}`)
+            doc.text(170, row, `${verifyUserType(visit.user.userType)}`)
+            doc.text(190, row, `${visit.department?.name ?? ''}`)
+            doc.text(230, row, `${visit.visitState?.name ?? ''}`)
+            doc.text(250, row, `${visit?.ingressTime ?? ''}`)
+            doc.text(270, row, `${visit?.egressTime ?? ''}`)
+            row += 5
+            let limitLineas = 33
+            if(pagina == 1) limitLineas = 26
+            if(lineas >= limitLineas){
+                
+                doc.addPage()
+                lineas=0
+                row = 30
+                pagina+=1
+                doc.setFont(undefined, 'bold')
+                doc.setFontSize(10)
+                //construimos cabecera del csv
+                doc.line(5, 15, 290, 15)
+                doc.setFillColor(210,210,210);
+                doc.rect(5, 15, 285, 10, 'F');
+                doc.text(10, 20, "Nombre")
+                doc.text(60, 20, "DNI")
+                doc.text(90, 20, "Fecha")
+                doc.text(110, 20, "Hora")
+                doc.text(130, 20, "Usuario")
+                doc.text(170, 20, "Tipo")
+                doc.text(190, 20, "Departamento")
+                doc.text(230, 20, "Estado")
+                doc.text(250, 20, "Inicio")
+                doc.text(270, 20, "Fin")
+                doc.line(5, 25, 290, 25)
+                doc.setTextColor(0,0,128)
+                doc.text(10, 200, `Página ${pagina}`)
+            }
+            lineas++
+        //}
+
     }
     // Save the PDF
-    var d = new Date();
-    var title = "log_Clientes_" + d.getDate() + "_" + (d.getMonth() + 1) + "_" + d.getFullYear() + `.pdf`;
+    var d = new Date()
+    var title = "log_Visitas_"+ d.getDate() + "_" + (d.getMonth()+1) + "_" + d.getFullYear() +`.pdf`;
     doc.save(title);
-};
-export const exportClientCsv = (ar) => {
+
+}*/
+export const exportClientCsv = async (ar, start, end) => {
     let rows = [];
     for (let i = 0; i < ar.length; i++) {
-        let user = ar[i];
+        let customer = ar[i];
         // @ts-ignore
+        //if(visit.creationDate >= start && visit.creationDate <= end){
         let obj = {
-            "Nombre": `${user?.firstName.split("\n").join("(salto)") ?? ''}`,
-            "Apellido 1": `${user?.lastName.split("\n").join("(salto)") ?? ''}`,
-            "Apellido 2": `${user?.secondLastName.split("\n").join("(salto)") ?? ''}`,
-            "Usuario": `${user.username}`,
-            "DNI": `${user?.dni ?? ''}`,
-            "Email": `${user?.email ?? ''}`,
-            "Teléfono": `${user?.phone ?? ''}`,
-            "Creado": `${user.createdDate}`
+            "Nombre": `${customer?.name ?? ''}`,
+            "Estado": `${customer?.state?.name ?? ''}`,
+            "RUC": `${customer?.ruc ?? ''}`,
+            "Fecha Creación": `${customer?.creationDate ?? ''}`,
+            "Hora Creación": `${customer?.creationTime ?? ''}`,
+            "Creado por": `${customer?.createdBy ?? ''}`,
         };
         rows.push(obj);
+        //}
     }
     generateFile(rows, "Clientes", "csv");
 };
-export const exportClientXls = (ar) => {
+export const exportClientXls = async (ar, start, end) => {
     let rows = [];
     for (let i = 0; i < ar.length; i++) {
-        let user = ar[i];
+        let customer = ar[i];
         // @ts-ignore
+        //if(visit.creationDate >= start && visit.creationDate <= end){
         let obj = {
-            "Nombre": `${user?.firstName.split("\n").join("(salto)") ?? ''}`,
-            "Apellido 1": `${user?.lastName.split("\n").join("(salto)") ?? ''}`,
-            "Apellido 2": `${user?.secondLastName.split("\n").join("(salto)") ?? ''}`,
-            "Usuario": `${user.username}`,
-            "DNI": `${user?.dni ?? ''}`,
-            "Email": `${user?.email ?? ''}`,
-            "Teléfono": `${user?.phone ?? ''}`,
-            "Creado": `${user.createdDate}`
+            "Nombre": `${customer?.name ?? ''}`,
+            "Estado": `${customer?.state?.name ?? ''}`,
+            "RUC": `${customer?.ruc ?? ''}`,
+            "Fecha Creación": `${customer?.creationDate ?? ''}`,
+            "Hora Creación": `${customer?.creationTime ?? ''}`,
+            "Creado por": `${customer?.createdBy ?? ''}`,
         };
         rows.push(obj);
+        //}
     }
     generateFile(rows, "Clientes", "xls");
 };
@@ -174,27 +184,3 @@ const generateFile = (ar, title, extension) => {
         alert("Su navegador no permite esta acción");
     }
 };
-const verifyUserType = (userType) => {
-    if (userType == 'CUSTOMER') {
-        return 'Cliente';
-    }
-    else if (userType == 'GUARD') {
-        return 'Guardia';
-    }
-    else if (userType == 'EMPLOYEE') {
-        return 'Empleado';
-    }
-    else if (userType == 'CONTRACTOR') {
-        return 'Contratista';
-    }
-    else {
-        return userType;
-    }
-};
-/*
-let rows = []
-            const users: any = await getUsers()
-            for(let i=0; i < users.length; i++){
-                let user = users[i]
-                
-            }*/ 

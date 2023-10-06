@@ -8,7 +8,7 @@ import { drawTagsIntoTables, inputObserver, inputSelect, CloseDialog, filterData
 import { Config } from "../../../Configs.js";
 import { tableLayout } from "./Layout.js";
 import { tableLayoutTemplate } from "./Templates.js";
-import { exportClientCsv, exportClientPdf, exportClientXls } from "../../../exportFiles/clients.js";
+//import { exportClientCsv, exportClientPdf, exportClientXls } from "../../../exportFiles/clients.js"
 const tableRows = Config.tableRows;
 const currentPage = Config.currentPage;
 const businessId = localStorage.getItem('business_id');
