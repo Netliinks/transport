@@ -1280,7 +1280,7 @@ export class Crews {
                 else if (searchExist[1] != undefined || searchExist[0] != 'none') {
                     alert("Patrulla ya existe!");
                 }
-                else if (data.crewState.name != "Disponible" || data.crewState.name != "No disponible") {
+                else if (data.crewState.name == "En servicio") {
                     alert("No se puede editar una patrulla en servicio.");
                 }
                 else {
@@ -1404,7 +1404,7 @@ export class Crews {
                                 eventLog('DLT', 'PATRULLA', `${entityName}`, '');
                                 if (data.vehicular.id) {
                                     getUpdateState(`${vehicularState.id}`, "Vehicular", `${data.vehicular.id}`);
-                                    eventLog('UPD', `VEHÍCULO`, `${data.vehicular.licensePlate} disponible`, '');
+                                    eventLog('UPD', `VEHÍCULO`, `${data.vehicular.type} [${data.vehicular.licensePlate}] disponible`, '');
                                 }
                                 if (data.crewOne.id != nothingUser.id || data.crewOne.username != "N/A") {
                                     getUpdateState(`${userState.id}`, "User", `${data.crewOne.id}`);
@@ -1428,23 +1428,23 @@ export class Crews {
                                 }
                                 if (data.weaponOne.id != nothingWeapon.id || data.weaponOne.name != "N/A") {
                                     getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponOne.id}`);
-                                    eventLog('UPD', `ARMA`, `${data.weaponOne.name} disponible`, '');
+                                    eventLog('UPD', `ARMA`, `${data.weaponOne.name} [${data.weaponOne.licensePlate}] disponible`, '');
                                 }
                                 if (data.weaponTwo.id != nothingWeapon.id || data.weaponTwo.name != "N/A") {
                                     getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponTwo.id}`);
-                                    eventLog('UPD', `ARMA`, `${data.weaponTwo.name} disponible`, '');
+                                    eventLog('UPD', `ARMA`, `${data.weaponTwo.name} [${data.weaponTwo.licensePlate}] disponible`, '');
                                 }
                                 if (data.weaponThree.id != nothingWeapon.id || data.weaponThree.name != "N/A") {
                                     getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponThree.id}`);
-                                    eventLog('UPD', `ARMA`, `${data.weaponThree.name} disponible`, '');
+                                    eventLog('UPD', `ARMA`, `${data.weaponThree.name} [${data.weaponThree.licensePlate}] disponible`, '');
                                 }
                                 if (data.weaponFour.id != nothingWeapon.id || data.weaponFour.name != "N/A") {
                                     getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponFour.id}`);
-                                    eventLog('UPD', `ARMA`, `${data.weaponFour.name} disponible`, '');
+                                    eventLog('UPD', `ARMA`, `${data.weaponFour.name} [${data.weaponFour.licensePlate}] disponible`, '');
                                 }
                                 if (data.weaponFive.id != nothingWeapon.id || data.weaponFive.name != "N/A") {
                                     getUpdateState(`${weaponState.id}`, "Weapon", `${data.weaponFive.id}`);
-                                    eventLog('UPD', `ARMA`, `${data.weaponFive.name} disponible`, '');
+                                    eventLog('UPD', `ARMA`, `${data.weaponFive.name} [${data.weaponFive.licensePlate}] disponible`, '');
                                 }
                                 const tableBody = document.getElementById('datatable-body');
                                 new CloseDialog().x(dialogContent);

@@ -918,7 +918,7 @@ export class Services {
                                         }
                                         for (let i = 0; i < dataArray.length; i++) {
                                             getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id);
-                                            eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '');
+                                            eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} asignado`, '');
                                         }
                                         eventLog('DLT', 'SERVICIO-PATRULLA', `${patrol.crew.name}, en servicio: ${data.name}`, data, `${data.serviceState.name}`);
                                         deleteEntity('ServiceDetailV', patrol.id);

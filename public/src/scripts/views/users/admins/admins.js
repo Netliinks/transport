@@ -624,8 +624,8 @@ export class Admins {
                         <div class="description">
                             <p class="filename">Plantilla de Administradores</p>
                             <a
-                            href="./public/src/templates/NetvisitorsClients.csv"
-                            download="./public/src/templates/NetvisitorsClients.csv"
+                            href="./public/src/templates/Admin.csv"
+                            download="./public/src/templates/Admin.csv"
                             rel="noopener"
                             target="_self" class="filelink">Descargar</a>
                         </div>
@@ -660,13 +660,14 @@ export class Admins {
                 //const contractor = await getEntitiesData('Contractor');
                 const fileReader = new FileReader();
                 fileReader.readAsText(file);
-                fileReader.addEventListener('load', (e) => {
+                fileReader.addEventListener('load', async (e) => {
                     let result = e.srcElement.result;
                     let resultSplit = result.split('\r');
                     let rawFile;
                     let elem = [];
                     for (let i = 1; i < resultSplit.length - 1; i++) {
                         let userData = resultSplit[i].split(';');
+                        let existUsername = await getVerifyUsername(`${userData[0]?.toLowerCase().replace(/\n/g, '')}.${userData[1]?.toLowerCase().replace(/\n/g, '')}${userData[2]?.toLowerCase().replace(/\n/g, '')[0]}@${currentUserInfo.customer.name.toLowerCase().replace(/\s+/g, '')}.com`);
                         rawFile = JSON.stringify({
                             "lastName": `${userData[1]?.replace(/\n/g, '')}`,
                             "secondLastName": `${userData[2]?.replace(/\n/g, '')}`,
@@ -676,6 +677,7 @@ export class Admins {
                             "isWebUser": false,
                             "isActive": true,
                             "newUser": true,
+                            'isSupervisor': false,
                             "firstName": `${userData[0]?.replace(/\n/g, '')}`,
                             "state": {
                                 "id": "60885987-1b61-4247-94c7-dff348347f93"
@@ -691,7 +693,9 @@ export class Admins {
                             'creationDate': `${currentDateTime().date}`,
                             'creationTime': `${currentDateTime().time}`,
                         });
-                        elem.push(rawFile);
+                        if (existUsername == "none") {
+                            elem.push(rawFile);
+                        }
                     }
                     const importToBackend = document.getElementById('button-import');
                     importToBackend.addEventListener('click', () => {

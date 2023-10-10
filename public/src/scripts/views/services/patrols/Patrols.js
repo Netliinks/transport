@@ -431,7 +431,7 @@ export class Patrols {
                                 }
                                 for (let i = 0; i < dataArray.length; i++) {
                                     getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id);
-                                    eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '');
+                                    eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} asignado`, '');
                                 }
                                 new Patrols().render(infoPage.offset, infoPage.currentPage, infoPage.search, serviceId.id);
                             }, 1000);

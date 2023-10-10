@@ -435,10 +435,10 @@ export class Weapons {
                     <div class="file_template">
                         <i class="fa-solid fa-file-csv"></i>
                         <div class="description">
-                            <p class="filename">Plantilla de Guardias</p>
+                            <p class="filename">Plantilla de Armas</p>
                             <a
-                            href="./public/src/templates/NetvisitorsClients.csv"
-                            download="./public/src/templates/NetvisitorsClients.csv"
+                            href="./public/src/templates/Armas.csv"
+                            download="./public/src/templates/Armas.csv"
                             rel="noopener"
                             target="_self" class="filelink">Descargar</a>
                         </div>
@@ -473,13 +473,14 @@ export class Weapons {
                 //const contractor = await getEntitiesData('Contractor');
                 const fileReader = new FileReader();
                 fileReader.readAsText(file);
-                fileReader.addEventListener('load', (e) => {
+                fileReader.addEventListener('load', async (e) => {
                     let result = e.srcElement.result;
                     let resultSplit = result.split('\r');
                     let rawFile;
                     let elem = [];
                     for (let i = 1; i < resultSplit.length - 1; i++) {
                         let userData = resultSplit[i].split(';');
+                        let searchExist = await getSearch("licensePlate", userData[1]?.replace(/\n/g, '').toUpperCase(), "Weapon");
                         rawFile = JSON.stringify({
                             "name": `${userData[0]?.replace(/\n/g, '')}`,
                             "licensePlate": `${userData[1]?.replace(/\n/g, '')}`,
@@ -493,7 +494,9 @@ export class Weapons {
                             'creationDate': `${currentDateTime().date}`,
                             'creationTime': `${currentDateTime().time}`,
                         });
-                        elem.push(rawFile);
+                        if (searchExist == undefined) {
+                            elem.push(rawFile);
+                        }
                     }
                     const importToBackend = document.getElementById('button-import');
                     importToBackend.addEventListener('click', () => {

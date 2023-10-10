@@ -319,10 +319,10 @@ export class Customers {
                     <div class="file_template">
                         <i class="fa-solid fa-file-csv"></i>
                         <div class="description">
-                            <p class="filename">Plantilla de Guardias</p>
+                            <p class="filename">Plantilla de Clientes</p>
                             <a
-                            href="./public/src/templates/NetvisitorsClients.csv"
-                            download="./public/src/templates/NetvisitorsClients.csv"
+                            href="./public/src/templates/Clients.csv"
+                            download="./public/src/templates/Clients.csv"
                             rel="noopener"
                             target="_self" class="filelink">Descargar</a>
                         </div>
@@ -357,13 +357,14 @@ export class Customers {
                 //const contractor = await getEntitiesData('Contractor');
                 const fileReader = new FileReader()
                 fileReader.readAsText(file)
-                fileReader.addEventListener('load', (e: any) => {
+                fileReader.addEventListener('load', async (e: any) => {
                     let result = e.srcElement.result
                     let resultSplit = result.split('\r')
                     let rawFile: string
                     let elem: any = []
                     for (let i = 1; i < resultSplit.length-1; i++) {
                         let userData = resultSplit[i].split(';')
+                        let searchExist = await getSearch("name", userData[0]?.replace(/\n/g, '').toUpperCase(), "Customer")
                         rawFile = JSON.stringify({
                             "name": `${userData[0]?.replace(/\n/g, '')}`,
                             "ruc": `${userData[1]?.replace(/\n/g, '')}`,
@@ -376,7 +377,9 @@ export class Customers {
                             'creationDate': `${currentDateTime().date}`,
                             'creationTime': `${currentDateTime().time}`,
                         });
-                        elem.push(rawFile)
+                        if(searchExist == undefined){
+                            elem.push(rawFile)
+                        }
                     }
                     const importToBackend: InterfaceElement = document.getElementById('button-import');
                     importToBackend.addEventListener('click', () => {
