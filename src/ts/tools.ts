@@ -355,6 +355,7 @@ export const getDetails = async (param: string, value: string, table: string) =>
                 }
             ]
         },
+        sort: "createdDate", 
         fetchPlan: 'full',
     });
     let data = await getFilterEntityData(`${table}`, raw);

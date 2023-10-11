@@ -478,7 +478,7 @@ export class Vehiculars {
                                 setTimeout(async () => {
                                     //let data = await getVehiculars()
                                     let parse = JSON.parse(el);
-                                    eventLog('INS', 'VEHÍCULO', `${parse.type} [${parse.name}], importación`, '');
+                                    eventLog('INS', 'VEHÍCULO', `${parse.type} [${parse.licensePlate}], importación`, '');
                                     const tableBody = document.getElementById('datatable-body');
                                     const container = document.getElementById('entity-editor-container');
                                     new CloseDialog().x(container);

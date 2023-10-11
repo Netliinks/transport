@@ -320,6 +320,7 @@ export const getDetails = async (param, value, table) => {
                 }
             ]
         },
+        sort: "createdDate",
         fetchPlan: 'full',
     });
     let data = await getFilterEntityData(`${table}`, raw);

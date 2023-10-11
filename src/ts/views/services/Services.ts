@@ -1623,6 +1623,7 @@ export class Services {
                 }
             }else if(data.serviceState.name != "Pendiente"){
                 let control = await getSearch("service.id", entityID, "Control")
+                let details = await getDetails("service.id", entityID, "DetailsObs")
                 let status = {
                     recepcion: await getNothing("name", "Recepción", "ServiceState"),
                     ruta: await getNothing("name", "En ruta", "ServiceState"),
@@ -1687,12 +1688,6 @@ export class Services {
                                 <input type="text" class="input_filled" value="${control?.originUser?.username ?? ''}" readonly>
                             </div>
                             <br>
-                            <div class="material_input">
-                            <br>
-                            <textarea id="entity-observation" rows="2" class="input_filled">${control?.observation ?? ''}</textarea>
-                            <label for="entity-observation"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
-                            </div>
-                            <br>
 
                             <h3>Partida Inicio</h3>
                             <br>
@@ -1711,12 +1706,6 @@ export class Services {
                             <div class="input_detail">
                                 <label><i class="fa-solid fa-user"></i></label>
                                 <input type="text" class="input_filled" value="${control?.startUser?.username ?? ''}" readonly>
-                            </div>
-                            <br>
-                            <div class="material_input">
-                            <br>
-                            <textarea id="entity-observation2" rows="2" class="input_filled">${control?.observation2 ?? ''}</textarea>
-                            <label for="entity-observation2"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
                             </div>
                             <br>
 
@@ -1739,12 +1728,6 @@ export class Services {
                                 <input type="text" class="input_filled" value="${control?.destinationUser?.username ?? ''}" readonly>
                             </div>
                             <br>
-                            <div class="material_input">
-                            <br>
-                            <textarea id="entity-observation3" rows="2" class="input_filled">${control?.observation3 ?? ''}</textarea>
-                            <label for="entity-observation3"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
-                            </div>
-                            <br>
 
                             <h3>Finalización</h3>
                             <br>
@@ -1765,29 +1748,12 @@ export class Services {
                                 <input type="text" class="input_filled" value="${control?.endUser?.username ?? ''}" readonly>
                             </div>
                             <br>
-                            <div class="material_input">
-                            <br>
-                            <textarea id="entity-observation4" rows="2" class="input_filled">${control?.observation4 ?? ''}</textarea>
-                            <label for="entity-observation4"><i class="fa-solid fa-memo-circle-info" readonly></i> Observación</label>
-                            </div>
-                            <br>
                             <br>
 
-                            <div class="input_detail">
-                                <label for="creation-date"><i class="fa-solid fa-calendar"></i></label>
-                                <input type="date" id="creation-date" class="input_filled" value="${control.creationDate}" readonly>
-                            </div>
+                            <h3>Observaciones</h3>
                             <br>
-                            <div class="input_detail">
-                                <label for="creation-time"><i class="fa-solid fa-clock"></i></label>
-                                <input type="time" id="creation-time" class="input_filled" value="${control.creationTime}" readonly>
-                            </div>
-                            <br>
-                            <div class="input_detail">
-                                <label for="log-user"><i class="fa-solid fa-user"></i></label>
-                                <input type="text" id="log-user" class="input_filled" value="${control.createdBy}" readonly>
-                            </div>
-
+                            <div id="containerObservation"></div>
+                            <button class="btn btn_primary" id="add-text" style="font-weight:bold; font-size:25px;"> + </button>
                         </div>
                         <!-- END EDITOR BODY -->
 
@@ -1808,10 +1774,8 @@ export class Services {
                         destTime: document.getElementById("destination-time"),
                         endDate: document.getElementById("finish-date"),
                         endTime: document.getElementById("finish-time"),
-                        observation: document.getElementById("entity-observation"),
-                        observation2: document.getElementById("entity-observation2"),
-                        observation3: document.getElementById("entity-observation3"),
-                        observation4: document.getElementById("entity-observation4"),
+                        containerObservation: document.getElementById("containerObservation"),
+                        buttonAdd: document.getElementById("add-text"),
                     }
                     const currentUser = await getUserInfo()
                     
@@ -1822,9 +1786,6 @@ export class Services {
                         inputsCollection.destTime.disabled = true
                         inputsCollection.endDate.disabled = true
                         inputsCollection.endTime.disabled = true
-                        inputsCollection.observation2.disabled = true
-                        inputsCollection.observation3.disabled = true
-                        inputsCollection.observation4.disabled = true
                         //inputsCollection.origenDate.focus()
                     }else if(control?.startingPointTime == undefined){
                         inputsCollection.startDate.value = anio+"-"+mes+"-"+dia
@@ -1833,15 +1794,12 @@ export class Services {
                         inputsCollection.destTime.disabled = true
                         inputsCollection.endDate.disabled = true
                         inputsCollection.endTime.disabled = true
-                        inputsCollection.observation3.disabled = true
-                        inputsCollection.observation4.disabled = true
                        //inputsCollection.startDate.focus()
                     }else if(control?.arrivalDestinationTime == undefined){
                         inputsCollection.destDate.value = anio+"-"+mes+"-"+dia
                         inputsCollection.destTime.value = `${_fixedHours}:${_fixedMinutes}`
                         inputsCollection.endDate.disabled = true
                         inputsCollection.endTime.disabled = true
-                        inputsCollection.observation4.disabled = true
                         //inputsCollection.destDate.focus()
                     }else if(control?.endServiceTime == undefined){
                         inputsCollection.endDate.value = anio+"-"+mes+"-"+dia
@@ -1853,13 +1811,135 @@ export class Services {
                     const closeButton: InterfaceElement = document.getElementById('close')
                     const saveButton: InterfaceElement = document.getElementById('update-changes')
                     const editor: InterfaceElement = document.getElementById('entity-editor-container')
+                    let node = 5
+                    if(details != undefined){
+                        node = details.length
+                        for(let i=0; i<node; i++){
+                            inputsCollection.containerObservation.innerHTML += `
+                            <div class="material_input">
+                                <input type="search" class="input_filled" id="obs${i}" name="${details[i]?.id ?? ''}" value="${details[i]?.content ?? ''}">
+                                <label for="obs${i}"><i class="fa-solid fa-memo-circle-info"></i> Observación ${i+1}</label>
+                            </div>
+                            <div class="input_detail">
+                                <label for="date"><i class="fa-solid fa-calendar"></i></label>
+                                <input type="text" id="date" class="input_filled" value="${details[i]?.creationDate} || ${details[i]?.creationTime}" readonly>
+                            </div>
+                            <div class="input_detail">
+                                <label for="user"><i class="fa-solid fa-user"></i></label>
+                                <input type="text" id="user" class="input_filled" value="${details[i]?.user.username ?? ''}" readonly>
+                            </div>
+                            <div class="input_detail">
+                                <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
+                                <input type="text" id="saveDetail" name="saveDetail${i}" data-index="${i}" class="input_filled" value="Guardar" readonly>
+                            </div>
+                            <br>
+                            <br>
+                            ` 
+                        }
+                    }else{
+                        for(let i=0; i<node; i++){
+                            inputsCollection.containerObservation.innerHTML += `
+                            <div class="material_input">
+                                <input type="search" class="input_filled" id="obs${i}" name="obs${i}">
+                                <label for="obs${i}"><i class="fa-solid fa-memo-circle-info"></i> Observación ${i+1}</label>
+                            </div>
+                            <div class="input_detail">
+                                <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
+                                <input type="text" id="saveDetail" name="saveDetail${i}" data-index="${i}" class="input_filled" value="Guardar" readonly>
+                            </div>
+                            <br>
+                            <br>
+                            ` 
+                        }
+                    }
 
+                    const detailEvent = () => {
+                        let saveDetail: InterfaceElement = document.querySelectorAll('#saveDetail')
+                        saveDetail.forEach((obj: InterfaceElement) => {
+                            const index = obj.dataset.index
+                            obj.addEventListener('click', (): void => {
+                                let obs: InterfaceElement = document.getElementById(`obs${index}`)
+                                let span: InterfaceElement = document.getElementsByName(`saveDetail${index}`)[0]
+                                if(details != undefined && details[index]?.id == obs.name){
+                                    if(obs.value == ""){
+                                        deleteEntity('DetailsObs', details[index].id)
+                                        eventLog('DLT', 'SERVICIO-DETALLE', `${obs.value}, en servicio: ${data.name}`, data, `${data.serviceState.name}`)
+                                        obs.placeholder = "(Eliminado)"
+                                        obs.disabled = true
+                                        span.value = "Detalle eliminado"
+                                        span.disabled = true
+                                    }else if(obs.value != details[index].content){
+                                        let raw = JSON.stringify({
+                                            "content": `${obs.value.trim()}`,
+                                            "user": {
+                                                "id": `${currentUser.attributes.id}`
+                                            }
+                                        })
+                                        updateEntity('DetailsObs', details[index].id, raw)
+                                        eventLog('UPD', 'SERVICIO-DETALLE', `${obs.value}, en servicio: ${data.name}`, data, `${data.serviceState.name}`)
+                                        span.value = "Guardar - Detalle actualizado"
+                                    }
+                                }else{
+                                    if(obs.value != ""){
+                                        let raw = JSON.stringify({
+                                            "content": `${obs.value.trim()}`,
+                                            "business": {
+                                                "id": `${businessId}`
+                                            },
+                                            "customer": {
+                                                "id": `${data?.customer?.id}`
+                                            },
+                                            "service": {
+                                                "id": `${entityID}`
+                                            },
+                                            "user": {
+                                                "id": `${currentUser.attributes.id}`
+                                            },
+                                            'creationDate': `${currentDateTime().date}`,
+                                            'creationTime': `${currentDateTime().time}`,
+                                        })
+                                        registerEntity(raw, 'DetailsObs')
+                                        eventLog('INS', 'SERVICIO-DETALLE', `${obs.value}, en servicio: ${data.name}`, data, `${data.serviceState.name}`)
+                                        obs.disabled = true
+                                        span.value = "Guardar - Detalle guardado"
+                                        span.disabled = true
+                                    }
+                                }
+                            })
+                        })
+                    }
+                        
+                    detailEvent()
+                    inputsCollection.buttonAdd.addEventListener('click', () => {
+                        const div2: InterfaceElement = document.createElement('div')
+                        div2.classList.add('input_detail')
+                        div2.innerHTML = `
+                            <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
+                            <input type="text" id="saveDetail" name="saveDetail${node}" data-index="${node}" class="input_filled" value="Guardar" readonly>
+                        `
+                        const br: InterfaceElement = document.createElement('br')
+                        const div: InterfaceElement = document.createElement('div')
+                        div.classList.add('material_input')
+                        div.innerHTML = `
+                            <input type="search" class="input_filled" id="obs${node}" name="obs${node}">
+                            <label for="obs${node}"><i class="fa-solid fa-memo-circle-info"></i> Observación ${node+=1}</label>
+                        `  
+                        inputsCollection.containerObservation.appendChild(div)
+                        inputsCollection.containerObservation.appendChild(div2)
+                        inputsCollection.containerObservation.appendChild(br)
+                        inputsCollection.containerObservation.appendChild(br)
+                        detailEvent()
+                    })
+
+                    
+                    
+                     
                     closeButton.addEventListener('click', () => {
                         //console.log('close')
                         new CloseDialog().x(editor)
                     })
 
-                    saveButton.addEventListener('click', () => {
+                    saveButton.addEventListener('click', async () => {
                         if((Date.parse(`${inputsCollection.origenDate.value} ${inputsCollection.origenTime.value}`) > Date.parse(`${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`)) && (control?.startingPointTime != undefined || inputsCollection.startTime.value != '')){
                             alert("Fecha origen mayor a la de inicio")
                         }else if((Date.parse(`${inputsCollection.startDate.value} ${inputsCollection.startTime.value}`) > Date.parse(`${inputsCollection.destDate.value} ${inputsCollection.destTime.value}`)) && (control?.arrivalDestinationTime != undefined || inputsCollection.destTime.value != '')){
@@ -1871,7 +1951,7 @@ export class Services {
                                 let raws = []
                                 let rawStatus = ''
                                 let events = []
-                                if((inputsCollection.origenTime.value != control?.arrivalOriginTime && inputsCollection.origenTime.value != '') || (inputsCollection.observation.value != control?.observation && inputsCollection.observation.value != '')){       
+                                if(inputsCollection.origenTime.value != control?.arrivalOriginTime && inputsCollection.origenTime.value != ''){       
                                     raws.push(
                                         JSON.stringify({
                                             "arrivalOriginDate": `${inputsCollection.origenDate.value}`,
@@ -1879,7 +1959,6 @@ export class Services {
                                             "originUser": {
                                                 "id": `${currentUser.attributes.id}`
                                             },
-                                            "observation": `${inputsCollection.observation.value}`,
                                         })
                                     )
                                     if(data.serviceState.name == 'Confirmado'){
@@ -1912,7 +1991,7 @@ export class Services {
                                     }
                                 }
 
-                                if((inputsCollection.startTime.value != control?.startingPointTime && inputsCollection.startTime.value != '') || (inputsCollection.observation2.value != control?.observation2 && inputsCollection.observation2.value != '')){
+                                if(inputsCollection.startTime.value != control?.startingPointTime && inputsCollection.startTime.value != ''){
                                     raws.push(
                                         JSON.stringify({
                                             "startingPointDate": `${inputsCollection.startDate.value}`,
@@ -1920,7 +1999,6 @@ export class Services {
                                             "startUser": {
                                                 "id": `${currentUser.attributes.id}`
                                             },
-                                            "observation2": `${inputsCollection.observation2.value}`,
                                         })
                                     )
                                     if(data.serviceState.name == 'Recepción'){
@@ -1953,7 +2031,7 @@ export class Services {
                                     }
                                 }
                                 
-                                if((inputsCollection.destTime.value != control?.arrivalDestinationTime && inputsCollection.destTime.value != '') || (inputsCollection.observation3.value != control?.observation3 && inputsCollection.observation3.value != '')){
+                                if(inputsCollection.destTime.value != control?.arrivalDestinationTime && inputsCollection.destTime.value != ''){
                                     raws.push(
                                         JSON.stringify({
                                             "arrivalDestinationDate": `${inputsCollection.destDate.value}`,
@@ -1961,7 +2039,6 @@ export class Services {
                                             "destinationUser": {
                                                 "id": `${currentUser.attributes.id}`
                                             },
-                                            "observation3": `${inputsCollection.observation3.value}`,
                                         })
                                     )
                                     if(data.serviceState.name == 'En ruta'){
@@ -1994,7 +2071,7 @@ export class Services {
                                     }
                                 }
 
-                                if((inputsCollection.endTime.value != control?.endServiceTime && inputsCollection.endTime.value != '') || (inputsCollection.observation4.value != control?.observation4 && inputsCollection.observation4.value != '')){
+                                if(inputsCollection.endTime.value != control?.endServiceTime && inputsCollection.endTime.value != ''){
                                     raws.push(
                                         JSON.stringify({
                                             "endServiceDate": `${inputsCollection.endDate.value}`,
@@ -2002,7 +2079,6 @@ export class Services {
                                             "endUser": {
                                                 "id": `${currentUser.attributes.id}`
                                             },
-                                            "observation4": `${inputsCollection.observation4.value}`,
                                         })
                                     )
                                     if(data.serviceState.name == 'Entregado'){
@@ -2157,15 +2233,13 @@ export class Services {
                                     }
                                 }
 
-                                for(let i= 0; i < events.length; i++){
-                                    let raw = raws[i]
-                                    updateEntity('Control', control.id, raw)
-                                }
                                 if(rawStatus != ''){
                                     await updateEntity('Service', data.id, rawStatus)
                                 }
                                 for(let i= 0; i < raws.length; i++){
+                                    let raw = raws[i]
                                     let event = events[i]
+                                    updateEntity('Control', control.id, raw)
                                     eventLog('UPD', `${event.title}`, `${event.value}`, event.service, event.aditionalData)
                                 }
                                 
