@@ -201,7 +201,10 @@ export class Charges {
         // register entity
         const openEditor = document.getElementById('new-entity');
         openEditor.addEventListener('click', () => {
-            if ((infoPage.count + 1) <= serviceId.quantyContainers) {
+            if (serviceId.serviceState.name == 'Terminado') {
+                alert(`El servicio ha terminado`);
+            }
+            else if ((infoPage.count + 1) <= serviceId.quantyContainers) {
                 renderInterface();
             }
             else {
@@ -406,7 +409,12 @@ export class Charges {
         edit.forEach((edit) => {
             const entityId = edit.dataset.entityid;
             edit.addEventListener('click', () => {
-                RInterface('Charge', entityId);
+                if (serviceId.serviceState.name == 'Terminado') {
+                    alert(`El servicio ha terminado`);
+                }
+                else {
+                    RInterface('Charge', entityId);
+                }
             });
         });
         const RInterface = async (entities, entityID) => {
@@ -723,7 +731,10 @@ export class Charges {
                 const dialogContent = document.getElementById('dialog-content');
                 deleteButton.onclick = async () => {
                     const data = await getEntityData('Charge', entityId);
-                    if (serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Terminado") {
+                    if (serviceId.serviceState.name == 'Terminado') {
+                        alert(`El servicio ha terminado`);
+                    }
+                    else {
                         deleteEntity('Charge', entityId)
                             .then(async (res) => {
                             setTimeout(async () => {
@@ -754,9 +765,6 @@ export class Charges {
                                 new Charges().render(infoPage.offset, infoPage.currentPage, infoPage.search, serviceId.id);
                             }, 1000);
                         });
-                    }
-                    else {
-                        alert("No se puede eliminar una patrulla en servicio.");
                     }
                     new CloseDialog().x(dialogContent);
                 };
@@ -1039,7 +1047,12 @@ export class Charges {
                             "property": "userType",
                             "operator": "=",
                             "value": `GUARD`
-                        }
+                        },
+                        {
+                            "property": "isSupervisor",
+                            "operator": "=",
+                            "value": `${false}`
+                        },
                     ],
                 },
                 sort: "-createdDate",

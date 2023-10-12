@@ -217,7 +217,9 @@ export class Charges {
         // register entity
         const openEditor: InterfaceElement = document.getElementById('new-entity')
         openEditor.addEventListener('click', (): void => {
-            if((infoPage.count + 1) <= serviceId.quantyContainers){
+            if(serviceId.serviceState.name == 'Terminado'){
+                alert(`El servicio ha terminado`)
+            }else if((infoPage.count + 1) <= serviceId.quantyContainers){
                 renderInterface()
             }else{
                 alert(`El servicio ha sido registrado con ${serviceId.quantyContainers} conetedor(es)`)
@@ -427,7 +429,11 @@ export class Charges {
       edit.forEach((edit: InterfaceElement) => {
           const entityId = edit.dataset.entityid
           edit.addEventListener('click', (): void => {
-              RInterface('Charge', entityId)
+                if(serviceId.serviceState.name == 'Terminado'){
+                    alert(`El servicio ha terminado`)
+                }else{
+                    RInterface('Charge', entityId)
+                }
           })
       })
 
@@ -758,7 +764,9 @@ export class Charges {
 
                 deleteButton.onclick = async () => {
                     const data: any = await getEntityData('Charge', entityId)
-                    if(serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Terminado"){
+                    if(serviceId.serviceState.name == 'Terminado'){
+                        alert(`El servicio ha terminado`)
+                    }else{
                       deleteEntity('Charge', entityId)
                         .then(async res => {
                             setTimeout(async () => {
@@ -794,8 +802,6 @@ export class Charges {
                                 new Charges().render(infoPage.offset, infoPage.currentPage, infoPage.search, serviceId.id)
                             },1000)
                         })
-                    }else{
-                      alert("No se puede eliminar una patrulla en servicio.")
                     }
                     
 
@@ -1125,7 +1131,12 @@ export class Charges {
                           "property": "userType",
                           "operator": "=",
                           "value": `GUARD`
-                        }
+                        },
+                        {
+                          "property": "isSupervisor",
+                          "operator": "=",
+                          "value": `${false}`
+                        },
                       ],
                       
                   }, 

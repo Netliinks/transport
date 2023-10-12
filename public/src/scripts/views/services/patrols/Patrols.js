@@ -163,7 +163,10 @@ export class Patrols {
         // register entity
         const openEditor = document.getElementById('new-entity');
         openEditor.addEventListener('click', () => {
-            if ((infoPage.count + 1) <= serviceId.quantyVehiculars) {
+            if (serviceId.serviceState.name == 'Terminado') {
+                alert(`El servicio ha terminado`);
+            }
+            else if ((infoPage.count + 1) <= serviceId.quantyVehiculars) {
                 renderInterface();
             }
             else {
@@ -371,7 +374,10 @@ export class Patrols {
                 const dialogContent = document.getElementById('dialog-content');
                 deleteButton.onclick = async () => {
                     const data = await getEntityData('ServiceDetailV', entityId);
-                    if (serviceId.serviceState.name == "Pendiente" || serviceId.serviceState.name == "Terminado") {
+                    if (serviceId.serviceState.name == 'Terminado') {
+                        alert(`El servicio ha terminado`);
+                    }
+                    else {
                         deleteEntity('ServiceDetailV', entityId)
                             .then(async (res) => {
                             setTimeout(async () => {
@@ -436,9 +442,6 @@ export class Patrols {
                                 new Patrols().render(infoPage.offset, infoPage.currentPage, infoPage.search, serviceId.id);
                             }, 1000);
                         });
-                    }
-                    else {
-                        alert("No se puede eliminar una patrulla en servicio.");
                     }
                     new CloseDialog().x(dialogContent);
                 };

@@ -8,7 +8,7 @@ import { tableLayout } from "./Layout.js"
 import { tableLayoutTemplate } from "./Template.js"
 import { Patrols } from "./patrols/Patrols.js"
 import { Charges } from "./containers/Containers.js"
-import { exportServiceCsv, exportServiceXls } from "../../exportFiles/services.js"
+import { exportServiceCsv, exportServicePdf, exportServiceXls } from "../../exportFiles/services.js"
 
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
@@ -156,6 +156,10 @@ export class Services {
                     <button class="button" id="remove-entity" data-entityId="${service.id}" data-entityName="${service.name}" style="display:${userPermissions().style};">
                         <i class="fa-solid fa-trash"></i>
                     </button>
+
+                    <button class="button" id="print-entity" data-entityId="${service.id}" data-entityName="${service.name}">
+                        <i class="fa-solid fa-print"></i>
+                    </button>
                 </td>
         `
                 table.appendChild(row)
@@ -169,6 +173,7 @@ export class Services {
         this.sendEmail(this.entityDialogContainer)
         this.export()
         this.remove()
+        this.print()
     }
 
     public searchEntity = async (tableBody: InterfaceElement /*, data: any*/) => {
@@ -660,7 +665,7 @@ export class Services {
 
             patrol.addEventListener('click', async (): Promise<void> => {
                 const data: any = await getEntityData('Service', entityId)
-                if(data.serviceState.name != 'Terminado')
+                //if(data.serviceState.name != 'Terminado')
                     new Patrols().render(Config.offset, Config.currentPage, "", entityId)
             })
         })
@@ -861,6 +866,21 @@ export class Services {
 
     }
 
+    public print() {
+        const print: InterfaceElement = document.querySelectorAll('#print-entity')
+        print.forEach((print: InterfaceElement) => {
+
+            const entityId = print.dataset.entityid
+            const entityName = print.dataset.entityname
+
+            print.addEventListener('click', async (): Promise<void> => {
+                const data: any = await getEntityData('Service', entityId)
+                exportServicePdf(data)
+            })
+        })
+
+    }
+
     public close(): void {
         const closeButton: InterfaceElement = document.getElementById('close')
         const editor: InterfaceElement = document.getElementById('entity-editor-container')
@@ -1025,7 +1045,7 @@ export class Services {
                                 exportServiceCsv(logs)
                             }else if(ele.value == "pdf"){
                                 // @ts-ignore
-                                //exportClientPdf(logs)
+                                //exportServicePdf(logs)
                             }
                         }
                     }
@@ -2168,8 +2188,8 @@ export class Services {
                                                 getUpdateState(dataArray[i].state, dataArray[i].table, dataArray[i].id)
                                                 eventLog('UPD', `${dataArray[i].title}`, `${dataArray[i].value} disponible`, '')
                                                 }
-                                                eventLog('DLT', 'SERVICIO-PATRULLA', `${patrol.crew.name}, en servicio: ${data.name}`, data, aditionalData)
-                                                deleteEntity('ServiceDetailV', patrol.id)
+                                                //eventLog('DLT', 'SERVICIO-PATRULLA', `${patrol.crew.name}, en servicio: ${data.name}`, data, aditionalData)
+                                                //deleteEntity('ServiceDetailV', patrol.id)
                                             })
                                         }
 
@@ -2197,7 +2217,7 @@ export class Services {
                                                         })
                                                     }
 
-                                                    const raw = JSON.stringify({
+                                                    /*const raw = JSON.stringify({
                                                         "companion": {
                                                         "id": `${status.nothingUser.id}`
                                                         },
@@ -2205,8 +2225,8 @@ export class Services {
                                                         "id": `${status.nothingWeapon.id}`
                                                         },
                                                     })
-                                                    updateEntity('Charge', container.id, raw)
-                                                    eventLog('UPD', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data, aditionalData)
+                                                    updateEntity('Charge', container.id, raw)*/
+                                                    //eventLog('UPD', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data, aditionalData)
                                                 }
                                                 
 
