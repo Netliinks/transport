@@ -158,7 +158,7 @@ export class Services {
                     </button>
 
                     <button class="button" id="print-entity" data-entityId="${service.id}" data-entityName="${service.name}">
-                        <i class="fa-solid fa-print"></i>
+                        <i class="fa-solid fa-file-pdf"></i>
                     </button>
                 </td>
         `
