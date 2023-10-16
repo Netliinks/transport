@@ -697,7 +697,7 @@ export class Guards {
                             "secondLastName": `${userData[2]?.replace(/\n/g, '')}`,
                             "isSuper": false,
                             "email": "",
-                            "temp": `${userData[5]?.replace(/\n/g, '')}`,
+                            //"temp": `${userData[5]?.replace(/\n/g, '')}`,
                             "isWebUser": false,
                             "isActive": true,
                             "newUser": true,

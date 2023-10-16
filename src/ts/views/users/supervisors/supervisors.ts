@@ -341,14 +341,14 @@ export class Supervisors {
                     <div id="input-options" class="input_options">
                     </div>
                     </div>
-                    
+                    -->
 
                     <br>
                     <div class="material_input">
                     <input type="password" id="tempPass" autocomplete="false">
                     <label for="tempPass">Contraseña</label>
                     </div>
-                    -->
+                    
 
                 </div>
                 <!-- END EDITOR BODY -->
@@ -379,7 +379,7 @@ export class Supervisors {
                     //customer: document.getElementById('entity-customer'),
                     username: document.getElementById('entity-username'),
                     //citadel: document.getElementById('entity-citadel'),
-                    //temporalPass: document.getElementById('tempPass'),
+                    temporalPass: document.getElementById('tempPass'),
                     dni: document.getElementById('entity-dni'),
                     email: document.getElementById('entity-email'),
                 }
@@ -391,7 +391,7 @@ export class Supervisors {
                     "newUser": true,
                     "dni": `${inputsCollection.dni.value}`,
                     "email": `${inputsCollection.email.value}`,
-                    //"temp": `${inputsCollection.temporalPass.value}`,
+                    "temp": `${inputsCollection.temporalPass.value}`,
                     "isWebUser": false,
                     "active": true,
                     "userType": "GUARD",
@@ -427,9 +427,9 @@ export class Supervisors {
                     alert("¡Correo vacío!")
                 }*/else if(inputsCollection.dni.value === '' || inputsCollection.dni.value === undefined){
                     alert("DNI vacío!")
-                }/*else if(inputsCollection.temporalPass.value === '' || inputsCollection.temporalPass.value === undefined){
+                }else if(inputsCollection.temporalPass.value === '' || inputsCollection.temporalPass.value === undefined){
                     alert("Clave vacío!")
-                }*/else{
+                }else{
                     reg(raw)
                 }
             })
@@ -515,8 +515,8 @@ export class Supervisors {
                         <div class="description">
                             <p class="filename">Plantilla de Supervisores</p>
                             <a
-                            href="./public/src/templates/Guards.csv"
-                            download="./public/src/templates/Guards.csv"
+                            href="./public/src/templates/Supervisors.csv"
+                            download="./public/src/templates/Supervisors.csv"
                             rel="noopener"
                             target="_self" class="filelink">Descargar</a>
                         </div>
@@ -1299,7 +1299,7 @@ export const setUserPassword = async (): Promise<any> => {
         }
     })
     let data = await getFilterEntityData("User", raw)
-    /*data.forEach((newUser: any) => {
+    data.forEach((newUser: any) => {
         let raw: string = JSON.stringify({
             "id": `${newUser.id}`,
             "newPassword": `${newUser.temp}`
@@ -1307,7 +1307,7 @@ export const setUserPassword = async (): Promise<any> => {
 
         if (newUser.newUser === true && (newUser.temp !== undefined || newUser.temp !== ''))
             setPassword(raw)
-    })*/
+    })
     setRole(data)
 }
 
