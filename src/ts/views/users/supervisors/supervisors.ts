@@ -190,6 +190,7 @@ export class Supervisors {
                 row.innerHTML += `
                     <td>${client.firstName} ${client.lastName}</dt>
                     <td>${client.username}</dt>
+                    <td class="key"><button class="button" data-userid="${client.id}" data-username="${client.username}" id="change-user-password"><i class="fa-regular fa-key"></i></button></td>
                     <td class="tag"><span>${client.userState.name}</span></td>
                     <td class="entity_options">
                         <button class="button" id="edit-entity" data-entityId="${client.id}">
@@ -211,7 +212,7 @@ export class Supervisors {
         this.export()
         this.edit(this.entityDialogContainer, data)
         this.remove()
-        //this.changeUserPassword()
+        this.changeUserPassword()
     }
 
     public searchEntity = async (tableBody: InterfaceElement/*, data: any*/) => {
@@ -859,7 +860,7 @@ export class Supervisors {
         }
     }
 
-    /*private changeUserPassword(): void {
+    private changeUserPassword(): void {
         const changeUserPasswordKeys: InterfaceElement = document.querySelectorAll('#change-user-password')
         changeUserPasswordKeys.forEach((buttonKey: InterfaceElement): void => {
             buttonKey.addEventListener('click', async (): Promise<void> => {
@@ -933,7 +934,7 @@ export class Supervisors {
             })
         })
 
-    }*/
+    }
 
     private remove() {
         const remove: InterfaceElement = document.querySelectorAll('#remove-entity')
