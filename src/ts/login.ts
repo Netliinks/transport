@@ -74,7 +74,7 @@ export class SignIn {
         loginContainer.innerHTML = `
         <div class="login_window">
         <div class="login_header">
-          <img src="./public/src/assets/pictures/app_logo.png">
+          <!-- <img src="./public/src/assets/pictures/app_logo.png"> -->
           <h1 class="login_title">Iniciar Sesión</h1>
           <p>Inicie sesión con los datos proporcionados por el proveedor.</p>
         </div>
