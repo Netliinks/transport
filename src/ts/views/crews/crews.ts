@@ -733,8 +733,8 @@ export class Crews {
 
             inputObserver()
             this.selectVehicle()
-            this.selectUser('UPD', nothingConfig, data)
-            this.selectWeapon('UPD', nothingConfig, data)
+            this.selectUser('INS', nothingConfig, data)
+            this.selectWeapon('INS', nothingConfig, data)
             this.selectDelete(nothingConfig)
             //inputSelect('Business', 'entity-citadel')
             //inputSelect('Crew', 'entity-customer')
