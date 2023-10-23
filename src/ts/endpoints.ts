@@ -7,7 +7,7 @@ import { Endpoint, Request } from "./types.js"
 // GENERAL URL
 // ===================================================
 const NetliinksUrl: string = 'https://transport2.netliinks.com:443/rest/entities/'
-const url = 'https://transport2.netliinks.com:443/'
+const url = 'https://transport2.netliinks.com:443'
 // ===================================================
 
 // TOOLS

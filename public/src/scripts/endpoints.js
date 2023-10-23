@@ -4,7 +4,7 @@ import { SignIn } from "./login.js";
 // GENERAL URL
 // ===================================================
 const NetliinksUrl = 'https://transport2.netliinks.com:443/rest/entities/';
-const url = 'https://transport2.netliinks.com:443/';
+const url = 'https://transport2.netliinks.com:443';
 // ===================================================
 // TOOLS
 // ===================================================
