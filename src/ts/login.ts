@@ -23,7 +23,7 @@ const connectionHeader = {
 const platformSystem: string = 'clients'
 
 const reqOP: Request = {
-    url: 'http://localhost:8080/oauth/token', //'https://backend.netliinks.com:443/oauth/token',
+    url: 'http://localhost:8080/oauth/token', //'https://transport2.netliinks.com:443/oauth/token',
     method: 'POST'
 }
 

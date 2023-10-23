@@ -6,8 +6,8 @@ import { Endpoint, Request } from "./types.js"
 
 // GENERAL URL
 // ===================================================
-const NetliinksUrl: string = 'http://localhost:8080/rest/entities/' //'https://backend.netliinks.com:443/rest/entities/'
-const url = 'http://localhost:8080' //'https://backend.netliinks.com:443/
+const NetliinksUrl: string = 'https://transport2.netliinks.com:443/rest/entities/'
+const url = 'https://transport2.netliinks.com:443/'
 // ===================================================
 
 // TOOLS
@@ -34,7 +34,7 @@ headers.append('Cookie', "JSESSIONID=CDD208A868EAABD1F523BB6F3C8946AF")
  */
 export const getToken = async (mail: string, password: string): Endpoint => {
     const URL: string =
-        `${url}/oauth/token` //'https://backend.netliinks.com:443/oauth/token'
+        `${url}/oauth/token` //'https://transport2.netliinks.com:443/oauth/token'
 
     const ReqOptions: {} = {
         method: 'POST',

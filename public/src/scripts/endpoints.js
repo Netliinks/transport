@@ -3,8 +3,8 @@
 import { SignIn } from "./login.js";
 // GENERAL URL
 // ===================================================
-const NetliinksUrl = 'http://localhost:8080/rest/entities/'; //'https://backend.netliinks.com:443/rest/entities/'
-const url = 'http://localhost:8080'; //'https://backend.netliinks.com:443/
+const NetliinksUrl = 'https://transport2.netliinks.com:443/rest/entities/';
+const url = 'https://transport2.netliinks.com:443/';
 // ===================================================
 // TOOLS
 // ===================================================
@@ -27,7 +27,7 @@ headers.append('Cookie', "JSESSIONID=CDD208A868EAABD1F523BB6F3C8946AF");
  * @returns token
  */
 export const getToken = async (mail, password) => {
-    const URL = `${url}/oauth/token`; //'https://backend.netliinks.com:443/oauth/token'
+    const URL = `${url}/oauth/token`; //'https://transport2.netliinks.com:443/oauth/token'
     const ReqOptions = {
         method: 'POST',
         body: `grant_type=password&username=${mail}&password=${password}`,
