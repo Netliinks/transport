@@ -1219,7 +1219,7 @@ export async function setRole(data: any): Promise<void> {
     data.forEach((newUser: any) => {
         let raw: string = JSON.stringify({
             "id": `${newUser.id}`,
-            "roleCode": 'app_operators'
+            "roleCode": 'role_operator'
         })
 
         let updateNewUser: string = JSON.stringify({

@@ -1274,7 +1274,7 @@ export async function setRole(data) {
     data.forEach((newUser) => {
         let raw = JSON.stringify({
             "id": `${newUser.id}`,
-            "roleCode": 'app_guard_supervisor'
+            "roleCode": 'role_supervisor'
         });
         let updateNewUser = JSON.stringify({
             "newUser": false,
