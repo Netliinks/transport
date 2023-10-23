@@ -17,7 +17,7 @@ const connectionHeader = {
 };
 const platformSystem = 'clients';
 const reqOP = {
-    url: 'http://localhost:8080/oauth/token',
+    url: 'https://transport2.netliinks.com:443/oauth/token',
     method: 'POST'
 };
 export class SignIn {
