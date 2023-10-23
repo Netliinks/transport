@@ -1808,6 +1808,8 @@ export class Services {
                         inputsCollection.endTime.disabled = true
                         //inputsCollection.origenDate.focus()
                     }else if(control?.startingPointTime == undefined){
+                        inputsCollection.origenDate.disabled = true
+                        inputsCollection.origenTime.disabled = true
                         inputsCollection.startDate.value = anio+"-"+mes+"-"+dia
                         inputsCollection.startTime.value = `${_fixedHours}:${_fixedMinutes}`
                         inputsCollection.destDate.disabled = true
@@ -1816,12 +1818,22 @@ export class Services {
                         inputsCollection.endTime.disabled = true
                        //inputsCollection.startDate.focus()
                     }else if(control?.arrivalDestinationTime == undefined){
+                        inputsCollection.origenDate.disabled = true
+                        inputsCollection.origenTime.disabled = true
+                        inputsCollection.startDate.disabled = true
+                        inputsCollection.startTime.disabled = true
                         inputsCollection.destDate.value = anio+"-"+mes+"-"+dia
                         inputsCollection.destTime.value = `${_fixedHours}:${_fixedMinutes}`
                         inputsCollection.endDate.disabled = true
                         inputsCollection.endTime.disabled = true
                         //inputsCollection.destDate.focus()
                     }else if(control?.endServiceTime == undefined){
+                        inputsCollection.origenDate.disabled = true
+                        inputsCollection.origenTime.disabled = true
+                        inputsCollection.startDate.disabled = true
+                        inputsCollection.startTime.disabled = true
+                        inputsCollection.destDate.disabled = true
+                        inputsCollection.destTime.disabled = true
                         inputsCollection.endDate.value = anio+"-"+mes+"-"+dia
                         inputsCollection.endTime.value = `${_fixedHours}:${_fixedMinutes}`
                         //inputsCollection.endDate.focus()

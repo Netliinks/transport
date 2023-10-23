@@ -706,6 +706,9 @@ export class Guards {
                             "userState": {
                                 "id": `${userState.id}`
                             },
+                            "state": {
+                                "id": "60885987-1b61-4247-94c7-dff348347f93"
+                            },
                             "business": {
                                 "id": `${businessId}`
                             },
