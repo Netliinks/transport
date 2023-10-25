@@ -574,7 +574,7 @@ export class Guards {
                         "id": `${businessId}`
                     },
                     "phone": `${inputsCollection.phoneNumer.value}`,
-                    "username": `${inputsCollection.username.value}@${currentUserInfo.business.name.toLowerCase().replace(/\s+/g, '')}.com`,
+                    "username": `${inputsCollection.username.value.replace(/\s+/g, '')}@${currentUserInfo.business.name.toLowerCase().replace(/\s+/g, '')}.com`,
                     'creationDate': `${currentDateTime().date}`,
                     'creationTime': `${currentDateTime().time}`,
                     'isSupervisor': false
