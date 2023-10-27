@@ -34,7 +34,7 @@ export const exportServicePdf = async (ar) => {
     doc.text(102, 48, "TIPO DE CUSTODIA:");
     doc.line(142, 32, 142, 50); //vertical 2
     doc.setFont(undefined, 'normal');
-    doc.text(49, 36, `${control?.arrivalOriginDate ?? ''} - ${control?.arrivalOriginTime ?? ''}`);
+    doc.text(49, 36, `${ar?.outputDate ?? ''} - ${ar?.outputTime ?? ''}`);
     doc.text(49, 42, `${control?.startingPointDate ?? ''} - ${control?.startingPointTime ?? ''}`);
     doc.text(49, 48, `${control?.endServiceDate ?? ''} - ${control?.endServiceTime ?? ''}`);
     doc.text(144, 36, `${ar?.customer?.name ?? ''}`);
