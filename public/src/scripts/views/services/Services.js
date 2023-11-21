@@ -1,5 +1,5 @@
 // @filename: Departments.ts
-import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity, sendMail, getUserInfo } from "../../endpoints.js";
+import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity, sendMail, getUserInfo, postNotificationPush } from "../../endpoints.js";
 import { inputObserver, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog, getSearch, getDetails, getUpdateState } from "../../tools.js";
 import { Config } from "../../Configs.js";
 import { tableLayout } from "./Layout.js";
@@ -1494,6 +1494,19 @@ export class Services {
                     getUpdateState(`${serviceState.id}`, "Service", data.id).then((res) => {
                         setTimeout(() => {
                             sendMail(mailRaw);
+                            if (patrols != undefined) {
+                                patrols.forEach(async (patrol) => {
+                                    //console.log(patrol)
+                                    const crew = await getEntityData("Crew", patrol.crew.id);
+                                    console.log(crew);
+                                    console.log(crew.crewOne.username);
+                                    console.log(crew.crewOne.token);
+                                    const dataPush = { "token": `${crew.crewOne.token}`, "title": "Notificacion", "body": `Prueba` };
+                                    console.log(dataPush);
+                                    const envioPush = await postNotificationPush(dataPush);
+                                    console.log(envioPush);
+                                });
+                            }
                             eventLog('UPD', 'SERVICIO', `${data.name} confirmado`, data, `${serviceState.name}`);
                             const raw = JSON.stringify({
                                 "service": {

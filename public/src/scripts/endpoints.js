@@ -258,3 +258,28 @@ export const setFile = async (file) => {
         .catch(err => alert(`Error subiendo archivo ${err}`));
     return res;
 };
+export const postNotificationPush = async (data) => {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", "key=AAAAPmde-Xo:APA91bEjT-8XWXwWvB-lIotXp_9OQIGf36awtJKr3JeeuMTbIrUuCqL4Ij7eTQEoIuTP4JhI8iMF_iMjviIPJwqQSeRGsQGk3-CRc_Ypp_3kcC-QV3Jn6revhZMPZ1htPAdLEMF1W4jX");
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+        "to": data['token'],
+        "notification": {
+            "title": data['title'],
+            "body": data['body']
+        },
+        "data": {
+            "type": "custody"
+        }
+    });
+    var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+    };
+    fetch("https://fcm.googleapis.com/fcm/send", requestOptions)
+        .then(response => response.text())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
+};
