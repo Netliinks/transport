@@ -1512,7 +1512,7 @@ export class Services {
     
         async function modalMail(entity: any, entityID: any){
             let data = await getEntityData(entity, entityID)
-            if(data.serviceState.name == "Asignada"){
+            //if(data.serviceState.name == "Asignada"){
                 const dialogContainer: InterfaceElement =
                 document.getElementById('app-dialogs')
                 const patrols: any = await getDetails("service.id", entityID, "ServiceDetailV")
@@ -1615,9 +1615,9 @@ export class Services {
                                 # Vehículos: ${data?.quantyVehiculars ?? '0'}\n
                                 \nNo responder a este correo.\nSaludos.\n\n\nNetliinks S.A.`
                         });
-                        getUpdateState(`${serviceState.id}`, "Service", data.id).then((res) => {
-                            setTimeout(() => {
-                                sendMail(mailRaw)
+                        //getUpdateState(`${serviceState.id}`, "Service", data.id).then((res) => {
+                            //setTimeout(() => {
+                                //sendMail(mailRaw)
                                 if(patrols != undefined){
                                     patrols.forEach(async (patrol: any) => {
                                         //console.log(patrol)
@@ -1625,7 +1625,7 @@ export class Services {
                                         console.log(crew)
                                         console.log(crew.crewOne.username)
                                         console.log(crew.crewOne.token)
-                                        const dataPush = {"token": `${crew.crewOne.token}`, "title": "Notificacion", "body":`Prueba` }
+                                        const dataPush = {"token": `${crew.crewOne.token}`, "title": "Saludo", "body":`Hola` }
                                         console.log(dataPush)
                                         const envioPush = await postNotificationPush(dataPush)
                                         console.log(envioPush)
@@ -1635,7 +1635,7 @@ export class Services {
                                     })
                                 }
                                 
-                                eventLog('UPD', 'SERVICIO', `${data.name} confirmado`, data, `${serviceState.name}`)
+                                /*eventLog('UPD', 'SERVICIO', `${data.name} confirmado`, data, `${serviceState.name}`)
                                 const raw = JSON.stringify({
                                     "service": {
                                       "id": `${entityID}`
@@ -1654,11 +1654,11 @@ export class Services {
                                 new CloseDialog().x(_dialog)
                                 new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search)
                             },1000)
-                        });
+                        });*/
                         
                     
                 }
-            }else if(data.serviceState.name != "Pendiente"){
+            /*}else if(data.serviceState.name != "Pendiente"){
                 let control = await getSearch("service.id", entityID, "Control")
                 let details = await getDetails("service.id", entityID, "DetailsObs")
                 let status = {
@@ -2246,15 +2246,15 @@ export class Services {
                                                         })
                                                     }
 
-                                                    /*const raw = JSON.stringify({
-                                                        "companion": {
-                                                        "id": `${status.nothingUser.id}`
-                                                        },
-                                                        "weapon": {
-                                                        "id": `${status.nothingWeapon.id}`
-                                                        },
-                                                    })
-                                                    updateEntity('Charge', container.id, raw)*/
+                                                    //const raw = JSON.stringify({
+                                                    //    "companion": {
+                                                    //    "id": `${status.nothingUser.id}`
+                                                    //    },
+                                                    //    "weapon": {
+                                                    //    "id": `${status.nothingWeapon.id}`
+                                                    //    },
+                                                    //})
+                                                    //updateEntity('Charge', container.id, raw)
                                                     //eventLog('UPD', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data, aditionalData)
                                                 }
                                                 
@@ -2298,7 +2298,7 @@ export class Services {
                         }
                     })
                 }
-            }
+            }*/
             
         }
     
