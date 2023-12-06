@@ -199,6 +199,7 @@ export class Patrols {
           <div class="entity_editor_body">
             <div class="material_input_select">
             <label for="entity-category"><i class="fa-solid fa-users" readonly></i> Categoría</label>
+            <p style="font-size:10px;color:red;">Primero, seleccione la categoría de la patrulla que se asignará.</p>
             <input type="text" id="entity-category" class="input_select" readonly placeholder="cargando..." autocomplete="none">
             <div id="input-options" class="input_options">
             </div>

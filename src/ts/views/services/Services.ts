@@ -1860,10 +1860,13 @@ export class Services {
                                 <label for="user"><i class="fa-solid fa-user"></i></label>
                                 <input type="text" id="user" class="input_filled" value="${details[i]?.user.username ?? ''}" readonly>
                             </div>
-                            <div class="input_detail">
+                            <div style="text-align: right;">
+                                <button id="saveDetail" name="saveDetail${i}" data-index="${i}" style="font-weight:bold; font-size:12px; color: white; background-color: #008CBA;; border: 2px solid #000000; border-radius: 8px; padding: 5px 24px;"><i class="fa-solid fa-floppy-disk" style="color:white; font-size:12px;"></i>. Guardar</button>
+                            </div>
+                            <!-- <div class="input_detail">
                                 <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
                                 <input type="text" id="saveDetail" name="saveDetail${i}" data-index="${i}" class="input_filled" value="Guardar" readonly>
-                            </div>
+                            </div> -->
                             <br>
                             <br>
                             ` 
@@ -1876,9 +1879,16 @@ export class Services {
                                 <label for="obs${i}"><i class="fa-solid fa-memo-circle-info"></i> Observación ${i+1}</label>
                             </div>
                             <div class="input_detail">
+                                <label for="date${i}"><i class="fa-solid fa-calendar" name="date${i}"></i></label>
+                                <input type="text" id="date${i}" class="input_filled" readonly>
+                            </div>
+                            <div style="text-align: right;">
+                                <button id="saveDetail" name="saveDetail${i}" data-index="${i}" style="font-weight:bold; font-size:12px; color: white; background-color: #008CBA;; border: 2px solid #000000; border-radius: 8px; padding: 5px 24px;"><i class="fa-solid fa-floppy-disk" style="color:white; font-size:12px;"></i>. Guardar</button>
+                            </div>    
+                            <!-- <div class="input_detail">
                                 <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
                                 <input type="text" id="saveDetail" name="saveDetail${i}" data-index="${i}" class="input_filled" value="Guardar" readonly>
-                            </div>
+                            </div> -->
                             <br>
                             <br>
                             ` 
@@ -1891,6 +1901,7 @@ export class Services {
                             const index = obj.dataset.index
                             obj.addEventListener('click', (): void => {
                                 let obs: InterfaceElement = document.getElementById(`obs${index}`)
+                                let date: InterfaceElement = document.getElementById(`date${index}`)
                                 let span: InterfaceElement = document.getElementsByName(`saveDetail${index}`)[0]
                                 if(details != undefined && details[index]?.id == obs.name){
                                     if(obs.value == ""){
@@ -1898,7 +1909,7 @@ export class Services {
                                         eventLog('DLT', 'SERVICIO-DETALLE', `${obs.value}, en servicio: ${data.name}`, data, `${data.serviceState.name}`)
                                         obs.placeholder = "(Eliminado)"
                                         obs.disabled = true
-                                        span.value = "Detalle eliminado"
+                                        span.innerText  = "Detalle eliminado"
                                         span.disabled = true
                                     }else if(obs.value != details[index].content){
                                         let raw = JSON.stringify({
@@ -1909,9 +1920,13 @@ export class Services {
                                         })
                                         updateEntity('DetailsObs', details[index].id, raw)
                                         eventLog('UPD', 'SERVICIO-DETALLE', `${obs.value}, en servicio: ${data.name}`, data, `${data.serviceState.name}`)
-                                        span.value = "Guardar - Detalle actualizado"
+                                        obs.disabled = true
+                                        span.innerText  = "Detalle actualizado"
+                                        span.disabled = true
                                     }
                                 }else{
+                                    let fecha = currentDateTime().date
+                                    let hora = currentDateTime().time
                                     if(obs.value != ""){
                                         let raw = JSON.stringify({
                                             "content": `${obs.value.trim()}`,
@@ -1927,13 +1942,14 @@ export class Services {
                                             "user": {
                                                 "id": `${currentUser.attributes.id}`
                                             },
-                                            'creationDate': `${currentDateTime().date}`,
-                                            'creationTime': `${currentDateTime().time}`,
+                                            'creationDate': `${fecha}`,
+                                            'creationTime': `${hora}`,
                                         })
                                         registerEntity(raw, 'DetailsObs')
                                         eventLog('INS', 'SERVICIO-DETALLE', `${obs.value}, en servicio: ${data.name}`, data, `${data.serviceState.name}`)
                                         obs.disabled = true
-                                        span.value = "Guardar - Detalle guardado"
+                                        date.value=`${fecha} || ${hora}`
+                                        span.innerText  = "Detalle guardado"
                                         span.disabled = true
                                     }
                                 }
@@ -1943,13 +1959,25 @@ export class Services {
                         
                     detailEvent()
                     inputsCollection.buttonAdd.addEventListener('click', () => {
-                        const div2: InterfaceElement = document.createElement('div')
+                        const br: InterfaceElement = document.createElement('br')
+                        const br1: InterfaceElement = document.createElement('br')
+                        /*const div2: InterfaceElement = document.createElement('div')
                         div2.classList.add('input_detail')
                         div2.innerHTML = `
                             <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
                             <input type="text" id="saveDetail" name="saveDetail${node}" data-index="${node}" class="input_filled" value="Guardar" readonly>
+                        `*/
+                        const div2: InterfaceElement = document.createElement('div')
+                        div2.style.textAlign = "right"
+                        div2.innerHTML = `
+                            <button id="saveDetail" name="saveDetail${node}" data-index="${node}" style="font-weight:bold; font-size:12px; color: white; background-color: #008CBA;; border: 2px solid #000000; border-radius: 8px; padding: 5px 24px;"><i class="fa-solid fa-floppy-disk" style="color:white; font-size:12px;"></i>. Guardar</button>
                         `
-                        const br: InterfaceElement = document.createElement('br')
+                        const div3: InterfaceElement = document.createElement('div')
+                        div3.classList.add('input_detail')
+                        div3.innerHTML = `
+                            <label for="date${node}"><i class="fa-solid fa-calendar"></i></label>
+                            <input type="text" id="date${node}" class="input_filled" name="date${node}" readonly>  
+                        `  
                         const div: InterfaceElement = document.createElement('div')
                         div.classList.add('material_input')
                         div.innerHTML = `
@@ -1957,9 +1985,12 @@ export class Services {
                             <label for="obs${node}"><i class="fa-solid fa-memo-circle-info"></i> Observación ${node+=1}</label>
                         `  
                         inputsCollection.containerObservation.appendChild(div)
+                        inputsCollection.containerObservation.appendChild(div3)
                         inputsCollection.containerObservation.appendChild(div2)
+                        
                         inputsCollection.containerObservation.appendChild(br)
-                        inputsCollection.containerObservation.appendChild(br)
+                        inputsCollection.containerObservation.appendChild(br1)
+
                         detailEvent()
                     })
 
