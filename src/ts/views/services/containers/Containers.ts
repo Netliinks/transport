@@ -399,7 +399,7 @@ export class Charges {
                 if(inputsCollection.name.value === '' || inputsCollection.name.value === undefined){
                     alert("¡Nombre vacío!")
                 }else if(inputsCollection.licensePlate.value === '' || inputsCollection.licensePlate.value === undefined){
-                    alert("¡Placa vacía!")
+                    alert("¡Placa Vehicular vacía!")
                 }else{
                   registerEntity(raw, 'Charge').then((res) => {
                     setTimeout(async () => {

@@ -381,7 +381,7 @@ export class Charges {
                     alert("¡Nombre vacío!");
                 }
                 else if (inputsCollection.licensePlate.value === '' || inputsCollection.licensePlate.value === undefined) {
-                    alert("¡Placa vacía!");
+                    alert("¡Placa Vehicular vacía!");
                 }
                 else {
                     registerEntity(raw, 'Charge').then((res) => {
