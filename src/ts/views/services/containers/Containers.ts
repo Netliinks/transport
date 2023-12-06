@@ -399,7 +399,7 @@ export class Charges {
                 if(inputsCollection.name.value === '' || inputsCollection.name.value === undefined){
                     alert("¡Nombre vacío!")
                 }else if(inputsCollection.licensePlate.value === '' || inputsCollection.licensePlate.value === undefined){
-                    alert("¡Placa vacía!")
+                    alert("¡Placa Vehicular vacía!")
                 }else{
                   registerEntity(raw, 'Charge').then((res) => {
                     setTimeout(async () => {
@@ -469,7 +469,7 @@ export class Charges {
       
                   <div class="material_input">
                   <input type="text" id="entity-licensePlate" class="input_filled" value="${data.licensePlate}">
-                  <label for="entity-licensePlate"><i class="fa-solid fa-address-card"></i> Placa</label>
+                  <label for="entity-licensePlate"><i class="fa-solid fa-address-card"></i> Placa Vehicular</label>
                   </div>
       
                   <div class="material_input">
