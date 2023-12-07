@@ -6,7 +6,7 @@ export const exportServicePdf = async (ar: any) => {
     window.jsPDF = window.jspdf.jsPDF;
     // @ts-ignore
     var doc = new jsPDF()
-    doc.addImage("./public/src/assets/pictures/report.png", "PNG", 7, 7, 30, 10);
+    doc.addImage("./public/src/assets/pictures/report.png", "PNG", 7, 7, 30, 6);
     //doc.setDrawColor(0, 0, 128);
     doc.setFont(undefined, 'bold')
     doc.setTextColor(0,0,0)

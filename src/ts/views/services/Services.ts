@@ -1,6 +1,6 @@
 // @filename: Departments.ts
 
-import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity, sendMail, getUserInfo, postNotificationPush } from "../../endpoints.js"
+import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity, sendMail, getUserInfo } from "../../endpoints.js"
 import { inputObserver, inputSelect, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog, getSearch, getDetails, getUpdateState } from "../../tools.js"
 import { Data, InterfaceElement } from "../../types.js"
 import { Config } from "../../Configs.js"
@@ -1512,7 +1512,7 @@ export class Services {
     
         async function modalMail(entity: any, entityID: any){
             let data = await getEntityData(entity, entityID)
-            //if(data.serviceState.name == "Asignada"){
+            if(data.serviceState.name == "Asignada"){
                 const dialogContainer: InterfaceElement =
                 document.getElementById('app-dialogs')
                 const patrols: any = await getDetails("service.id", entityID, "ServiceDetailV")
@@ -1615,27 +1615,10 @@ export class Services {
                                 # Vehículos: ${data?.quantyVehiculars ?? '0'}\n
                                 \nNo responder a este correo.\nSaludos.\n\n\nNetliinks S.A.`
                         });
-                        //getUpdateState(`${serviceState.id}`, "Service", data.id).then((res) => {
-                            //setTimeout(() => {
-                                //sendMail(mailRaw)
-                                if(patrols != undefined){
-                                    patrols.forEach(async (patrol: any) => {
-                                        //console.log(patrol)
-                                        const crew: any = await getEntityData("Crew", patrol.crew.id)
-                                        console.log(crew)
-                                        console.log(crew.crewOne.username)
-                                        console.log(crew.crewOne.token)
-                                        const dataPush = {"token": `${crew.crewOne.token}`, "title": "Saludo", "body":`Hola` }
-                                        console.log(dataPush)
-                                        const envioPush = await postNotificationPush(dataPush)
-                                        console.log(envioPush)
-                                            
-
-                                        
-                                    })
-                                }
-                                
-                                /*eventLog('UPD', 'SERVICIO', `${data.name} confirmado`, data, `${serviceState.name}`)
+                        getUpdateState(`${serviceState.id}`, "Service", data.id).then((res) => {
+                            setTimeout(() => {
+                                sendMail(mailRaw)
+                                eventLog('UPD', 'SERVICIO', `${data.name} confirmado`, data, `${serviceState.name}`)
                                 const raw = JSON.stringify({
                                     "service": {
                                       "id": `${entityID}`
@@ -1654,11 +1637,11 @@ export class Services {
                                 new CloseDialog().x(_dialog)
                                 new Services().render(infoPage.offset, infoPage.currentPage, infoPage.search)
                             },1000)
-                        });*/
+                        });
                         
                     
                 }
-            /*}else if(data.serviceState.name != "Pendiente"){
+            }else if(data.serviceState.name != "Pendiente"){
                 let control = await getSearch("service.id", entityID, "Control")
                 let details = await getDetails("service.id", entityID, "DetailsObs")
                 let status = {
@@ -1877,10 +1860,13 @@ export class Services {
                                 <label for="user"><i class="fa-solid fa-user"></i></label>
                                 <input type="text" id="user" class="input_filled" value="${details[i]?.user.username ?? ''}" readonly>
                             </div>
-                            <div class="input_detail">
+                            <div style="text-align: right;">
+                                <button id="saveDetail" name="saveDetail${i}" data-index="${i}" style="font-weight:bold; font-size:12px; color: white; background-color: #008CBA;; border: 2px solid #000000; border-radius: 8px; padding: 5px 24px;"><i class="fa-solid fa-floppy-disk" style="color:white; font-size:12px;"></i>. Guardar</button>
+                            </div>
+                            <!-- <div class="input_detail">
                                 <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
                                 <input type="text" id="saveDetail" name="saveDetail${i}" data-index="${i}" class="input_filled" value="Guardar" readonly>
-                            </div>
+                            </div> -->
                             <br>
                             <br>
                             ` 
@@ -1893,9 +1879,16 @@ export class Services {
                                 <label for="obs${i}"><i class="fa-solid fa-memo-circle-info"></i> Observación ${i+1}</label>
                             </div>
                             <div class="input_detail">
+                                <label for="date${i}"><i class="fa-solid fa-calendar" name="date${i}"></i></label>
+                                <input type="text" id="date${i}" class="input_filled" readonly>
+                            </div>
+                            <div style="text-align: right;">
+                                <button id="saveDetail" name="saveDetail${i}" data-index="${i}" style="font-weight:bold; font-size:12px; color: white; background-color: #008CBA;; border: 2px solid #000000; border-radius: 8px; padding: 5px 24px;"><i class="fa-solid fa-floppy-disk" style="color:white; font-size:12px;"></i>. Guardar</button>
+                            </div>    
+                            <!-- <div class="input_detail">
                                 <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
                                 <input type="text" id="saveDetail" name="saveDetail${i}" data-index="${i}" class="input_filled" value="Guardar" readonly>
-                            </div>
+                            </div> -->
                             <br>
                             <br>
                             ` 
@@ -1908,6 +1901,7 @@ export class Services {
                             const index = obj.dataset.index
                             obj.addEventListener('click', (): void => {
                                 let obs: InterfaceElement = document.getElementById(`obs${index}`)
+                                let date: InterfaceElement = document.getElementById(`date${index}`)
                                 let span: InterfaceElement = document.getElementsByName(`saveDetail${index}`)[0]
                                 if(details != undefined && details[index]?.id == obs.name){
                                     if(obs.value == ""){
@@ -1915,7 +1909,7 @@ export class Services {
                                         eventLog('DLT', 'SERVICIO-DETALLE', `${obs.value}, en servicio: ${data.name}`, data, `${data.serviceState.name}`)
                                         obs.placeholder = "(Eliminado)"
                                         obs.disabled = true
-                                        span.value = "Detalle eliminado"
+                                        span.innerText  = "Detalle eliminado"
                                         span.disabled = true
                                     }else if(obs.value != details[index].content){
                                         let raw = JSON.stringify({
@@ -1926,9 +1920,13 @@ export class Services {
                                         })
                                         updateEntity('DetailsObs', details[index].id, raw)
                                         eventLog('UPD', 'SERVICIO-DETALLE', `${obs.value}, en servicio: ${data.name}`, data, `${data.serviceState.name}`)
-                                        span.value = "Guardar - Detalle actualizado"
+                                        obs.disabled = true
+                                        span.innerText  = "Detalle actualizado"
+                                        span.disabled = true
                                     }
                                 }else{
+                                    let fecha = currentDateTime().date
+                                    let hora = currentDateTime().time
                                     if(obs.value != ""){
                                         let raw = JSON.stringify({
                                             "content": `${obs.value.trim()}`,
@@ -1944,13 +1942,14 @@ export class Services {
                                             "user": {
                                                 "id": `${currentUser.attributes.id}`
                                             },
-                                            'creationDate': `${currentDateTime().date}`,
-                                            'creationTime': `${currentDateTime().time}`,
+                                            'creationDate': `${fecha}`,
+                                            'creationTime': `${hora}`,
                                         })
                                         registerEntity(raw, 'DetailsObs')
                                         eventLog('INS', 'SERVICIO-DETALLE', `${obs.value}, en servicio: ${data.name}`, data, `${data.serviceState.name}`)
                                         obs.disabled = true
-                                        span.value = "Guardar - Detalle guardado"
+                                        date.value=`${fecha} || ${hora}`
+                                        span.innerText  = "Detalle guardado"
                                         span.disabled = true
                                     }
                                 }
@@ -1960,13 +1959,25 @@ export class Services {
                         
                     detailEvent()
                     inputsCollection.buttonAdd.addEventListener('click', () => {
-                        const div2: InterfaceElement = document.createElement('div')
+                        const br: InterfaceElement = document.createElement('br')
+                        const br1: InterfaceElement = document.createElement('br')
+                        /*const div2: InterfaceElement = document.createElement('div')
                         div2.classList.add('input_detail')
                         div2.innerHTML = `
                             <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
                             <input type="text" id="saveDetail" name="saveDetail${node}" data-index="${node}" class="input_filled" value="Guardar" readonly>
+                        `*/
+                        const div2: InterfaceElement = document.createElement('div')
+                        div2.style.textAlign = "right"
+                        div2.innerHTML = `
+                            <button id="saveDetail" name="saveDetail${node}" data-index="${node}" style="font-weight:bold; font-size:12px; color: white; background-color: #008CBA;; border: 2px solid #000000; border-radius: 8px; padding: 5px 24px;"><i class="fa-solid fa-floppy-disk" style="color:white; font-size:12px;"></i>. Guardar</button>
                         `
-                        const br: InterfaceElement = document.createElement('br')
+                        const div3: InterfaceElement = document.createElement('div')
+                        div3.classList.add('input_detail')
+                        div3.innerHTML = `
+                            <label for="date${node}"><i class="fa-solid fa-calendar"></i></label>
+                            <input type="text" id="date${node}" class="input_filled" name="date${node}" readonly>  
+                        `  
                         const div: InterfaceElement = document.createElement('div')
                         div.classList.add('material_input')
                         div.innerHTML = `
@@ -1974,9 +1985,12 @@ export class Services {
                             <label for="obs${node}"><i class="fa-solid fa-memo-circle-info"></i> Observación ${node+=1}</label>
                         `  
                         inputsCollection.containerObservation.appendChild(div)
+                        inputsCollection.containerObservation.appendChild(div3)
                         inputsCollection.containerObservation.appendChild(div2)
+                        
                         inputsCollection.containerObservation.appendChild(br)
-                        inputsCollection.containerObservation.appendChild(br)
+                        inputsCollection.containerObservation.appendChild(br1)
+
                         detailEvent()
                     })
 
@@ -2246,15 +2260,15 @@ export class Services {
                                                         })
                                                     }
 
-                                                    //const raw = JSON.stringify({
-                                                    //    "companion": {
-                                                    //    "id": `${status.nothingUser.id}`
-                                                    //    },
-                                                    //    "weapon": {
-                                                    //    "id": `${status.nothingWeapon.id}`
-                                                    //    },
-                                                    //})
-                                                    //updateEntity('Charge', container.id, raw)
+                                                    /*const raw = JSON.stringify({
+                                                        "companion": {
+                                                        "id": `${status.nothingUser.id}`
+                                                        },
+                                                        "weapon": {
+                                                        "id": `${status.nothingWeapon.id}`
+                                                        },
+                                                    })
+                                                    updateEntity('Charge', container.id, raw)*/
                                                     //eventLog('UPD', 'SERVICIO-CONTENEDOR', `${container.name} [${container.licensePlate}], en servicio: ${data.name}`, data, aditionalData)
                                                 }
                                                 
@@ -2298,7 +2312,7 @@ export class Services {
                         }
                     })
                 }
-            }*/
+            }
             
         }
     
