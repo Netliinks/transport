@@ -146,6 +146,9 @@ export class Patrols {
                 row.innerHTML += `
                 <td>${patrol.crew?.name ?? ''}</dt>
                 <td>${patrol?.category ?? ''}</dt>
+                <td>${patrol?.checkService ? '<i class="fa-solid fa-eye"></i> Si' : '<i class="fa-solid fa-eye-slash"></i> No'}</dt>
+                <td>${patrol?.checkDate ?? ''} | ${patrol?.checkTime ?? ''}</dt>
+                <td>${patrol?.checkUser?.username ?? ''}</dt>
                 <td class="entity_options">
 
                     <button class="button" id="remove-entity" data-entityId="${patrol.id}" data-entityName="${patrol.crew.name}" style="display:${userPermissions().style};">

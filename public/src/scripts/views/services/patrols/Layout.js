@@ -39,6 +39,18 @@ export const tableLayout = `
           Categoría <i class="fa-regular fa-filter"></i>
         </span></th>
 
+        <th><span data-type="check">
+          Check <i class="fa-regular fa-filter"></i>
+        </span></th>
+
+        <th><span data-type="checkDate">
+          Fecha Check <i class="fa-regular fa-filter"></i>
+        </span></th>
+
+        <th><span data-type="checkUser">
+          Supervisor Check <i class="fa-regular fa-filter"></i>
+        </span></th>
+
         <th class="header_filled"></th>
 
       </tr></thead>
