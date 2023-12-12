@@ -1,4 +1,4 @@
-import { getEntitiesData, getUserInfo, getFilterEntityData, getEntityData, registerEntity, _userAgent, updateEntity } from "../endpoints.js"
+import { getEntitiesData, getUserInfo, getFilterEntityData, getEntityData, registerEntity, _userAgent, updateEntity, getFile } from "../endpoints.js"
 import { getDetails, getSearch } from "../tools.js";
 export const exportServicePdf = async (ar: any) => {
   let control = await getSearch("service.id", ar.id, "Control")
@@ -6,6 +6,7 @@ export const exportServicePdf = async (ar: any) => {
     window.jsPDF = window.jspdf.jsPDF;
     // @ts-ignore
     var doc = new jsPDF()
+    let listImages: any = []
     doc.addImage("./public/src/assets/pictures/report.png", "PNG", 7, 7, 30, 6);
     //doc.setDrawColor(0, 0, 128);
     doc.setFont(undefined, 'bold')
@@ -227,10 +228,9 @@ export const exportServicePdf = async (ar: any) => {
       row+=10
     }
     doc.setTextColor(0,0,0)
+    doc.setFont(undefined, 'bold')
     doc.text(5, row, `DETALLE DE RUTA`)
     row += 5
-    doc.setFont(undefined, 'bold')
-    doc.setTextColor(0,0,0)
     doc.text(7, row, "HORA")
     doc.text(102, row, "RECORRIDO")
     const details: any = await getDetails("service.id", ar.id, "DetailsObs")
@@ -238,6 +238,10 @@ export const exportServicePdf = async (ar: any) => {
     if(details != undefined){
       for (let i = 0; i < details.length; i++) {
           let detail = details[i]
+          if(detail?.image !== undefined){
+            listImages.push(detail.image)
+          }
+          doc.setTextColor(0,0,0)  
           doc.setFont(undefined, 'normal')
           doc.line(5, row, 205, row); //HORIZONTAL INICIO
           doc.line(5, row, 5, row+6);//vertical inicio
@@ -261,9 +265,54 @@ export const exportServicePdf = async (ar: any) => {
       }
     }
 
+    if(listImages.length != 0){
+      if(row+60 > 286){
+        doc.addPage()
+        row = 15
+        pagina+=1
+        doc.setFont(undefined, 'bold')
+        //doc.setFontSize(10)
+        doc.setTextColor(0,0,128)
+        doc.text(10, 290, `Página ${pagina}`)
+      }else{
+        row+=10
+      }
+      doc.setFont(undefined, 'bold')
+      doc.setTextColor(0,0,0)
+      doc.text(5, row, `IMÁGENES`)
+      row += 5
+      let column: number = 5
+      for(let i=0; i<listImages.length; i++){
+        doc.addImage(await getFile(listImages[i]), "JPEG", column, row, 45, 50);
+        column+=51
+        //console.log("row "+row)
+        if(column > 200){
+          //console.log("row total "+row)
+          if((row+65) > 200){
+              
+            doc.addPage()
+            column = 5
+            row = 15
+            pagina+=1
+            doc.setFont(undefined, 'bold')
+            //doc.setFontSize(10)
+            doc.setTextColor(0,0,128)
+            doc.text(10, 290, `Página ${pagina}`)
+
+          }else{
+            column = 5
+            row+=60
+          }
+        }
+          
+      }
+    }
+    
+
+    
     // Save the PDF
     var d = new Date()
-    var title = "Servicio_"+ d.getDate() + "_" + (d.getMonth()+1) + "_" + d.getFullYear() +`.pdf`;
+    var title = "Servicio_"+ `${ar?.name ?? ''}` + d.getDate() + "_" + (d.getMonth()+1) + "_" + d.getFullYear() +`.pdf`;
     doc.save(title);
 
 }
