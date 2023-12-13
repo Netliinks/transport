@@ -1,5 +1,5 @@
 // @filename: Departments.ts
-import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity, sendMail, getUserInfo, postNotificationPush } from "../../endpoints.js";
+import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity, sendMail, getUserInfo, postNotificationPush, getFile } from "../../endpoints.js";
 import { inputObserver, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog, getSearch, getDetails, getUpdateState } from "../../tools.js";
 import { Config } from "../../Configs.js";
 import { tableLayout } from "./Layout.js";
@@ -1727,29 +1727,60 @@ export class Services {
                     if (details != undefined) {
                         node = details.length;
                         for (let i = 0; i < node; i++) {
-                            inputsCollection.containerObservation.innerHTML += `
-                            <div class="material_input">
-                                <input type="search" class="input_filled" id="obs${i}" name="${details[i]?.id ?? ''}" value="${details[i]?.content ?? ''}">
-                                <label for="obs${i}"><i class="fa-solid fa-memo-circle-info"></i> Observación ${i + 1}</label>
-                            </div>
-                            <div class="input_detail">
-                                <label for="date"><i class="fa-solid fa-calendar"></i></label>
-                                <input type="text" id="date" class="input_filled" value="${details[i]?.creationDate} || ${details[i]?.creationTime}" readonly>
-                            </div>
-                            <div class="input_detail">
-                                <label for="user"><i class="fa-solid fa-user"></i></label>
-                                <input type="text" id="user" class="input_filled" value="${details[i]?.user.username ?? ''}" readonly>
-                            </div>
-                            <div style="text-align: right;">
-                                <button id="saveDetail" name="saveDetail${i}" data-index="${i}" style="font-weight:bold; font-size:12px; color: white; background-color: #008CBA;; border: 2px solid #000000; border-radius: 8px; padding: 5px 24px;"><i class="fa-solid fa-floppy-disk" style="color:white; font-size:12px;"></i>. Guardar</button>
-                            </div>
-                            <!-- <div class="input_detail">
-                                <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
-                                <input type="text" id="saveDetail" name="saveDetail${i}" data-index="${i}" class="input_filled" value="Guardar" readonly>
-                            </div> -->
-                            <br>
-                            <br>
-                            `;
+                            if (details[i]?.image !== undefined) {
+                                inputsCollection.containerObservation.innerHTML += `
+                                <div class="material_input">
+                                    <input type="search" class="input_filled" id="obs${i}" name="${details[i]?.id ?? ''}" value="${details[i]?.content ?? ''}">
+                                    <label for="obs${i}"><i class="fa-solid fa-memo-circle-info"></i> Observación ${i + 1}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="date"><i class="fa-solid fa-calendar"></i></label>
+                                    <input type="text" id="date" class="input_filled" value="${details[i]?.creationDate} || ${details[i]?.creationTime}" readonly>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="user"><i class="fa-solid fa-user"></i></label>
+                                    <input type="text" id="user" class="input_filled" value="${details[i]?.user.username ?? ''}" readonly>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="viewImage"><i class="fa-solid fa-image"></i></label>
+                                    <input type="text" id="viewImage" data-entityId="${details[i]?.image ?? ''}" class="input_filled" value="Ver Imagen" readonly>
+                                </div>
+                                <div style="text-align: right;">
+                                    <button id="saveDetail" name="saveDetail${i}" data-index="${i}" style="font-weight:bold; font-size:12px; color: white; background-color: #008CBA;; border: 2px solid #000000; border-radius: 8px; padding: 5px 24px;"><i class="fa-solid fa-floppy-disk" style="color:white; font-size:12px;"></i>. Guardar</button>
+                                </div>
+                                <!-- <div class="input_detail">
+                                    <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
+                                    <input type="text" id="saveDetail" name="saveDetail${i}" data-index="${i}" class="input_filled" value="Guardar" readonly>
+                                </div> -->
+                                <br>
+                                <br>
+                                `;
+                            }
+                            else {
+                                inputsCollection.containerObservation.innerHTML += `
+                                <div class="material_input">
+                                    <input type="search" class="input_filled" id="obs${i}" name="${details[i]?.id ?? ''}" value="${details[i]?.content ?? ''}">
+                                    <label for="obs${i}"><i class="fa-solid fa-memo-circle-info"></i> Observación ${i + 1}</label>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="date"><i class="fa-solid fa-calendar"></i></label>
+                                    <input type="text" id="date" class="input_filled" value="${details[i]?.creationDate} || ${details[i]?.creationTime}" readonly>
+                                </div>
+                                <div class="input_detail">
+                                    <label for="user"><i class="fa-solid fa-user"></i></label>
+                                    <input type="text" id="user" class="input_filled" value="${details[i]?.user.username ?? ''}" readonly>
+                                </div>
+                                <div style="text-align: right;">
+                                    <button id="saveDetail" name="saveDetail${i}" data-index="${i}" style="font-weight:bold; font-size:12px; color: white; background-color: #008CBA;; border: 2px solid #000000; border-radius: 8px; padding: 5px 24px;"><i class="fa-solid fa-floppy-disk" style="color:white; font-size:12px;"></i>. Guardar</button>
+                                </div>
+                                <!-- <div class="input_detail">
+                                    <label for="saveDetail"><i class="fa-solid fa-floppy-disk"></i></label>
+                                    <input type="text" id="saveDetail" name="saveDetail${i}" data-index="${i}" class="input_filled" value="Guardar" readonly>
+                                </div> -->
+                                <br>
+                                <br>
+                                `;
+                            }
                         }
                     }
                     else {
@@ -1835,6 +1866,28 @@ export class Services {
                                         span.disabled = true;
                                     }
                                 }
+                            });
+                        });
+                        const viewZoom = document.querySelectorAll('#viewImage');
+                        viewZoom.forEach((image) => {
+                            const entityId = image.dataset.entityid;
+                            image.addEventListener('click', async () => {
+                                const close = document.getElementById("close-modalZoom");
+                                const modalZoom = document.getElementById('modalZoom');
+                                //this.dialogContainer.style.display = 'block'
+                                //this.dialogContainer.innerHTML = modalZoomImage
+                                const editor = document.getElementById('entity-editor-container');
+                                editor.style.display = 'none';
+                                const img01 = document.getElementById('img01');
+                                const caption = document.getElementById('caption');
+                                modalZoom.style.display = 'block';
+                                img01.src = await getFile(entityId);
+                                caption.innerHTML = `Imagen`;
+                                close.addEventListener('click', () => {
+                                    modalZoom.style.display = 'none';
+                                    const editor = document.getElementById('entity-editor-container');
+                                    editor.style.display = 'flex';
+                                });
                             });
                         });
                     };
