@@ -50,9 +50,24 @@ export class SignIn {
                 }    
             }else{
                 let user = await getEntityData('User', currentUser.attributes.id);
-                let business = await getEntityData('Business', user?.business?.id);
-                if(user?.state?.name == 'Enabled' && business?.state?.name == 'Enabled' && user.isSuper == true && (user.userType == 'ADMIN' || user.userType == 'OPERATOR')){
-                    localStorage.setItem('business_id', user.business?.id)
+                let rawBusiness = JSON.stringify({
+                    "filter": {
+                        "conditions": [
+                          {
+                            "property": "id",
+                            "operator": "=",
+                            "value": `${businessId}`
+                          },
+                          {
+                            "property": "business.state.name",
+                            "operator": "=",
+                            "value": `Enabled`
+                          },
+                        ]
+                    }
+                });
+                let business = await getFilterEntityData("Business", rawBusiness);
+                if(user?.state?.name == 'Enabled' && business?.length != 0 && user.isSuper == true && (user.userType == 'ADMIN' || user.userType == 'OPERATOR')){
                     localStorage.setItem('user_type', currentUser.attributes.userType)  
                     new RenderApplicationUI().render();
                 }else{
