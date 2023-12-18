@@ -46,6 +46,8 @@ export class SignIn {
                 let user = await getEntityData('User', currentUser.attributes.id);
                 let business = await getEntityData('Business', user?.business?.id);
                 if (user?.state?.name == 'Enabled' && business?.state?.name == 'Enabled' && user.isSuper == true && (user.userType == 'ADMIN' || user.userType == 'OPERATOR')) {
+                    localStorage.setItem('business_id', user.business?.id);
+                    localStorage.setItem('user_type', currentUser.attributes.userType);
                     new RenderApplicationUI().render();
                 }
                 else {
