@@ -1249,7 +1249,7 @@ export class Services {
                         }
                     ],
                 },
-                sort: "-createdDate",
+                sort: "+name",
                 limit: Config.modalRows,
                 offset: offset,
                 fetchPlan: 'full',

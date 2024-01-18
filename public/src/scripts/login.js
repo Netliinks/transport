@@ -53,7 +53,7 @@ export class SignIn {
                                 "value": `${businessId}`
                             },
                             {
-                                "property": "business.state.name",
+                                "property": "state.name",
                                 "operator": "=",
                                 "value": `Enabled`
                             },
