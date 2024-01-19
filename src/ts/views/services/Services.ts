@@ -2227,11 +2227,11 @@ export class Services {
                                             }
                                         })
 
-                                        const aditionalData = {
+                                        /*const aditionalData = {
                                             status: `${status.terminado[0].name}`,
                                             statusDate: `${inputsCollection.endDate.value}`,
                                             statusTime: `${inputsCollection.endTime.value}`
-                                        }
+                                        }*/
                                         const patrols: any = await getDetails("service.id", data.id, "ServiceDetailV")
                                         const containers: any = await getDetails("service.id", data.id, "Charge")
 

@@ -2088,11 +2088,11 @@ export class Services {
                                                 statusTime: `${inputsCollection.endTime.value}`
                                             }
                                         });
-                                        const aditionalData = {
+                                        /*const aditionalData = {
                                             status: `${status.terminado[0].name}`,
                                             statusDate: `${inputsCollection.endDate.value}`,
                                             statusTime: `${inputsCollection.endTime.value}`
-                                        };
+                                        }*/
                                         const patrols = await getDetails("service.id", data.id, "ServiceDetailV");
                                         const containers = await getDetails("service.id", data.id, "Charge");
                                         //Patrulla
