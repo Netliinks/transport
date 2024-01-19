@@ -1,5 +1,5 @@
 // @filename: Departments.ts
-import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity, sendMail, getUserInfo, postNotificationPush, getFile } from "../../endpoints.js";
+import { deleteEntity, registerEntity, getFilterEntityData, getFilterEntityCount, getEntityData, updateEntity, sendMail, getUserInfo, postNotificationPush, getFile, getEntitiesData } from "../../endpoints.js";
 import { inputObserver, CloseDialog, filterDataByHeaderType, pageNumbers, fillBtnPagination, userPermissions, getNothing, inputSelectType, currentDateTime, eventLog, getSearch, getDetails, getUpdateState } from "../../tools.js";
 import { Config } from "../../Configs.js";
 import { tableLayout } from "./Layout.js";
@@ -1528,19 +1528,12 @@ export class Services {
             else if (data.serviceState.name != "Pendiente") {
                 let control = await getSearch("service.id", entityID, "Control");
                 let details = await getDetails("service.id", entityID, "DetailsObs");
+                const allStatus = await getEntitiesData('ServiceState');
                 let status = {
-                    recepcion: await getNothing("name", "Recepción", "ServiceState"),
-                    ruta: await getNothing("name", "En ruta", "ServiceState"),
-                    entregado: await getNothing("name", "Entregado", "ServiceState"),
-                    terminado: await getNothing("name", "Terminado", "ServiceState"),
-                    vehicularState: await getNothing("name", "Asignado", "VehicularState"),
-                    userState: await getNothing("name", "Asignado", "UserState"),
-                    weaponState: await getNothing("name", "Asignado", "WeaponState"),
-                    nothingWeapon: await getNothing("name", "N/A", "Weapon"),
-                    nothingUser: await getNothing("username", "N/A", "User"),
-                    crewState: await getNothing("name", "Disponible", "CrewState"),
-                    userContainer: await getNothing("name", "Disponible", "UserState"),
-                    weaponContainer: await getNothing("name", "Disponible", "WeaponState"),
+                    recepcion: allStatus.filter((data) => data.name === "Recepción"),
+                    ruta: allStatus.filter((data) => data.name === "En ruta"),
+                    entregado: allStatus.filter((data) => data.name === "Entregado"),
+                    terminado: allStatus.filter((data) => data.name === "Terminado"), //await getNothing("name", "Terminado", "ServiceState"),
                 };
                 if (control != undefined) {
                     let fecha = new Date(); //Fecha actual
@@ -1665,6 +1658,7 @@ export class Services {
                         </div>
                     `;
                     inputObserver();
+                    const saveButton = document.getElementById('update-changes');
                     const inputsCollection = {
                         origenDate: document.getElementById("origen-date"),
                         origenTime: document.getElementById("origen-time"),
@@ -1718,10 +1712,22 @@ export class Services {
                         inputsCollection.destTime.disabled = true;
                         inputsCollection.endDate.value = anio + "-" + mes + "-" + dia;
                         inputsCollection.endTime.value = `${_fixedHours}:${_fixedMinutes}`;
+                        saveButton.disabled = true;
+                        saveButton.innerHTML = "Espere un momento";
+                        status["vehicularState"] = await getNothing("name", "Asignado", "VehicularState");
+                        status["userState"] = await getNothing("name", "Asignado", "UserState");
+                        status["weaponState"] = await getNothing("name", "Asignado", "WeaponState");
+                        status["nothingWeapon"] = await getNothing("name", "N/A", "Weapon");
+                        status["nothingUser"] = await getNothing("username", "N/A", "User");
+                        status["crewState"] = await getNothing("name", "Disponible", "CrewState");
+                        status["userContainer"] = await getNothing("name", "Disponible", "UserState");
+                        status["weaponContainer"] = await getNothing("name", "Disponible", "WeaponState");
                         //inputsCollection.endDate.focus()
+                        saveButton.disabled = false;
+                        saveButton.innerHTML = "Guardar";
                     }
+                    console.log(status);
                     const closeButton = document.getElementById('close');
-                    const saveButton = document.getElementById('update-changes');
                     const editor = document.getElementById('entity-editor-container');
                     let node = 5;
                     if (details != undefined) {
@@ -1955,7 +1961,7 @@ export class Services {
                                     if (data.serviceState.name == 'Confirmado') {
                                         rawStatus = JSON.stringify({
                                             "serviceState": {
-                                                "id": `${status.recepcion.id}`
+                                                "id": `${status.recepcion[0].id}`
                                             },
                                         });
                                         events.push({
@@ -1963,7 +1969,7 @@ export class Services {
                                             title: `SERVICIO`,
                                             service: data,
                                             aditionalData: {
-                                                status: `${status.recepcion.name}`,
+                                                status: `${status.recepcion[0].name}`,
                                                 statusDate: `${inputsCollection.origenDate.value}`,
                                                 statusTime: `${inputsCollection.origenTime.value}`
                                             }
@@ -1975,7 +1981,7 @@ export class Services {
                                             title: `SERVICIO`,
                                             service: data,
                                             aditionalData: {
-                                                status: `${status.recepcion.name}`,
+                                                status: `${status.recepcion[0].name}`,
                                                 statusDate: `${inputsCollection.origenDate.value}`,
                                                 statusTime: `${inputsCollection.origenTime.value}`
                                             }
@@ -1993,7 +1999,7 @@ export class Services {
                                     if (data.serviceState.name == 'Recepción') {
                                         rawStatus = JSON.stringify({
                                             "serviceState": {
-                                                "id": `${status.ruta.id}`
+                                                "id": `${status.ruta[0].id}`
                                             },
                                         });
                                         events.push({
@@ -2001,7 +2007,7 @@ export class Services {
                                             title: `SERVICIO`,
                                             service: data,
                                             aditionalData: {
-                                                status: `${status.ruta.name}`,
+                                                status: `${status.ruta[0].name}`,
                                                 statusDate: `${inputsCollection.startDate.value}`,
                                                 statusTime: `${inputsCollection.startTime.value}`
                                             }
@@ -2013,7 +2019,7 @@ export class Services {
                                             title: `SERVICIO`,
                                             service: data,
                                             aditionalData: {
-                                                status: `${status.ruta.name}`,
+                                                status: `${status.ruta[0].name}`,
                                                 statusDate: `${inputsCollection.startDate.value}`,
                                                 statusTime: `${inputsCollection.startTime.value}`
                                             }
@@ -2031,7 +2037,7 @@ export class Services {
                                     if (data.serviceState.name == 'En ruta') {
                                         rawStatus = JSON.stringify({
                                             "serviceState": {
-                                                "id": `${status.entregado.id}`
+                                                "id": `${status.entregado[0].id}`
                                             },
                                         });
                                         events.push({
@@ -2039,7 +2045,7 @@ export class Services {
                                             title: `SERVICIO`,
                                             service: data,
                                             aditionalData: {
-                                                status: `${status.entregado.name}`,
+                                                status: `${status.entregado[0].name}`,
                                                 statusDate: `${inputsCollection.destDate.value}`,
                                                 statusTime: `${inputsCollection.destTime.value}`
                                             }
@@ -2051,7 +2057,7 @@ export class Services {
                                             title: `SERVICIO`,
                                             service: data,
                                             aditionalData: {
-                                                status: `${status.entregado.name}`,
+                                                status: `${status.entregado[0].name}`,
                                                 statusDate: `${inputsCollection.destDate.value}`,
                                                 statusTime: `${inputsCollection.destTime.value}`
                                             }
@@ -2069,7 +2075,7 @@ export class Services {
                                     if (data.serviceState.name == 'Entregado') {
                                         rawStatus = JSON.stringify({
                                             "serviceState": {
-                                                "id": `${status.terminado.id}`
+                                                "id": `${status.terminado[0].id}`
                                             },
                                         });
                                         events.push({
@@ -2077,13 +2083,13 @@ export class Services {
                                             title: `SERVICIO`,
                                             service: data,
                                             aditionalData: {
-                                                status: `${status.terminado.name}`,
+                                                status: `${status.terminado[0].name}`,
                                                 statusDate: `${inputsCollection.endDate.value}`,
                                                 statusTime: `${inputsCollection.endTime.value}`
                                             }
                                         });
                                         const aditionalData = {
-                                            status: `${status.terminado.name}`,
+                                            status: `${status.terminado[0].name}`,
                                             statusDate: `${inputsCollection.endDate.value}`,
                                             statusTime: `${inputsCollection.endTime.value}`
                                         };
@@ -2199,7 +2205,7 @@ export class Services {
                                             title: `SERVICIO`,
                                             service: data,
                                             aditionalData: {
-                                                status: `${status.terminado.name}`,
+                                                status: `${status.terminado[0].name}`,
                                                 statusDate: `${inputsCollection.endDate.value}`,
                                                 statusTime: `${inputsCollection.endTime.value}`
                                             }
