@@ -1853,7 +1853,7 @@ export class Services {
                         saveButton.disabled = false
                         saveButton.innerHTML = "Guardar"
                     }
-                    console.log(status)
+                    //console.log(status)
                     const closeButton: InterfaceElement = document.getElementById('close')
                     const editor: InterfaceElement = document.getElementById('entity-editor-container')
                     let node = 5

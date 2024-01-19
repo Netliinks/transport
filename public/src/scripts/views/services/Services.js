@@ -1726,7 +1726,7 @@ export class Services {
                         saveButton.disabled = false;
                         saveButton.innerHTML = "Guardar";
                     }
-                    console.log(status);
+                    //console.log(status)
                     const closeButton = document.getElementById('close');
                     const editor = document.getElementById('entity-editor-container');
                     let node = 5;
