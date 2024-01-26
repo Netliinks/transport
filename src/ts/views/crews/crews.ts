@@ -219,8 +219,8 @@ export class Crews {
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-vehicle" autocomplete="none" readonly>
-                    <label for="entity-vehicle"><i class="fa-solid fa-car" readonly></i> Vehículo</label>
+                    <input type="text" id="entity-vehicle" autocomplete="none" disabled>
+                    <label for="entity-vehicle"><i class="fa-solid fa-car" readonly></i> Vehículo <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-vehicle"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     </div>
 
                     <div class="material_input_select">
@@ -234,13 +234,13 @@ export class Crews {
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-supervisor" autocomplete="none" readonly>
-                    <label for="entity-supervisor"><i class="fa-solid fa-person-military-pointing"></i> Supervisor</label>
+                    <input type="text" id="entity-supervisor" autocomplete="none" disabled>
+                    <label for="entity-supervisor"><i class="fa-solid fa-person-military-pointing"></i> Supervisor <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-supervisor"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon1" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" readonly>
-                    <label for="entity-weapon1"><i class="fa-solid fa-gun"></i> Arma Supervisor</label>
+                    <input type="text" id="entity-weapon1" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" disabled>
+                    <label for="entity-weapon1"><i class="fa-solid fa-gun"></i> Arma Supervisor <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon1"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-weapon1"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
@@ -248,14 +248,14 @@ export class Crews {
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-segundero" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" readonly>
-                    <label for="entity-segundero"><i class="fa-solid fa-user-nurse"></i> Segundero</label>
+                    <input type="text" id="entity-segundero" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" disabled>
+                    <label for="entity-segundero"><i class="fa-solid fa-user-nurse"></i> Segundero <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-segundero"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-segundero"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon2" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" readonly>
-                    <label for="entity-weapon2"><i class="fa-solid fa-gun"></i> Arma Segundero</label>
+                    <input type="text" id="entity-weapon2" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" disabled>
+                    <label for="entity-weapon2"><i class="fa-solid fa-gun"></i> Arma Segundero <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon2"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-weapon2"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
@@ -263,14 +263,14 @@ export class Crews {
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-custodio1" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" readonly>
-                    <label for="entity-custodio1"><i class="fa-solid fa-user"></i> Custodio 1</label>
+                    <input type="text" id="entity-custodio1" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" disabled>
+                    <label for="entity-custodio1"><i class="fa-solid fa-user"></i> Custodio 1 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-custodio1"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-custodio1"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon3" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" readonly>
-                    <label for="entity-weapon3"><i class="fa-solid fa-gun"></i> Arma Custodio 1</label>
+                    <input type="text" id="entity-weapon3" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" disabled>
+                    <label for="entity-weapon3"><i class="fa-solid fa-gun"></i> Arma Custodio 1 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon3"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-weapon3"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
@@ -278,14 +278,14 @@ export class Crews {
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-custodio2" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" readonly>
-                    <label for="entity-custodio2"><i class="fa-solid fa-user"></i> Custodio 2</label>
+                    <input type="text" id="entity-custodio2" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" disabled>
+                    <label for="entity-custodio2"><i class="fa-solid fa-user"></i> Custodio 2 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-custodio2"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-custodio2"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon4" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" readonly>
-                    <label for="entity-weapon4"><i class="fa-solid fa-gun"></i> Arma Custodio 2</label>
+                    <input type="text" id="entity-weapon4" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" disabled>
+                    <label for="entity-weapon4"><i class="fa-solid fa-gun"></i> Arma Custodio 2 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon4"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-weapon4"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
@@ -293,14 +293,14 @@ export class Crews {
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-custodio3" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" readonly>
-                    <label for="entity-custodio3"><i class="fa-solid fa-user"></i> Custodio 3</label>
+                    <input type="text" id="entity-custodio3" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" disabled>
+                    <label for="entity-custodio3"><i class="fa-solid fa-user"></i> Custodio 3 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-custodio3"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-custodio3"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon5" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" readonly>
-                    <label for="entity-weapon5"><i class="fa-solid fa-gun"></i> Arma Custodio 3</label>
+                    <input type="text" id="entity-weapon5" autocomplete="none" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" disabled>
+                    <label for="entity-weapon5"><i class="fa-solid fa-gun"></i> Arma Custodio 3 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon5"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-weapon5"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
@@ -615,13 +615,13 @@ export class Crews {
                 <!-- EDITOR BODY -->
                 <div class="entity_editor_body">
                     <div class="material_input">
-                    <input type="text" id="entity-name" class="input_filled" value="${data.name}" readonly>
+                    <input type="text" id="entity-name" class="input_filled" value="${data.name}">
                     <label for="entity-name">Nombre</label>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-vehicle" class="input_filled" data-optionid="${data.vehicular.id}" value="${data.vehicular.type} [${data.vehicular.licensePlate}]" readonly>
-                    <label for="entity-vehicle">Vehículo</label>
+                    <input type="text" id="entity-vehicle" class="input_filled" data-optionid="${data.vehicular.id}" value="${data.vehicular.type} [${data.vehicular.licensePlate}]" disabled>
+                    <label for="entity-vehicle">Vehículo <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-vehicle"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     </div>
 
                     <div class="material_input_select">
@@ -636,14 +636,14 @@ export class Crews {
 
                     
                     <div class="material_input">
-                    <input type="text" id="entity-supervisor" class="input_filled" data-optionid="${data.crewOne.id}" value="${data.crewOne.username}">
-                    <label for="entity-supervisor">Supervisor</label>
+                    <input type="text" id="entity-supervisor" class="input_filled" data-optionid="${data.crewOne.id}" value="${data.crewOne.username}" disabled>
+                    <label for="entity-supervisor">Supervisor <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-supervisor"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     </div>
                     
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon1" class="input_filled" data-optionid="${data.weaponOne.id}" value="${data.weaponOne.name} [${data.weaponOne.licensePlate}]">
-                    <label for="entity-weapon1">Arma Supervisor</label>
+                    <input type="text" id="entity-weapon1" class="input_filled" data-optionid="${data.weaponOne.id}" value="${data.weaponOne.name} [${data.weaponOne.licensePlate}]" disabled>
+                    <label for="entity-weapon1">Arma Supervisor <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon1"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-weapon1"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
@@ -651,14 +651,14 @@ export class Crews {
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-segundero" class="input_filled" data-optionid="${data.crewTwo.id}" value="${data.crewTwo.username}">
-                    <label for="entity-segundero">Segundero</label>
+                    <input type="text" id="entity-segundero" class="input_filled" data-optionid="${data.crewTwo.id}" value="${data.crewTwo.username}" disabled>
+                    <label for="entity-segundero">Segundero <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-segundero"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-segundero"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon2" class="input_filled" data-optionid="${data.weaponTwo.id}" value="${data.weaponTwo.name} [${data.weaponTwo.licensePlate}]">
-                    <label for="entity-weapon2">Arma Segundero</label>
+                    <input type="text" id="entity-weapon2" class="input_filled" data-optionid="${data.weaponTwo.id}" value="${data.weaponTwo.name} [${data.weaponTwo.licensePlate}]" disabled>
+                    <label for="entity-weapon2">Arma Segundero <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon2"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-weapon2"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
@@ -666,14 +666,14 @@ export class Crews {
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-custodio1" class="input_filled" data-optionid="${data.crewThree.id}" value="${data.crewThree.username}">
-                    <label for="entity-custodio1">Custodio 1</label>
+                    <input type="text" id="entity-custodio1" class="input_filled" data-optionid="${data.crewThree.id}" value="${data.crewThree.username}" disabled>
+                    <label for="entity-custodio1">Custodio 1 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-custodio1"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-custodio1"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon3" class="input_filled" data-optionid="${data.weaponThree.id}" value="${data.weaponThree.name} [${data.weaponThree.licensePlate}]">
-                    <label for="entity-weapon3">Arma Custodio 1</label>
+                    <input type="text" id="entity-weapon3" class="input_filled" data-optionid="${data.weaponThree.id}" value="${data.weaponThree.name} [${data.weaponThree.licensePlate}]" disabled>
+                    <label for="entity-weapon3">Arma Custodio 1 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon3"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-weapon3"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
@@ -681,14 +681,14 @@ export class Crews {
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-custodio2" class="input_filled" data-optionid="${data.crewFour.id}" value="${data.crewFour.username}">
-                    <label for="entity-custodio2">Custodio 2</label>
+                    <input type="text" id="entity-custodio2" class="input_filled" data-optionid="${data.crewFour.id}" value="${data.crewFour.username}" disabled>
+                    <label for="entity-custodio2">Custodio 2 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-custodio2"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-custodio2"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon4" class="input_filled" data-optionid="${data.weaponFour.id}" value="${data.weaponFour.name} [${data.weaponFour.licensePlate}]">
-                    <label for="entity-weapon4">Arma Custodio 2</label>
+                    <input type="text" id="entity-weapon4" class="input_filled" data-optionid="${data.weaponFour.id}" value="${data.weaponFour.name} [${data.weaponFour.licensePlate}]" disabled>
+                    <label for="entity-weapon4">Arma Custodio 2 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon4"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-weapon4"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
@@ -696,14 +696,14 @@ export class Crews {
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-custodio3" class="input_filled" data-optionid="${data.crewFive.id}" value="${data.crewFive.username}">
-                    <label for="entity-custodio3">Custodio 3</label>
+                    <input type="text" id="entity-custodio3" class="input_filled" data-optionid="${data.crewFive.id}" value="${data.crewFive.username}" disabled>
+                    <label for="entity-custodio3">Custodio 3 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-custodio3"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-custodio3"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
-                    <input type="text" id="entity-weapon5" class="input_filled" data-optionid="${data.weaponFive.id}" value="${data.weaponFive.name} [${data.weaponFive.licensePlate}]">
-                    <label for="entity-weapon5">Arma Custodio 3</label>
+                    <input type="text" id="entity-weapon5" class="input_filled" data-optionid="${data.weaponFive.id}" value="${data.weaponFive.name} [${data.weaponFive.licensePlate}]" disabled>
+                    <label for="entity-weapon5">Arma Custodio 3 <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon5"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                     <button id="delete-weapon5"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
@@ -1579,14 +1579,15 @@ export class Crews {
 
     private selectVehicle(): void {
         
-        const element: InterfaceElement = document.getElementById('entity-vehicle')
+        const btnElement: InterfaceElement = document.getElementById('btn-select-vehicle')
         //let offset = 0
 
-            element.addEventListener('click', async (): Promise<void> => {
-                modalTable(0, "", "CAMIONETA")
+            btnElement.addEventListener('click', async (): Promise<void> => {
+                const element: InterfaceElement = document.getElementById('entity-vehicle')
+                modalTable(0, "", "CAMIONETA", element)
             })
 
-            async function modalTable(offset: any, search: any, type: any){
+            async function modalTable(offset: any, search: any, type: any, element: InterfaceElement){
                 const dialogContainer: InterfaceElement =
                 document.getElementById('app-dialogs')
                 let raw = JSON.stringify({
@@ -1765,7 +1766,7 @@ export class Crews {
                 })
 
                 btnSearchModal.onclick = () => {
-                    modalTable(0, txtSearch.value, _selectType.value)
+                    modalTable(0, txtSearch.value, _selectType.value, element)
                 }
 
                 _closeButton.onclick = () => {
@@ -1774,12 +1775,12 @@ export class Crews {
 
                 nextModalButton.onclick = () => {
                     offset = Config.modalRows + (offset)
-                    modalTable(offset, search, _selectType.value)
+                    modalTable(offset, search, _selectType.value, element)
                 }
 
                 prevModalButton.onclick = () => {
                     offset = Config.modalRows - (offset)
-                    modalTable(offset, search, _selectType.value)
+                    modalTable(offset, search, _selectType.value, element)
                 }
             }
 
@@ -1787,6 +1788,14 @@ export class Crews {
 
     private selectWeapon(acc: any, nothingConfig: any, crews: any): void {
         
+        const btnElements: InterfaceElement = {
+            weapon1: document.getElementById('btn-select-weapon1'),
+            weapon2: document.getElementById('btn-select-weapon2'),
+            weapon3: document.getElementById('btn-select-weapon3'),
+            weapon4: document.getElementById('btn-select-weapon4'),
+            weapon5: document.getElementById('btn-select-weapon5')
+        }
+   
         const elements: InterfaceElement = {
          weapon1: document.getElementById('entity-weapon1'),
          weapon2: document.getElementById('entity-weapon2'),
@@ -1796,23 +1805,23 @@ export class Crews {
         }
 
 
-            elements.weapon1.addEventListener('click', async (): Promise<void> => {
+            btnElements.weapon1.addEventListener('click', async (): Promise<void> => {
                 modalTable(0, "", elements.weapon1)
             })
 
-            elements.weapon2.addEventListener('click', async (): Promise<void> => {
+            btnElements.weapon2.addEventListener('click', async (): Promise<void> => {
                 modalTable(0, "", elements.weapon2)
             })
 
-            elements.weapon3.addEventListener('click', async (): Promise<void> => {
+            btnElements.weapon3.addEventListener('click', async (): Promise<void> => {
                 modalTable(0, "", elements.weapon3)
             })
 
-            elements.weapon4.addEventListener('click', async (): Promise<void> => {
+            btnElements.weapon4.addEventListener('click', async (): Promise<void> => {
                 modalTable(0, "", elements.weapon4)
             })
 
-            elements.weapon5.addEventListener('click', async (): Promise<void> => {
+            btnElements.weapon5.addEventListener('click', async (): Promise<void> => {
                 modalTable(0, "", elements.weapon5)
             })
 
@@ -2176,6 +2185,14 @@ export class Crews {
 
     private selectUser(acc: any, nothingConfig: any, crews: any): void {
         
+        const btnElements: InterfaceElement = {
+            supervisor: document.getElementById('btn-select-supervisor'),
+            segundero: document.getElementById('btn-select-segundero'),
+            custodio1: document.getElementById('btn-select-custodio1'),
+            custodio2: document.getElementById('btn-select-custodio2'),
+            custodio3: document.getElementById('btn-select-custodio3')
+        }
+
         const elements: InterfaceElement = {
             supervisor: document.getElementById('entity-supervisor'),
             segundero: document.getElementById('entity-segundero'),
@@ -2185,23 +2202,23 @@ export class Crews {
         }
 
 
-            elements.supervisor.addEventListener('click', async (): Promise<void> => {
+            btnElements.supervisor.addEventListener('click', async (): Promise<void> => {
                 modalTable(0, "", elements.supervisor, true)
             })
 
-            elements.segundero.addEventListener('click', async (): Promise<void> => {
+            btnElements.segundero.addEventListener('click', async (): Promise<void> => {
                 modalTable(0, "", elements.segundero, false)
             })
 
-            elements.custodio1.addEventListener('click', async (): Promise<void> => {
+            btnElements.custodio1.addEventListener('click', async (): Promise<void> => {
                 modalTable(0, "", elements.custodio1, false)
             })
 
-            elements.custodio2.addEventListener('click', async (): Promise<void> => {
+            btnElements.custodio2.addEventListener('click', async (): Promise<void> => {
                 modalTable(0, "", elements.custodio2, false)
             })
 
-            elements.custodio3.addEventListener('click', async (): Promise<void> => {
+            btnElements.custodio3.addEventListener('click', async (): Promise<void> => {
                 modalTable(0, "", elements.custodio3, false)
             })
 

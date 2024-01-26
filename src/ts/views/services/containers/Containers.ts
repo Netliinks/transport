@@ -295,14 +295,14 @@ export class Charges {
             </div>
 
             <div class="material_input">
-            <input type="text" id="entity-guard" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}">
-            <label for="entity-guard"><i class="fa-solid fa-user-police"></i> Guardia</label>
+            <input type="text" id="entity-guard" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" disabled>
+            <label for="entity-guard"><i class="fa-solid fa-user-police"></i> Guardia <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-guard"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
             <button id="delete-guard"><i class="fa-solid fa-trash"></i></button>
             </div>
 
             <div class="material_input">
-            <input type="text" id="entity-weapon" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]">
-            <label for="entity-weapon"><i class="fa-solid fa-gun"></i> Arma</label>
+            <input type="text" id="entity-weapon" data-optionid="${nothingConfig.nothingWeapon.id}" value="${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]" disabled>
+            <label for="entity-weapon"><i class="fa-solid fa-gun"></i> Arma <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
             <button id="delete-weapon"><i class="fa-solid fa-trash"></i></button>
             </div>
 
@@ -508,14 +508,14 @@ export class Charges {
                   </div>
       
                   <div class="material_input">
-                  <input type="text" id="entity-guard" class="input_filled" data-optionid="${data.companion.id}" value="${data?.companion.username ?? ''}">
-                  <label for="entity-guard"><i class="fa-solid fa-user-police"></i> Guardia</label>
+                  <input type="text" id="entity-guard" class="input_filled" data-optionid="${data.companion.id}" value="${data?.companion.username ?? ''}" disabled>
+                  <label for="entity-guard"><i class="fa-solid fa-user-police"></i> Guardia <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-guard"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                   <button id="delete-guard"><i class="fa-solid fa-trash"></i></button>
                   </div>
       
                   <div class="material_input">
-                  <input type="text" id="entity-weapon" class="input_filled" data-optionid="${data.weapon.id}" value="${data?.weapon.name ?? ''} [${data?.weapon.licensePlate ?? ''}]">
-                  <label for="entity-weapon"><i class="fa-solid fa-gun"></i> Arma</label>
+                  <input type="text" id="entity-weapon" class="input_filled" data-optionid="${data.weapon.id}" value="${data?.weapon.name ?? ''} [${data?.weapon.licensePlate ?? ''}]" disabled>
+                  <label for="entity-weapon"><i class="fa-solid fa-gun"></i> Arma <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-weapon"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
                   <button id="delete-weapon"><i class="fa-solid fa-trash"></i></button>
                   </div>
 
@@ -905,10 +905,11 @@ export class Charges {
 
     private selectWeapon(): void {
         
-      const waepon: InterfaceElement = document.getElementById('entity-weapon')
+      const btnWeapon: InterfaceElement = document.getElementById('btn-select-weapon')
 
-          waepon.addEventListener('click', async (): Promise<void> => {
-              modalTable(0, "", waepon)
+          btnWeapon.addEventListener('click', async (): Promise<void> => {
+              const weapon: InterfaceElement = document.getElementById('entity-weapon')
+              modalTable(0, "", weapon)
           })
 
           async function modalTable(offset: any, search: any, element: InterfaceElement){
@@ -981,7 +982,7 @@ export class Charges {
                   })
               }
               let dataModal = await getFilterEntityData("Weapon", raw)
-              const Fwaepon: Data = dataModal.filter((data: any) => data.id != waepon.dataset.optionid)
+              const Fwaepon: Data = dataModal.filter((data: any) => data.id != element.dataset.optionid)
               dialogContainer.style.display = 'block'
               dialogContainer.innerHTML = `
                   <div class="dialog_content" id="dialog-content">
@@ -1103,11 +1104,11 @@ export class Charges {
   }
 
   private selectUser(): void {
-      
-      const guard: InterfaceElement = document.getElementById('entity-guard')
+      const btnGuard: InterfaceElement = document.getElementById('btn-select-guard')
 
 
-          guard.addEventListener('click', async (): Promise<void> => {
+          btnGuard.addEventListener('click', async (): Promise<void> => {
+              const guard: InterfaceElement = document.getElementById('entity-guard')
               modalTable(0, "", guard)
           })
 
@@ -1211,7 +1212,7 @@ export class Charges {
                   })
               }
               let dataModal = await getFilterEntityData("User", raw)
-              const FGuard: Data = dataModal.filter((data: any) => data.id != guard.dataset.optionid)
+              const FGuard: Data = dataModal.filter((data: any) => data.id != element.dataset.optionid)
               dialogContainer.style.display = 'block'
               dialogContainer.innerHTML = `
                   <div class="dialog_content" id="dialog-content">

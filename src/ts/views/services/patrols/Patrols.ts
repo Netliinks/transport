@@ -225,8 +225,8 @@ export class Patrols {
             </div>
 
             <div class="material_input">
-            <input type="text" id="entity-patrol" autocomplete="none">
-            <label for="entity-patrol"><i class="fa-solid fa-car"></i> Patrulla</label>
+            <input type="text" id="entity-patrol" autocomplete="none" disabled>
+            <label for="entity-patrol"><i class="fa-solid fa-car"></i> Patrulla <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-patrol"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
             </div>
 
             
@@ -583,15 +583,16 @@ export class Patrols {
 
     private selectCrew(): void {
         
-        const element: InterfaceElement = document.getElementById('entity-patrol')
+        const btnElement: InterfaceElement = document.getElementById('btn-select-patrol')
         const category: InterfaceElement = document.getElementById('entity-category')
         //let offset = 0
 
-            element.addEventListener('click', async (): Promise<void> => {
-                modalTable(0, "")
+            btnElement.addEventListener('click', async (): Promise<void> => {
+                const element: InterfaceElement = document.getElementById('entity-patrol')
+                modalTable(0, "", element)
             })
 
-            async function modalTable(offset: any, search: any){
+            async function modalTable(offset: any, search: any, element: InterfaceElement){
                 const dialogContainer: InterfaceElement =
                 document.getElementById('app-dialogs')
                 let raw = JSON.stringify({
@@ -773,7 +774,7 @@ export class Patrols {
                 })
 
                 btnSearchModal.onclick = () => {
-                    modalTable(0, txtSearch.value)
+                    modalTable(0, txtSearch.value, element)
                 }
 
                 _closeButton.onclick = () => {
@@ -782,12 +783,12 @@ export class Patrols {
 
                 nextModalButton.onclick = () => {
                     offset = Config.modalRows + (offset)
-                    modalTable(offset, search)
+                    modalTable(offset, search, element)
                 }
 
                 prevModalButton.onclick = () => {
                     offset = Config.modalRows - (offset)
-                    modalTable(offset, search)
+                    modalTable(offset, search, element)
                 }
             }
 

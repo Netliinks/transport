@@ -378,18 +378,18 @@ export class Services {
             </div>
 
             <div class="material_input">
-            <input type="text" id="entity-client" autocomplete="none" readonly>
-            <label for="entity-client"><i class="fa-solid fa-buildings" readonly></i> Cliente</label>
+            <input type="text" id="entity-client" autocomplete="none" disabled>
+            <label for="entity-client"><i class="fa-solid fa-buildings" readonly></i> Cliente <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-client"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
             </div>
 
             <div class="material_input">
-            <input type="text" id="entity-city-origin" autocomplete="none" readonly>
-            <label for="entity-city-origin"><i class="fa-solid fa-earth-americas" readonly></i> Ciudad Origen</label>
+            <input type="text" id="entity-city-origin" autocomplete="none" disabled>
+            <label for="entity-city-origin"><i class="fa-solid fa-earth-americas" readonly></i> Ciudad Origen <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-city-origin"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
             </div>
 
             <div class="material_input">
-            <input type="text" id="entity-city-destiny" autocomplete="none" readonly>
-            <label for="entity-city-destiny"><i class="fa-solid fa-earth-americas" readonly></i> Ciudad Destino</label>
+            <input type="text" id="entity-city-destiny" autocomplete="none" disabled>
+            <label for="entity-city-destiny"><i class="fa-solid fa-earth-americas" readonly></i> Ciudad Destino <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-city-destiny"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
             </div>
 
             <div class="material_input">
@@ -1054,12 +1054,13 @@ export class Services {
         }
     }
     selectClient() {
-        const element = document.getElementById('entity-client');
+        const elementBtn = document.getElementById('btn-select-client');
+        const elementText = document.getElementById('entity-client');
         //let offset = 0
-        element.addEventListener('click', async () => {
-            modalTable(0, "");
+        elementBtn.addEventListener('click', async () => {
+            modalTable(0, "", elementText);
         });
-        async function modalTable(offset, search) {
+        async function modalTable(offset, search, element) {
             const dialogContainer = document.getElementById('app-dialogs');
             let raw = JSON.stringify({
                 "filter": {
@@ -1212,29 +1213,31 @@ export class Services {
                 });
             });
             btnSearchModal.onclick = () => {
-                modalTable(0, txtSearch.value);
+                modalTable(0, txtSearch.value, element);
             };
             _closeButton.onclick = () => {
                 new CloseDialog().x(_dialog);
             };
             nextModalButton.onclick = () => {
                 offset = Config.modalRows + (offset);
-                modalTable(offset, search);
+                modalTable(offset, search, element);
             };
             prevModalButton.onclick = () => {
                 offset = Config.modalRows - (offset);
-                modalTable(offset, search);
+                modalTable(offset, search, element);
             };
         }
     }
     selectCity() {
-        const origin = document.getElementById('entity-city-origin');
-        const destiny = document.getElementById('entity-city-destiny');
+        const btnOrigin = document.getElementById('btn-select-city-origin');
+        const btnDestiny = document.getElementById('btn-select-city-destiny');
         //let offset = 0
-        origin.addEventListener('click', async () => {
+        btnOrigin.addEventListener('click', async () => {
+            const origin = document.getElementById('entity-city-origin');
             modalTable(0, "", origin);
         });
-        destiny.addEventListener('click', async () => {
+        btnDestiny.addEventListener('click', async () => {
+            const destiny = document.getElementById('entity-city-destiny');
             modalTable(0, "", destiny);
         });
         async function modalTable(offset, search, element) {

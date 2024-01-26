@@ -209,8 +209,8 @@ export class Patrols {
             </div>
 
             <div class="material_input">
-            <input type="text" id="entity-patrol" autocomplete="none">
-            <label for="entity-patrol"><i class="fa-solid fa-car"></i> Patrulla</label>
+            <input type="text" id="entity-patrol" autocomplete="none" disabled>
+            <label for="entity-patrol"><i class="fa-solid fa-car"></i> Patrulla <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-patrol"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
             </div>
 
             
@@ -524,13 +524,14 @@ export class Patrols {
         }
     }
     selectCrew() {
-        const element = document.getElementById('entity-patrol');
+        const btnElement = document.getElementById('btn-select-patrol');
         const category = document.getElementById('entity-category');
         //let offset = 0
-        element.addEventListener('click', async () => {
-            modalTable(0, "");
+        btnElement.addEventListener('click', async () => {
+            const element = document.getElementById('entity-patrol');
+            modalTable(0, "", element);
         });
-        async function modalTable(offset, search) {
+        async function modalTable(offset, search, element) {
             const dialogContainer = document.getElementById('app-dialogs');
             let raw = JSON.stringify({
                 "filter": {
@@ -702,18 +703,18 @@ export class Patrols {
                 });
             });
             btnSearchModal.onclick = () => {
-                modalTable(0, txtSearch.value);
+                modalTable(0, txtSearch.value, element);
             };
             _closeButton.onclick = () => {
                 new CloseDialog().x(_dialog);
             };
             nextModalButton.onclick = () => {
                 offset = Config.modalRows + (offset);
-                modalTable(offset, search);
+                modalTable(offset, search, element);
             };
             prevModalButton.onclick = () => {
                 offset = Config.modalRows - (offset);
-                modalTable(offset, search);
+                modalTable(offset, search, element);
             };
         }
     }
