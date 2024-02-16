@@ -627,7 +627,8 @@ export class Supervisors {
     }
     import() {
         const importClients = document.getElementById('import-entities');
-        importClients.addEventListener('click', () => {
+        importClients.addEventListener('click', async () => {
+            let userState = await getNothing("name", "Disponible", "UserState");
             this.entityDialogContainer.innerHTML = '';
             this.entityDialogContainer.style.display = 'flex';
             this.entityDialogContainer.innerHTML = `
@@ -679,7 +680,6 @@ export class Supervisors {
                 readFile(_fileHandler.files[0]);
             });
             async function readFile(file) {
-                let userState = await getNothing("name", "Disponible", "UserState");
                 //const customer = await getEntitiesData('Customer');
                 //const citadel = await getEntitiesData('Citadel');
                 //const deparment = await getEntitiesData('Department');
