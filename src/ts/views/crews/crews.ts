@@ -1282,7 +1282,7 @@ export class Crews {
                         <div class="dialog dialog_danger">
                         <div class="dialog_container">
                             <div class="dialog_header">
-                            <h2>¿Deseas eliminar esta arma?</h2>
+                            <h2>¿Deseas eliminar esta patrulla?</h2>
                             </div>
 
                             <div class="dialog_message">

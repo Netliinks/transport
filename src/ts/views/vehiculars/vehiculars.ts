@@ -299,7 +299,8 @@ export class Vehiculars {
 
     public import() {
         const importClients: InterfaceElement = document.getElementById('import-entities');
-        importClients.addEventListener('click', () => {
+        importClients.addEventListener('click', async () => {
+            let vehicularState = await getNothing("name", "Disponible", "VehicularState")
             this.entityDialogContainer.innerHTML = '';
             this.entityDialogContainer.style.display = 'flex';
             this.entityDialogContainer.innerHTML = `
@@ -351,7 +352,6 @@ export class Vehiculars {
                 readFile(_fileHandler.files[0]);
             });
             async function readFile(file: any) {
-                let vehicularState = await getNothing("name", "Disponible", "VehicularState")
                 //const customer = await getEntitiesData('Vehicular');
                 //const citadel = await getEntitiesData('Citadel');
                 //const deparment = await getEntitiesData('Department');
