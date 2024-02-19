@@ -550,6 +550,11 @@ export class Patrols {
                             "property": "category",
                             "operator": "=",
                             "value": `${category.value}`
+                        },
+                        {
+                            "property": "crewOne.username",
+                            "operator": "<>",
+                            "value": `N/A`
                         }
                     ],
                 },
@@ -596,6 +601,11 @@ export class Patrols {
                                 "property": "category",
                                 "operator": "=",
                                 "value": `${category.value}`
+                            },
+                            {
+                                "property": "crewOne.username",
+                                "operator": "<>",
+                                "value": `N/A`
                             }
                         ],
                     },
@@ -606,6 +616,7 @@ export class Patrols {
                 });
             }
             let dataModal = await getFilterEntityData("Crew", raw);
+            console.log(dataModal);
             const FData = dataModal.filter((data) => data.id != element.dataset.optionid);
             dialogContainer.style.display = 'block';
             dialogContainer.innerHTML = `

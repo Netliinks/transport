@@ -234,8 +234,9 @@ export class Crews {
                     <br>
 
                     <div class="material_input">
-                    <input type="text" id="entity-supervisor" autocomplete="none" disabled>
+                    <input type="text" id="entity-supervisor" autocomplete="none" data-optionid="${nothingConfig.nothingUser.id}" value="${nothingConfig.nothingUser.username}" disabled>
                     <label for="entity-supervisor"><i class="fa-solid fa-person-military-pointing"></i> Supervisor <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-supervisor"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
+                    <button id="delete-supervisor"><i class="fa-solid fa-trash"></i></button>
                     </div>
 
                     <div class="material_input">
@@ -343,7 +344,7 @@ export class Crews {
                     weapon5: document.getElementById('entity-weapon5'),
                 }
                 let dataArray = []
-                if(inputsCollection.supervisor.dataset.optionid){
+                if(inputsCollection.supervisor.dataset.optionid != nothingConfig.nothingUser.id || inputsCollection.supervisor.value != "N/A"){
                     dataArray.push({
                         id: inputsCollection.supervisor.dataset.optionid,
                         value: inputsCollection.supervisor.value,
@@ -638,6 +639,7 @@ export class Crews {
                     <div class="material_input">
                     <input type="text" id="entity-supervisor" class="input_filled" data-optionid="${data.crewOne.id}" value="${data.crewOne.username}" disabled>
                     <label for="entity-supervisor">Supervisor <button style="background-color:white; color:#808080; font-size:12px;" id="btn-select-supervisor"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:blue;"></i></button></label>
+                    <button id="delete-supervisor"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     
 
@@ -786,54 +788,80 @@ export class Crews {
                     })
                 }
 
-                category += 1
-                if($value.supervisor.dataset.optionid != data.crewOne.id){
-                    dataArray.push({
-                        id: $value.supervisor.dataset.optionid,
-                        value: $value.supervisor.value,
-                        table: "User",
-                        state: nothingConfig.userState.id,
-                        title: "SUPERVISOR"
-                    })
-                    dataChangesArray.push({
-                        id: data.crewOne.id,
-                        value: data.crewOne.username,
-                        table: "User",
-                        state: nothingConfig.userEnable.id,
-                        title: "SUPERVISOR"
-                    })
-                }
-
-                if($value.weapon1.dataset.optionid != data.weaponOne.id){
-                    if($value.weapon1.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon1.value != "N/A [N/A]"){
+                if($value.supervisor.dataset.optionid != nothingConfig.nothingUser.id || $value.supervisor.value != "N/A"){
+                    category += 1
+                    if($value.supervisor.dataset.optionid != data.crewOne.id){
                         dataArray.push({
-                            id: $value.weapon1.dataset.optionid,
-                            value: $value.weapon1.value,
-                            table: "Weapon",
-                            state: nothingConfig.weaponState.id,
-                            title: "ARMA"
+                            id: $value.supervisor.dataset.optionid,
+                            value: $value.supervisor.value,
+                            table: "User",
+                            state: nothingConfig.userState.id,
+                            title: "SUPERVISOR"
                         })
-                    
-                        if(data.weaponOne.id != nothingConfig.nothingWeapon.id){
+
+                        if(data.crewOne.id != nothingConfig.nothingUser.id){
                             dataChangesArray.push({
-                                id: data.weaponOne.id,
-                                value: `${data.weaponOne.name} [${data.weaponOne.licensePlate}]`,
-                                table: "Weapon",
-                                state: nothingConfig.weaponEnable.id,
-                                title: "ARMA"
-                            })
-                        }
-                    }else{
-                        if(data.weaponOne.id != nothingConfig.nothingWeapon.id){
-                            dataChangesArray.push({
-                                id: data.weaponOne.id,
-                                value: `${data.weaponOne.name} [${data.weaponOne.licensePlate}]`,
-                                table: "Weapon",
-                                state: nothingConfig.weaponEnable.id,
-                                title: "ARMA"
+                                id: data.crewOne.id,
+                                value: data.crewOne.username,
+                                table: "User",
+                                state: nothingConfig.userEnable.id,
+                                title: "SUPERVISOR"
                             })
                         }
                     }
+
+                    if($value.weapon1.dataset.optionid != data.weaponOne.id){
+                        if($value.weapon1.dataset.optionid != nothingConfig.nothingWeapon.id || $value.weapon1.value != "N/A [N/A]"){
+                            dataArray.push({
+                                id: $value.weapon1.dataset.optionid,
+                                value: $value.weapon1.value,
+                                table: "Weapon",
+                                state: nothingConfig.weaponState.id,
+                                title: "ARMA"
+                            })
+                        
+                            if(data.weaponOne.id != nothingConfig.nothingWeapon.id){
+                                dataChangesArray.push({
+                                    id: data.weaponOne.id,
+                                    value: `${data.weaponOne.name} [${data.weaponOne.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                })
+                            }
+                        }else{
+                            if(data.weaponOne.id != nothingConfig.nothingWeapon.id){
+                                dataChangesArray.push({
+                                    id: data.weaponOne.id,
+                                    value: `${data.weaponOne.name} [${data.weaponOne.licensePlate}]`,
+                                    table: "Weapon",
+                                    state: nothingConfig.weaponEnable.id,
+                                    title: "ARMA"
+                                })
+                            }
+                        }
+                    }
+                }else{
+                    if(data.crewOne.id != nothingConfig.nothingUser.id){
+                        dataChangesArray.push({
+                            id: data.crewOne.id,
+                            value: data.crewOne.username,
+                            table: "User",
+                            state: nothingConfig.userEnable.id,
+                            title: "GUARDIA"
+                        })
+                    }
+                    if(data.weaponOne.id != nothingConfig.nothingWeapon.id){
+                        dataChangesArray.push({
+                            id: data.weaponOne.id,
+                            value: `${data.weaponOne.name} [${data.weaponOne.licensePlate}]`,
+                            table: "Weapon",
+                            state: nothingConfig.weaponEnable.id,
+                            title: "ARMA"
+                        })
+                    }
+                    $value.weapon1.dataset.optionid = nothingConfig.nothingWeapon.id
+                    $value.weapon1.value = "N/A [N/A]"
                 }
 
                 if($value.segundero.dataset.optionid != nothingConfig.nothingUser.id || $value.segundero.value != "N/A"){
@@ -2611,6 +2639,7 @@ export class Crews {
     private selectDelete(nothingConfig: any): void {
         
         const inputs: InterfaceElement = {
+            supervisor: document.getElementById('entity-supervisor'),
             segundero: document.getElementById('entity-segundero'),
             custodio1: document.getElementById('entity-custodio1'),
             custodio2: document.getElementById('entity-custodio2'),
@@ -2623,6 +2652,7 @@ export class Crews {
         }
 
         const deletes: InterfaceElement = {
+            supervisor: document.getElementById('delete-supervisor'),
             segundero: document.getElementById('delete-segundero'),
             custodio1: document.getElementById('delete-custodio1'),
             custodio2: document.getElementById('delete-custodio2'),
@@ -2633,6 +2663,11 @@ export class Crews {
             weapon4: document.getElementById('delete-weapon4'),
             weapon5: document.getElementById('delete-weapon5'),
         }
+
+        deletes.supervisor.addEventListener('click', async (): Promise<void> => {
+            inputs.supervisor.value = nothingConfig.nothingUser.username
+            inputs.supervisor.dataset.optionid = nothingConfig.nothingUser.id
+        })
 
         deletes.weapon1.addEventListener('click', async (): Promise<void> => {
             inputs.weapon1.value = `${nothingConfig.nothingWeapon.name} [${nothingConfig.nothingWeapon.licensePlate}]`
