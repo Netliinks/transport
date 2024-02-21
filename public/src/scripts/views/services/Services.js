@@ -1223,8 +1223,10 @@ export class Services {
                 modalTable(offset, search, element);
             };
             prevModalButton.onclick = () => {
-                offset = Config.modalRows - (offset);
-                modalTable(offset, search, element);
+                if (offset > 0) {
+                    offset = (offset) - Config.modalRows;
+                    modalTable(offset, search, element);
+                }
             };
         }
     }
@@ -1380,8 +1382,10 @@ export class Services {
                 modalTable(offset, search, element);
             };
             prevModalButton.onclick = () => {
-                offset = Config.modalRows - (offset);
-                modalTable(offset, search, element);
+                if (offset > 0) {
+                    offset = (offset) - Config.modalRows;
+                    modalTable(offset, search, element);
+                }
             };
         }
     }

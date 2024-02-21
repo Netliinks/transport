@@ -1958,8 +1958,10 @@ export class Crews {
                 modalTable(offset, search, element);
             };
             prevModalButton.onclick = () => {
-                offset = Config.modalRows - (offset);
-                modalTable(offset, search, element);
+                if (offset > 0) {
+                    offset = (offset) - Config.modalRows;
+                    modalTable(offset, search, element);
+                }
             };
             if (acc == 'UPD') {
                 listWeapon.innerHTML = `
@@ -2349,8 +2351,10 @@ export class Crews {
                 modalTable(offset, search, element, isSupervisor);
             };
             prevModalButton.onclick = () => {
-                offset = Config.modalRows - (offset);
-                modalTable(offset, search, element, isSupervisor);
+                if (offset > 0) {
+                    offset = (offset) - Config.modalRows;
+                    modalTable(offset, search, element, isSupervisor);
+                }
             };
             if (acc == 'UPD') {
                 listUser.innerHTML = `

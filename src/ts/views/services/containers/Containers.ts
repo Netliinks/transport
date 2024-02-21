@@ -1096,8 +1096,10 @@ export class Charges {
               }
 
               prevModalButton.onclick = () => {
-                  offset = Config.modalRows - (offset)
+                if(offset > 0){
+                  offset = (offset) - Config.modalRows
                   modalTable(offset, search, element)
+                }
               }
           }
 
@@ -1325,8 +1327,10 @@ export class Charges {
               }
 
               prevModalButton.onclick = () => {
-                  offset = Config.modalRows - (offset)
+                if(offset > 0){
+                  offset = (offset) - Config.modalRows
                   modalTable(offset, search, element)
+                }
               }
           }
 
