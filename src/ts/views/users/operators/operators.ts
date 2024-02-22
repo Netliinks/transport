@@ -1166,6 +1166,11 @@ export const setUserPassword = async (): Promise<any> => {
                 "property": "isSuper",
                 "operator": "=",
                 "value": `${true}`
+              },
+              {
+                "property": "temp",
+                "operator": "<>",
+                "value": ``
               }
             ]
         }

@@ -1226,6 +1226,11 @@ export const setUserPassword = async () => {
                     "property": "isSupervisor",
                     "operator": "=",
                     "value": `${true}`
+                },
+                {
+                    "property": "temp",
+                    "operator": "<>",
+                    "value": ``
                 }
             ]
         }
