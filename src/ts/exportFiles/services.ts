@@ -370,7 +370,7 @@ export const exportServiceCsv = async (ar: any, start: any, end: any) => {
         //}
         
     }
-    generateFile(rows, "Log_Servicios", "csv");
+    generateFile(rows, "Servicios", "csv");
 }
 
 export const exportServiceXls = async (ar: any, start: any, end: any) => {

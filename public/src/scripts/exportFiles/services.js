@@ -354,7 +354,7 @@ export const exportServiceCsv = async (ar, start, end) => {
         rows.push(obj);
         //}
     }
-    generateFile(rows, "Log_Servicios", "csv");
+    generateFile(rows, "Servicios", "csv");
 };
 export const exportServiceXls = async (ar, start, end) => {
     let rows = [];

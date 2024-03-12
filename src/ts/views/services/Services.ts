@@ -9,6 +9,7 @@ import { tableLayoutTemplate } from "./Template.js"
 import { Patrols } from "./patrols/Patrols.js"
 import { Charges } from "./containers/Containers.js"
 import { exportServiceCsv, exportServicePdf, exportServiceXls } from "../../exportFiles/services.js"
+import { exportContainerCsv, exportContainerXls } from "../../exportFiles/container.js"
 
 const tableRows = Config.tableRows
 const currentPage = Config.currentPage
@@ -900,10 +901,11 @@ export class Services {
                     <div class="dialog">
                         <div class="dialog_container padding_8">
                             <div class="dialog_header">
-                                <h2>Seleccione un tipo</h2>
+                                <h2>Filtrar por fecha de servicio</h2>
                             </div>
 
                             <div class="dialog_message padding_8">
+                                <h3>Servicios</h3>
                                 <div class="form_group">
                                     <div class="form_input">
                                         <label class="form_label" for="start-date">Desde:</label>
@@ -925,6 +927,21 @@ export class Services {
 
                                     <!-- <label for="exportPdf">
                                         <input type="radio" id="exportPdf" name="exportOption" value="pdf" /> PDF
+                                    </label> -->
+                                </div>
+                                <br>
+                                <h3>Contenedores</h3>
+                                <div class="form_group">
+                                    <label for="exportContainerCsv">
+                                        <input type="radio" id="exportContainerCsv" name="exportOption" value="csv" /> CSV
+                                    </label>
+
+                                    <label for="exportContainerXls">
+                                        <input type="radio" id="exportContainerXls" name="exportOption" value="xls" /> XLS
+                                    </label>
+
+                                    <!-- <label for="exportPdf">
+                                        <input type="radio" id="exportContainerPdf" name="exportOption" value="pdf" /> PDF
                                     </label> -->
                                 </div>
                             </div>
@@ -960,92 +977,32 @@ export class Services {
                     start: document.getElementById('start-date'),
                     end: document.getElementById('end-date'),
                 }
-                let rawExport = JSON.stringify({
-                    "filter": {
-                        "conditions": [
-                          {
-                            "property": "business.id",
-                            "operator": "=",
-                            "value": `${businessId}`
-                          },
-                          {
-                            "property": "creationDate",
-                            "operator": ">=",
-                            "value": `${_values.start.value}`
-                          },
-                          {
-                            "property": "creationDate",
-                            "operator": "<=",
-                            "value": `${_values.end.value}`
-                          }
-                        ],
-                        
-                    }, 
-                    sort: "-createdDate",
-                    fetchPlan: 'full',
-                    
-                })
-                if(infoPage.search != ""){
-                    rawExport = JSON.stringify({
-                        "filter": {
-                            "conditions": [
-                              {
-                                "group": "OR",
-                                "conditions": [
-                                    {
-                                        "property": "name",
-                                        "operator": "contains",
-                                        "value": `${infoPage.search.toLowerCase()}`
-                                      },
-                                      {
-                                        "property": "customer.name",
-                                        "operator": "contains",
-                                        "value": `${infoPage.search.toLowerCase()}`
-                                      },
-                                      {
-                                        "property": "serviceState.name",
-                                        "operator": "contains",
-                                        "value": `${infoPage.search.toLowerCase()}`
-                                      }
-                                ]
-                              },
-                              {
-                                "property": "business.id",
-                                "operator": "=",
-                                "value": `${businessId}`
-                              },
-                              {
-                                "property": "creationDate",
-                                "operator": ">=",
-                                "value": `${_values.start.value}`
-                              },
-                              {
-                                "property": "creationDate",
-                                "operator": "<=",
-                                "value": `${_values.end.value}`
-                              }
-                            ]
-                          },
-                        sort: "-createdDate",
-                        fetchPlan: 'full',
-                        
-                    })
-                }
-                const logs: any = await getFilterEntityData("Service", rawExport) //await getLogs()
+                
+                
                 for (let i = 0; i < _values.exportOption.length; i++) {
                     let ele: any = _values.exportOption[i]
                     if (ele.type = "radio") {
     
                         if (ele.checked){
-                            if(ele.value == "xls"){
+                            if(ele.id == "exportXls"){
+                                const logs: any = await this.exportDetails(_values, "SERVICIO") //await getLogs()
                                 // @ts-ignore
                                 exportServiceXls(logs)
-                            }else if(ele.value == "csv"){
+                            }else if(ele.id == "exportCsv"){
+                                const logs: any = await this.exportDetails(_values, "SERVICIO")
                                 // @ts-ignore
                                 exportServiceCsv(logs)
-                            }else if(ele.value == "pdf"){
+                            }else if(ele.id == "exportPdf"){
                                 // @ts-ignore
                                 //exportServicePdf(logs)
+                            }else if(ele.id == "exportContainerXls"){
+                                const logs: any = await this.exportDetails(_values, "CONTENEDOR")
+                                // @ts-ignore
+                                exportContainerXls(logs)
+                            }else if(ele.id == "exportContainerCsv"){
+                                const logs: any = await this.exportDetails(_values, "CONTENEDOR")
+                                // @ts-ignore
+                                exportContainerCsv(logs)
                             }
                         }
                     }
@@ -1056,6 +1013,158 @@ export class Services {
             };
         });
     };
+
+    private exportDetails = async (elements: InterfaceElement, mode: string) => {
+        let response;
+        if(mode == "SERVICIO"){
+            let rawExport = JSON.stringify({
+                "filter": {
+                    "conditions": [
+                      {
+                        "property": "business.id",
+                        "operator": "=",
+                        "value": `${businessId}`
+                      },
+                      {
+                        "property": "creationDate",
+                        "operator": ">=",
+                        "value": `${elements.start.value}`
+                      },
+                      {
+                        "property": "creationDate",
+                        "operator": "<=",
+                        "value": `${elements.end.value}`
+                      }
+                    ],
+                    
+                }, 
+                sort: "-createdDate",
+                fetchPlan: 'full',
+                
+            })
+            if(infoPage.search != ""){
+                rawExport = JSON.stringify({
+                    "filter": {
+                        "conditions": [
+                          {
+                            "group": "OR",
+                            "conditions": [
+                                {
+                                    "property": "name",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  },
+                                  {
+                                    "property": "customer.name",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  },
+                                  {
+                                    "property": "serviceState.name",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  }
+                            ]
+                          },
+                          {
+                            "property": "business.id",
+                            "operator": "=",
+                            "value": `${businessId}`
+                          },
+                          {
+                            "property": "creationDate",
+                            "operator": ">=",
+                            "value": `${elements.start.value}`
+                          },
+                          {
+                            "property": "creationDate",
+                            "operator": "<=",
+                            "value": `${elements.end.value}`
+                          }
+                        ]
+                      },
+                    sort: "-createdDate",
+                    fetchPlan: 'full',
+                    
+                })
+            }
+            response = await getFilterEntityData("Service", rawExport)
+        }else if(mode == "CONTENEDOR"){
+            let rawExport = JSON.stringify({
+                "filter": {
+                    "conditions": [
+                      {
+                        "property": "business.id",
+                        "operator": "=",
+                        "value": `${businessId}`
+                      },
+                      {
+                        "property": "service.creationDate",
+                        "operator": ">=",
+                        "value": `${elements.start.value}`
+                      },
+                      {
+                        "property": "service.creationDate",
+                        "operator": "<=",
+                        "value": `${elements.end.value}`
+                      }
+                    ],
+                    
+                }, 
+                sort: "-createdDate",
+                fetchPlan: 'full',
+                
+            })
+            if(infoPage.search != ""){
+                rawExport = JSON.stringify({
+                    "filter": {
+                        "conditions": [
+                          {
+                            "group": "OR",
+                            "conditions": [
+                                {
+                                    "property": "service.name",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  },
+                                  {
+                                    "property": "customer.name",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  },
+                                  {
+                                    "property": "service.serviceState.name",
+                                    "operator": "contains",
+                                    "value": `${infoPage.search.toLowerCase()}`
+                                  }
+                            ]
+                          },
+                          {
+                            "property": "business.id",
+                            "operator": "=",
+                            "value": `${businessId}`
+                          },
+                          {
+                            "property": "service.creationDate",
+                            "operator": ">=",
+                            "value": `${elements.start.value}`
+                          },
+                          {
+                            "property": "service.creationDate",
+                            "operator": "<=",
+                            "value": `${elements.end.value}`
+                          }
+                        ]
+                      },
+                    sort: "-createdDate",
+                    fetchPlan: 'full',
+                    
+                })
+            }
+            response = await getFilterEntityData("Charge", rawExport)
+        }
+        return response;
+    }
 
     private pagination(items: [], limitRows: number, currentPage: number) {
         const tableBody: InterfaceElement = document.getElementById('datatable-body')
