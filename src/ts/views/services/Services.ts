@@ -905,7 +905,6 @@ export class Services {
                             </div>
 
                             <div class="dialog_message padding_8">
-                                <h3>Servicios</h3>
                                 <div class="form_group">
                                     <div class="form_input">
                                         <label class="form_label" for="start-date">Desde:</label>
@@ -916,7 +915,10 @@ export class Services {
                                         <label class="form_label" for="end-date">Hasta:</label>
                                         <input type="date" class="input_date input_date-end" id="end-date" name="end-date">
                                     </div>
-
+                                </div>
+                                <br>
+                                <h3>Servicios</h3>
+                                <div class="form_group">
                                     <label for="exportCsv">
                                         <input type="radio" id="exportCsv" name="exportOption" value="csv" /> CSV
                                     </label>
