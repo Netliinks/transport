@@ -318,11 +318,11 @@ export const exportServicePdf = async (ar: any) => {
 }
 
 export const exportServiceCsv = async (ar: any, start: any, end: any) => {
-    let rows = [];
-    for(let i=0; i < ar.length; i++){
-        let service = ar[i]
-        // @ts-ignore
-        //if(visit.creationDate >= start && visit.creationDate <= end){
+  let rows = [];
+  for(let i=0; i < ar.length; i++){
+      let service = ar[i]
+      // @ts-ignore
+      //if(visit.creationDate >= start && visit.creationDate <= end){
           let obj = {
             "Solicitante": `${service?.name ?? ''}`,
             "Cliente": `${service?.customer?.name ?? ''}`,
@@ -342,34 +342,104 @@ export const exportServiceCsv = async (ar: any, start: any, end: any) => {
             "Hora Creación": `${service?.creationTime ?? ''}`,
             "Creado por": `${service?.createdBy ?? ''}`,
             "Observación": `${service?.observation.split("\n").join("(salto)") ?? ''}`,
+            "Origen Fecha": ``,
+            "Origen Hora": ``,
+            "Origen Usuario": ``,
+            //"Observación 1": ``,
+            "Inicio Fecha": ``,
+            "Inicio Hora": ``,
+            "Inicio Usuario": ``,
+            //"Observación 2": ``,
+            "Destino Fecha": ``,
+            "Destino Hora": ``,
+            "Destino Usuario": ``,
+            //"Observación 3": ``,
+            "Fin Fecha": ``,
+            "Fin Hora": ``,
+            "Fin Usuario": ``,
+            "Contenedor_1": ``,
+            "Placa_1": ``,
+            "Conductor_1": ``,
+            "DNI_1": ``,
+            "Contenedor_2": ``,
+            "Placa_2": ``,
+            "Conductor_2": ``,
+            "DNI_2": ``,
+            "Contenedor_3": ``,
+            "Placa_3": ``,
+            "Conductor_3": ``,
+            "DNI_3": ``,
+            "Contenedor_4": ``,
+            "Placa_4": ``,
+            "Conductor_4": ``,
+            "DNI_4": ``,
+            "Contenedor_5": ``,
+            "Placa_5": ``,
+            "Conductor_5": ``,
+            "DNI_5": ``,
+            "Contenedor_6": ``,
+            "Placa_6": ``,
+            "Conductor_6": ``,
+            "DNI_6": ``,
           }
           
           let control = await getSearch("service.id", service.id, "Control")
           if(control != undefined){
             let obj1 = {
               "Origen Fecha": `${control?.arrivalOriginDate ?? ''}`,
-              "Origen Hora": ` ${control?.arrivalOriginTime ?? ''}`,
-              "Origen Usuario": ` ${control?.originUser?.username ?? ''}`,
-              //"Observación 1": ` ${control?.observation ?? ''}`,
+              "Origen Hora": `${control?.arrivalOriginTime ?? ''}`,
+              "Origen Usuario": `${control?.originUser?.username ?? ''}`,
+              //"Observación 1": `${control?.observation ?? ''}`,
               "Inicio Fecha": `${control?.startingPointDate ?? ''}`,
-              "Inicio Hora": ` ${control?.startingPointTime ?? ''}`,
-              "Inicio Usuario": ` ${control?.startUser?.username ?? ''}`,
-              //"Observación 2": ` ${control?.observation2 ?? ''}`,
+              "Inicio Hora": `${control?.startingPointTime ?? ''}`,
+              "Inicio Usuario": `${control?.startUser?.username ?? ''}`,
+              //"Observación 2": `${control?.observation2 ?? ''}`,
               "Destino Fecha": `${control?.arrivalDestinationDate ?? ''}`,
-              "Destino Hora": ` ${control?.arrivalDestinationTime ?? ''}`,
-              "Destino Usuario": ` ${control?.destinationUser?.username ?? ''}`,
-              //"Observación 3": ` ${control?.observation3 ?? ''}`,
+              "Destino Hora": `${control?.arrivalDestinationTime ?? ''}`,
+              "Destino Usuario": `${control?.destinationUser?.username ?? ''}`,
+              //"Observación 3": `${control?.observation3 ?? ''}`,
               "Fin Fecha": `${control?.endServiceDate ?? ''}`,
-              "Fin Hora": ` ${control?.endServiceTime ?? ''}`,
-              "Fin Usuario": ` ${control?.endUser?.username ?? ''}`,
-              //"Observación 4": ` ${control?.observation4 ?? ''}`,
+              "Fin Hora": `${control?.endServiceTime ?? ''}`,
+              "Fin Usuario": `${control?.endUser?.username ?? ''}`,
+              //"Observación 4": `${control?.observation4 ?? ''}`,
             }
             obj = Object.assign(obj, obj1);
           }
+          let containers = await getDetails("service.id", service.id, "Charge")
+          console.log(containers);
+          if(containers != undefined){
+            let obj2 = {
+              "Contenedor_1": `${containers[0]?.name ?? ''}`,
+              "Placa_1": `${containers[0]?.licensePlate ?? ''}`,
+              "Conductor_1": `${containers[0]?.driver ?? ''}`,
+              "DNI_1": `${containers[0]?.dniDriver ?? ''}`,
+              "Contenedor_2": `${containers[1]?.name ?? ''}`,
+              "Placa_2": `${containers[1]?.licensePlate ?? ''}`,
+              "Conductor_2": `${containers[1]?.driver ?? ''}`,
+              "DNI_2": `${containers[1]?.dniDriver ?? ''}`,
+              "Contenedor_3": `${containers[2]?.name ?? ''}`,
+              "Placa_3": `${containers[2]?.licensePlate ?? ''}`,
+              "Conductor_3": `${containers[2]?.driver ?? ''}`,
+              "DNI_3": `${containers[2]?.dniDriver ?? ''}`,
+              "Contenedor_4": `${containers[3]?.name ?? ''}`,
+              "Placa_4": `${containers[3]?.licensePlate ?? ''}`,
+              "Conductor_4": `${containers[3]?.driver ?? ''}`,
+              "DNI_4": `${containers[3]?.dniDriver ?? ''}`,
+              "Contenedor_5": `${containers[4]?.name ?? ''}`,
+              "Placa_5": `${containers[4]?.licensePlate ?? ''}`,
+              "Conductor_5": `${containers[4]?.driver ?? ''}`,
+              "DNI_5": `${containers[4]?.dniDriver ?? ''}`,
+              "Contenedor_6": `${containers[5]?.name ?? ''}`,
+              "Placa_6": `${containers[5]?.licensePlate ?? ''}`,
+              "Conductor_6": `${containers[5]?.driver ?? ''}`,
+              "DNI_6": `${containers[5]?.dniDriver ?? ''}`,
+            }
+            obj = Object.assign(obj, obj2);
+          }
           rows.push(obj);
-        //}
-        
-    }
+      //}
+      
+  }
     generateFile(rows, "Servicios", "csv");
 }
 
@@ -398,29 +468,99 @@ export const exportServiceXls = async (ar: any, start: any, end: any) => {
               "Hora Creación": `${service?.creationTime ?? ''}`,
               "Creado por": `${service?.createdBy ?? ''}`,
               "Observación": `${service?.observation.split("\n").join("(salto)") ?? ''}`,
+              "Origen Fecha": ``,
+              "Origen Hora": ``,
+              "Origen Usuario": ``,
+              //"Observación 1": ``,
+              "Inicio Fecha": ``,
+              "Inicio Hora": ``,
+              "Inicio Usuario": ``,
+              //"Observación 2": ``,
+              "Destino Fecha": ``,
+              "Destino Hora": ``,
+              "Destino Usuario": ``,
+              //"Observación 3": ``,
+              "Fin Fecha": ``,
+              "Fin Hora": ``,
+              "Fin Usuario": ``,
+              "Contenedor_1": ``,
+              "Placa_1": ``,
+              "Conductor_1": ``,
+              "DNI_1": ``,
+              "Contenedor_2": ``,
+              "Placa_2": ``,
+              "Conductor_2": ``,
+              "DNI_2": ``,
+              "Contenedor_3": ``,
+              "Placa_3": ``,
+              "Conductor_3": ``,
+              "DNI_3": ``,
+              "Contenedor_4": ``,
+              "Placa_4": ``,
+              "Conductor_4": ``,
+              "DNI_4": ``,
+              "Contenedor_5": ``,
+              "Placa_5": ``,
+              "Conductor_5": ``,
+              "DNI_5": ``,
+              "Contenedor_6": ``,
+              "Placa_6": ``,
+              "Conductor_6": ``,
+              "DNI_6": ``,
             }
             
             let control = await getSearch("service.id", service.id, "Control")
             if(control != undefined){
               let obj1 = {
                 "Origen Fecha": `${control?.arrivalOriginDate ?? ''}`,
-                "Origen Hora": ` ${control?.arrivalOriginTime ?? ''}`,
-                "Origen Usuario": ` ${control?.originUser?.username ?? ''}`,
-                //"Observación 1": ` ${control?.observation ?? ''}`,
+                "Origen Hora": `${control?.arrivalOriginTime ?? ''}`,
+                "Origen Usuario": `${control?.originUser?.username ?? ''}`,
+                //"Observación 1": `${control?.observation ?? ''}`,
                 "Inicio Fecha": `${control?.startingPointDate ?? ''}`,
-                "Inicio Hora": ` ${control?.startingPointTime ?? ''}`,
-                "Inicio Usuario": ` ${control?.startUser?.username ?? ''}`,
-                //"Observación 2": ` ${control?.observation2 ?? ''}`,
+                "Inicio Hora": `${control?.startingPointTime ?? ''}`,
+                "Inicio Usuario": `${control?.startUser?.username ?? ''}`,
+                //"Observación 2": `${control?.observation2 ?? ''}`,
                 "Destino Fecha": `${control?.arrivalDestinationDate ?? ''}`,
-                "Destino Hora": ` ${control?.arrivalDestinationTime ?? ''}`,
-                "Destino Usuario": ` ${control?.destinationUser?.username ?? ''}`,
-                //"Observación 3": ` ${control?.observation3 ?? ''}`,
+                "Destino Hora": `${control?.arrivalDestinationTime ?? ''}`,
+                "Destino Usuario": `${control?.destinationUser?.username ?? ''}`,
+                //"Observación 3": `${control?.observation3 ?? ''}`,
                 "Fin Fecha": `${control?.endServiceDate ?? ''}`,
-                "Fin Hora": ` ${control?.endServiceTime ?? ''}`,
-                "Fin Usuario": ` ${control?.endUser?.username ?? ''}`,
-                //"Observación 4": ` ${control?.observation4 ?? ''}`,
+                "Fin Hora": `${control?.endServiceTime ?? ''}`,
+                "Fin Usuario": `${control?.endUser?.username ?? ''}`,
+                //"Observación 4": `${control?.observation4 ?? ''}`,
               }
               obj = Object.assign(obj, obj1);
+            }
+            let containers = await getDetails("service.id", service.id, "Charge")
+            console.log(containers);
+            if(containers != undefined){
+              let obj2 = {
+                "Contenedor_1": `${containers[0]?.name ?? ''}`,
+                "Placa_1": `${containers[0]?.licensePlate ?? ''}`,
+                "Conductor_1": `${containers[0]?.driver ?? ''}`,
+                "DNI_1": `${containers[0]?.dniDriver ?? ''}`,
+                "Contenedor_2": `${containers[1]?.name ?? ''}`,
+                "Placa_2": `${containers[1]?.licensePlate ?? ''}`,
+                "Conductor_2": `${containers[1]?.driver ?? ''}`,
+                "DNI_2": `${containers[1]?.dniDriver ?? ''}`,
+                "Contenedor_3": `${containers[2]?.name ?? ''}`,
+                "Placa_3": `${containers[2]?.licensePlate ?? ''}`,
+                "Conductor_3": `${containers[2]?.driver ?? ''}`,
+                "DNI_3": `${containers[2]?.dniDriver ?? ''}`,
+                "Contenedor_4": `${containers[3]?.name ?? ''}`,
+                "Placa_4": `${containers[3]?.licensePlate ?? ''}`,
+                "Conductor_4": `${containers[3]?.driver ?? ''}`,
+                "DNI_4": `${containers[3]?.dniDriver ?? ''}`,
+                "Contenedor_5": `${containers[4]?.name ?? ''}`,
+                "Placa_5": `${containers[4]?.licensePlate ?? ''}`,
+                "Conductor_5": `${containers[4]?.driver ?? ''}`,
+                "DNI_5": `${containers[4]?.dniDriver ?? ''}`,
+                "Contenedor_6": `${containers[5]?.name ?? ''}`,
+                "Placa_6": `${containers[5]?.licensePlate ?? ''}`,
+                "Conductor_6": `${containers[5]?.driver ?? ''}`,
+                "DNI_6": `${containers[5]?.dniDriver ?? ''}`,
+              }
+              obj = Object.assign(obj, obj2);
             }
             rows.push(obj);
         //}
