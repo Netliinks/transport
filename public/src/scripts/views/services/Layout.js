@@ -37,6 +37,10 @@ export const tableLayout = `
           Cliente <i class="fa-regular fa-filter"></i>
         </span></th>
 
+        <th><span data-type="date">
+          Fecha <i class="fa-regular fa-filter"></i>
+        </span></th>
+
         <th><span data-type="output">
           Fecha Salida <i class="fa-regular fa-filter"></i>
         </span></th>

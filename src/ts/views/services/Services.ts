@@ -133,6 +133,7 @@ export class Services {
                 row.innerHTML += `
                 <td>${service.name}</dt>
                 <td>${service?.customer?.name ?? ''}</dt>
+                <td>${service?.creationDate ?? ''}</dt>
                 <td>${service?.outputDate ?? ''} ${service?.outputTime ?? ''}</dt>
                 <td>${service?.custodyType ?? ''}</dt>
                 <td class="tag"><span>${service?.serviceState?.name ?? ''}</span></td>
