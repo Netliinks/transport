@@ -46,7 +46,7 @@ export const tableLayout = `
         </span></th>
 
         <th><span data-type="custody">
-          Tipo Custodia <i class="fa-regular fa-filter"></i>
+          Custodia <i class="fa-regular fa-filter"></i>
         </span></th>
 
         <th class="thead_centered"><span data-type="status">
