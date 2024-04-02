@@ -343,6 +343,42 @@ export const exportServiceCsv = async (ar, start, end) => {
             "Fin Fecha": ``,
             "Fin Hora": ``,
             "Fin Usuario": ``,
+            "Patrulla_1": ``,
+            "Supervisor_P1": ``,
+            "Segundero_P1": ``,
+            "Custodio1_P1": ``,
+            "Custodio2_P1": ``,
+            "Custodio3_P1": ``,
+            "Patrulla_2": ``,
+            "Supervisor_P2": ``,
+            "Segundero_P2": ``,
+            "Custodio1_P2": ``,
+            "Custodio2_P2": ``,
+            "Custodio3_P2": ``,
+            "Patrulla_3": ``,
+            "Supervisor_P3": ``,
+            "Segundero_P3": ``,
+            "Custodio1_P3": ``,
+            "Custodio2_P3": ``,
+            "Custodio3_P3": ``,
+            "Patrulla_4": ``,
+            "Supervisor_P4": ``,
+            "Segundero_P4": ``,
+            "Custodio1_P4": ``,
+            "Custodio2_P4": ``,
+            "Custodio3_P4": ``,
+            "Patrulla_5": ``,
+            "Supervisor_P5": ``,
+            "Segundero_P5": ``,
+            "Custodio1_P5": ``,
+            "Custodio2_P5": ``,
+            "Custodio3_P5": ``,
+            "Patrulla_6": ``,
+            "Supervisor_P6": ``,
+            "Segundero_P6": ``,
+            "Custodio1_P6": ``,
+            "Custodio2_P6": ``,
+            "Custodio3_P6": ``,
             "Contenedor_1": ``,
             "Placa_1": ``,
             "Conductor_1": ``,
@@ -390,8 +426,83 @@ export const exportServiceCsv = async (ar, start, end) => {
             };
             obj = Object.assign(obj, obj1);
         }
+        let patrols = await getDetails("service.id", service.id, "ServiceDetailV");
+        //console.log(patrols);
+        if (patrols != undefined) {
+            for (let i = 0; i < patrols.length; i++) {
+                const patrol = await getDetails("id", patrols[i].id, "Crew");
+                if (patrol != undefined) {
+                    if (i == 0) {
+                        let obj3 = {
+                            "Patrulla_1": `${patrol[0]?.name ?? ''}`,
+                            "Supervisor_P1": `${patrol[0]?.crewOne?.firstName ?? ''} ${patrol[0]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P1": `${patrol[0]?.crewTwo?.firstName ?? ''} ${patrol[0]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P1": `${patrol[0]?.crewThree?.firstName ?? ''} ${patrol[0]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P1": `${patrol[0]?.crewFour?.firstName ?? ''} ${patrol[0]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P1": `${patrol[0]?.crewFive?.firstName ?? ''} ${patrol[0]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                    else if (i == 1) {
+                        let obj3 = {
+                            "Patrulla_2": `${patrol[1]?.name ?? ''}`,
+                            "Supervisor_P2": `${patrol[1]?.crewOne?.firstName ?? ''} ${patrol[1]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P2": `${patrol[1]?.crewTwo?.firstName ?? ''} ${patrol[1]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P2": `${patrol[1]?.crewThree?.firstName ?? ''} ${patrol[1]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P2": `${patrol[1]?.crewFour?.firstName ?? ''} ${patrol[1]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P2": `${patrol[1]?.crewFive?.firstName ?? ''} ${patrol[1]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                    else if (i == 2) {
+                        let obj3 = {
+                            "Patrulla_3": `${patrol[2]?.name ?? ''}`,
+                            "Supervisor_P3": `${patrol[2]?.crewOne?.firstName ?? ''} ${patrol[2]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P3": `${patrol[2]?.crewTwo?.firstName ?? ''} ${patrol[2]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P3": `${patrol[2]?.crewThree?.firstName ?? ''} ${patrol[2]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P3": `${patrol[2]?.crewFour?.firstName ?? ''} ${patrol[2]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P3": `${patrol[2]?.crewFive?.firstName ?? ''} ${patrol[2]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                    else if (i == 3) {
+                        let obj3 = {
+                            "Patrulla_4": `${patrol[3]?.name ?? ''}`,
+                            "Supervisor_P4": `${patrol[3]?.crewOne?.firstName ?? ''} ${patrol[3]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P4": `${patrol[3]?.crewTwo?.firstName ?? ''} ${patrol[3]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P4": `${patrol[3]?.crewThree?.firstName ?? ''} ${patrol[3]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P4": `${patrol[3]?.crewFour?.firstName ?? ''} ${patrol[3]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P4": `${patrol[3]?.crewFive?.firstName ?? ''} ${patrol[3]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                    else if (i == 4) {
+                        let obj3 = {
+                            "Patrulla_5": `${patrol[4]?.name ?? ''}`,
+                            "Supervisor_P5": `${patrol[4]?.crewOne?.firstName ?? ''} ${patrol[4]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P5": `${patrol[4]?.crewTwo?.firstName ?? ''} ${patrol[4]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P5": `${patrol[4]?.crewThree?.firstName ?? ''} ${patrol[4]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P5": `${patrol[4]?.crewFour?.firstName ?? ''} ${patrol[4]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P5": `${patrol[4]?.crewFive?.firstName ?? ''} ${patrol[4]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                    else if (i == 6) {
+                        let obj3 = {
+                            "Patrulla_6": `${patrol[5]?.name ?? ''}`,
+                            "Supervisor_P6": `${patrol[5]?.crewOne?.firstName ?? ''} ${patrol[5]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P6": `${patrol[5]?.crewTwo?.firstName ?? ''} ${patrol[5]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P6": `${patrol[5]?.crewThree?.firstName ?? ''} ${patrol[5]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P6": `${patrol[5]?.crewFour?.firstName ?? ''} ${patrol[5]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P6": `${patrol[5]?.crewFive?.firstName ?? ''} ${patrol[5]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                }
+            }
+        }
         let containers = await getDetails("service.id", service.id, "Charge");
-        console.log(containers);
+        //console.log(containers);
         if (containers != undefined) {
             let obj2 = {
                 "Contenedor_1": `${containers[0]?.name ?? ''}`,
@@ -466,6 +577,42 @@ export const exportServiceXls = async (ar, start, end) => {
             "Fin Fecha": ``,
             "Fin Hora": ``,
             "Fin Usuario": ``,
+            "Patrulla_1": ``,
+            "Supervisor_P1": ``,
+            "Segundero_P1": ``,
+            "Custodio1_P1": ``,
+            "Custodio2_P1": ``,
+            "Custodio3_P1": ``,
+            "Patrulla_2": ``,
+            "Supervisor_P2": ``,
+            "Segundero_P2": ``,
+            "Custodio1_P2": ``,
+            "Custodio2_P2": ``,
+            "Custodio3_P2": ``,
+            "Patrulla_3": ``,
+            "Supervisor_P3": ``,
+            "Segundero_P3": ``,
+            "Custodio1_P3": ``,
+            "Custodio2_P3": ``,
+            "Custodio3_P3": ``,
+            "Patrulla_4": ``,
+            "Supervisor_P4": ``,
+            "Segundero_P4": ``,
+            "Custodio1_P4": ``,
+            "Custodio2_P4": ``,
+            "Custodio3_P4": ``,
+            "Patrulla_5": ``,
+            "Supervisor_P5": ``,
+            "Segundero_P5": ``,
+            "Custodio1_P5": ``,
+            "Custodio2_P5": ``,
+            "Custodio3_P5": ``,
+            "Patrulla_6": ``,
+            "Supervisor_P6": ``,
+            "Segundero_P6": ``,
+            "Custodio1_P6": ``,
+            "Custodio2_P6": ``,
+            "Custodio3_P6": ``,
             "Contenedor_1": ``,
             "Placa_1": ``,
             "Conductor_1": ``,
@@ -513,8 +660,83 @@ export const exportServiceXls = async (ar, start, end) => {
             };
             obj = Object.assign(obj, obj1);
         }
+        let patrols = await getDetails("service.id", service.id, "ServiceDetailV");
+        //console.log(patrols);
+        if (patrols != undefined) {
+            for (let i = 0; i < patrols.length; i++) {
+                const patrol = await getDetails("id", patrols[i].id, "Crew");
+                if (patrol != undefined) {
+                    if (i == 0) {
+                        let obj3 = {
+                            "Patrulla_1": `${patrol[0]?.name ?? ''}`,
+                            "Supervisor_P1": `${patrol[0]?.crewOne?.firstName ?? ''} ${patrol[0]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P1": `${patrol[0]?.crewTwo?.firstName ?? ''} ${patrol[0]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P1": `${patrol[0]?.crewThree?.firstName ?? ''} ${patrol[0]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P1": `${patrol[0]?.crewFour?.firstName ?? ''} ${patrol[0]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P1": `${patrol[0]?.crewFive?.firstName ?? ''} ${patrol[0]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                    else if (i == 1) {
+                        let obj3 = {
+                            "Patrulla_2": `${patrol[1]?.name ?? ''}`,
+                            "Supervisor_P2": `${patrol[1]?.crewOne?.firstName ?? ''} ${patrol[1]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P2": `${patrol[1]?.crewTwo?.firstName ?? ''} ${patrol[1]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P2": `${patrol[1]?.crewThree?.firstName ?? ''} ${patrol[1]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P2": `${patrol[1]?.crewFour?.firstName ?? ''} ${patrol[1]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P2": `${patrol[1]?.crewFive?.firstName ?? ''} ${patrol[1]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                    else if (i == 2) {
+                        let obj3 = {
+                            "Patrulla_3": `${patrol[2]?.name ?? ''}`,
+                            "Supervisor_P3": `${patrol[2]?.crewOne?.firstName ?? ''} ${patrol[2]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P3": `${patrol[2]?.crewTwo?.firstName ?? ''} ${patrol[2]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P3": `${patrol[2]?.crewThree?.firstName ?? ''} ${patrol[2]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P3": `${patrol[2]?.crewFour?.firstName ?? ''} ${patrol[2]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P3": `${patrol[2]?.crewFive?.firstName ?? ''} ${patrol[2]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                    else if (i == 3) {
+                        let obj3 = {
+                            "Patrulla_4": `${patrol[3]?.name ?? ''}`,
+                            "Supervisor_P4": `${patrol[3]?.crewOne?.firstName ?? ''} ${patrol[3]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P4": `${patrol[3]?.crewTwo?.firstName ?? ''} ${patrol[3]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P4": `${patrol[3]?.crewThree?.firstName ?? ''} ${patrol[3]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P4": `${patrol[3]?.crewFour?.firstName ?? ''} ${patrol[3]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P4": `${patrol[3]?.crewFive?.firstName ?? ''} ${patrol[3]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                    else if (i == 4) {
+                        let obj3 = {
+                            "Patrulla_5": `${patrol[4]?.name ?? ''}`,
+                            "Supervisor_P5": `${patrol[4]?.crewOne?.firstName ?? ''} ${patrol[4]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P5": `${patrol[4]?.crewTwo?.firstName ?? ''} ${patrol[4]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P5": `${patrol[4]?.crewThree?.firstName ?? ''} ${patrol[4]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P5": `${patrol[4]?.crewFour?.firstName ?? ''} ${patrol[4]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P5": `${patrol[4]?.crewFive?.firstName ?? ''} ${patrol[4]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                    else if (i == 6) {
+                        let obj3 = {
+                            "Patrulla_6": `${patrol[5]?.name ?? ''}`,
+                            "Supervisor_P6": `${patrol[5]?.crewOne?.firstName ?? ''} ${patrol[5]?.crewOne?.lastName ?? ''}`,
+                            "Segundero_P6": `${patrol[5]?.crewTwo?.firstName ?? ''} ${patrol[5]?.crewTwo?.lastName ?? ''}`,
+                            "Custodio1_P6": `${patrol[5]?.crewThree?.firstName ?? ''} ${patrol[5]?.crewThree?.lastName ?? ''}`,
+                            "Custodio2_P6": `${patrol[5]?.crewFour?.firstName ?? ''} ${patrol[5]?.crewFour?.lastName ?? ''}`,
+                            "Custodio3_P6": `${patrol[5]?.crewFive?.firstName ?? ''} ${patrol[5]?.crewFive?.lastName ?? ''}`,
+                        };
+                        obj = Object.assign(obj, obj3);
+                    }
+                }
+            }
+        }
         let containers = await getDetails("service.id", service.id, "Charge");
-        console.log(containers);
+        //console.log(containers);
         if (containers != undefined) {
             let obj2 = {
                 "Contenedor_1": `${containers[0]?.name ?? ''}`,
