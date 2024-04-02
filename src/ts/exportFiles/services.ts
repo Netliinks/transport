@@ -445,7 +445,8 @@ export const exportServiceCsv = async (ar: any, start: any, end: any) => {
           //console.log(patrols);
           if(patrols != undefined){
             for(let i = 0; i < patrols.length; i++){
-              const patrol: any = await getDetails("id", patrols[i].id, "Crew")
+              const patrol: any = await getDetails("id", patrols[i].crew.id, "Crew")
+              //console.log(patrol);
               if(patrol != undefined){
                 if(i==0){
                   let obj3 = {
@@ -678,7 +679,8 @@ export const exportServiceXls = async (ar: any, start: any, end: any) => {
             //console.log(patrols);
             if(patrols != undefined){
               for(let i = 0; i < patrols.length; i++){
-                const patrol: any = await getDetails("id", patrols[i].id, "Crew")
+                const patrol: any = await getDetails("id", patrols[i].crew.id, "Crew")
+                //console.log(patrol);
                 if(patrol != undefined){
                   if(i==0){
                     let obj3 = {
