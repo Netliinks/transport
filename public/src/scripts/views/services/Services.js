@@ -887,7 +887,7 @@ export class Services {
                         let data;
                         //data = await getWeapons()
                         let parse = JSON.parse(raw);
-                        eventLog('UPD', 'SERVICIO', `${parse.name}`, service, `${service.ServiceState.name}`);
+                        eventLog('UPD', 'SERVICIO', `${parse.name}`, service, `${service.serviceState.name}`);
                         new CloseDialog()
                             .x(container =
                             document.getElementById('entity-editor-container'));
