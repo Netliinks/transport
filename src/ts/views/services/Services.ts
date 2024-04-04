@@ -261,7 +261,7 @@ export class Services {
 
             <div class="material_input">
             <input type="email" id="entity-email" autocomplete="none">
-            <label for="entity-place-email"><i class="fa-solid fa-envelope" readonly></i> Correo Electrónico</label>
+            <label for="entity-email"><i class="fa-solid fa-envelope" readonly></i> Correo Electrónico</label>
             </div>
 
             <div class="form_group">
@@ -279,7 +279,7 @@ export class Services {
 
             <div class="material_input">
             <input type="text" id="entity-reference" autocomplete="none">
-            <label for="entity-place-reference"><i class="fa-solid fa-info" readonly></i> Referencia Cliente</label>
+            <label for="entity-reference"><i class="fa-solid fa-info" readonly></i> Referencia Cliente</label>
             </div>
 
             <div class="material_input_select">
@@ -500,7 +500,7 @@ export class Services {
 
                   <div class="material_input">
                   <input type="email" id="entity-email" class="input_filled" value="${data?.email ?? ''}" readonly>
-                  <label for="entity-place-email"><i class="fa-solid fa-envelope" readonly></i> Correo Electrónico</label>
+                  <label for="entity-email"><i class="fa-solid fa-envelope" readonly></i> Correo Electrónico</label>
                   </div>
 
                   <div class="form_group">
@@ -518,12 +518,22 @@ export class Services {
 
                   <div class="material_input">
                   <input type="text" id="entity-reference" class="input_filled" value="${data?.reference ?? ''}">
-                  <label for="entity-place-reference"><i class="fa-solid fa-info" readonly></i> Referencia Cliente</label>
+                  <label for="entity-reference"><i class="fa-solid fa-info" readonly></i> Referencia Cliente</label>
                   </div>
 
                   <div class="material_input">
                   <input type="text" id="entity-custody" class="input_filled" value="${data?.custodyType ?? ''}" readonly>
-                  <label for="entity-place-custody"><i class="fa-solid fa-shield" readonly></i> Tipo de Custodia</label>
+                  <label for="entity-custody"><i class="fa-solid fa-shield" readonly></i> Tipo de Custodia</label>
+                  </div>
+
+                  <div class="material_input">
+                  <input type="text" id="entity-nroGuide" class="input_filled" value="${data?.nroGuide ?? ''}">
+                  <label for="entity-nroGuide"><i class="fa-solid fa-book" readonly></i> Nro Guía</label>
+                  </div>
+
+                  <div class="material_input">
+                  <input type="text" id="entity-nroGuideInternal" class="input_filled" value="${data?.nroGuideInternal ?? ''}">
+                  <label for="entity-nroGuideInternal"><i class="fa-solid fa-book" readonly></i> Nro Guía Interno Cliente</label>
                   </div>
 
                   <div class="form_group">
@@ -607,6 +617,8 @@ export class Services {
                   placeOrigin: document.getElementById('entity-place-origin'),
                   placeDestiny: document.getElementById('entity-place-destiny'),
                   reference: document.getElementById('entity-reference'),
+                  nroGuide: document.getElementById('entity-nroGuide'),
+                  nroGuideInternal: document.getElementById('entity-nroGuideInternal'),
                   observation: document.getElementById('entity-observation'),
               }
               let raw = JSON.stringify({
@@ -615,6 +627,8 @@ export class Services {
                   "placeOrigin": `${$value.placeOrigin?.value}`,
                   "placeDestination": `${$value.placeDestiny?.value}`,
                   "reference": `${$value.reference?.value}`,
+                  "nroGuide": `${$value.nroGuide?.value}`,
+                  "nroGuideInternal": `${$value.nroGuideInternal?.value}`,
                   "observation": `${$value.observation?.value}`,
               })
               let searchExist = [] 
