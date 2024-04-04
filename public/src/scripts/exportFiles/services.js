@@ -20,20 +20,27 @@ export const exportServicePdf = async (ar) => {
     doc.text(40, 30, "INFORMACIÓN OPERATIVA");
     doc.text(130, 30, "INFORMACIÓN ADMINISTRATIVA");
     doc.line(5, 32, 205, 32);
-    doc.line(100, 26, 100, 50); //vertical centro
-    doc.line(5, 20, 5, 50); //vertical inicio
-    doc.line(205, 20, 205, 50); //vertical fin
+    doc.line(100, 26, 100, 62); //vertical centro
+    doc.line(5, 20, 5, 62); //vertical inicio
+    doc.line(205, 20, 205, 62); //vertical fin
     doc.text(7, 36, "FECHA/HORA DEL PEDIDO:");
-    doc.line(5, 38, 205, 38);
+    //doc.line(5, 38, 205, 38);
     doc.text(7, 42, "FECHA/HORA DE INICIO:");
-    doc.line(5, 44, 205, 44);
+    //doc.line(5, 44, 205, 44);
     doc.text(7, 48, "FECHA/HORA DEL FINAL:");
-    doc.line(5, 50, 205, 50);
-    doc.line(47, 32, 47, 50); //vertical 1
+    //doc.line(5, 50, 205, 50);
+    doc.line(47, 32, 47, 62); //vertical 1
     doc.text(102, 36, "NOMBRE DE LA EMPRESA:");
+    doc.line(5, 38, 205, 38);
     doc.text(102, 42, "EJECUTIVO SOLICITANTE:");
+    doc.line(5, 44, 205, 44);
     doc.text(102, 48, "TIPO DE CUSTODIA:");
-    doc.line(142, 32, 142, 50); //vertical 2
+    doc.line(5, 50, 205, 50);
+    doc.text(102, 54, "NRO GUÍA:");
+    doc.line(5, 56, 205, 56);
+    doc.text(102, 60, "NRO GUÍA INTERNO:");
+    doc.line(5, 62, 205, 62);
+    doc.line(142, 32, 142, 62); //vertical 2
     doc.setFont(undefined, 'normal');
     doc.text(49, 36, `${ar?.outputDate ?? ''} - ${ar?.outputTime ?? ''}`);
     doc.text(49, 42, `${control?.startingPointDate ?? ''} - ${control?.startingPointTime ?? ''}`);
@@ -41,16 +48,18 @@ export const exportServicePdf = async (ar) => {
     doc.text(144, 36, `${ar?.customer?.name ?? ''}`);
     doc.text(144, 42, `${ar?.name ?? ''}`);
     doc.text(144, 48, `${ar?.custodyType ?? ''}`);
+    doc.text(144, 54, `${ar?.nroGuide ?? ''}`);
+    doc.text(144, 60, `${ar?.nroGuideInternal ?? ''}`);
     doc.setFont(undefined, 'bold');
-    doc.text(7, 54, `RUTA DESDE: ${ar?.placeOrigin ?? ''}`);
-    doc.text(102, 54, `HASTA: ${ar?.placeDestination ?? ''}`);
-    doc.text(5, 65, `DATOS DE PATRULLAS`);
+    doc.text(7, 66, `RUTA DESDE: ${ar?.placeOrigin ?? ''}`);
+    doc.text(102, 66, `HASTA: ${ar?.placeDestination ?? ''}`);
+    doc.text(5, 75, `DATOS DE PATRULLAS`);
     let pagina = 1;
     doc.setTextColor(0, 0, 128);
     doc.text(10, 290, `Página ${pagina}`);
     //doc.setFont(undefined, 'bold')
     //doc.setFont(undefined, 'italic')
-    let row = 70;
+    let row = 80;
     //let lineas = 0
     const patrols = await getDetails("service.id", ar.id, "ServiceDetailV");
     //resto del contenido
@@ -322,6 +331,8 @@ export const exportServiceCsv = async (ar, start, end) => {
             "Hora Servicio": `${service?.outputTime ?? ''}`,
             "Referencia Cliente": `${service?.reference ?? ''}`,
             "Tipo de Custodia": `${service?.custodyType ?? ''}`,
+            "Nro Guía": `${service?.nroGuide ?? ''}`,
+            "Nro Guía Interno Cliente": `${service?.nroGuideInternal ?? ''}`,
             "# Contenedores": `${service?.quantyContainers ?? '0'}`,
             "# Vehículos": `${service?.quantyVehiculars ?? '0'}`,
             "Fecha Creación": `${service?.creationDate ?? ''}`,
@@ -557,6 +568,8 @@ export const exportServiceXls = async (ar, start, end) => {
             "Hora Servicio": `${service?.outputTime ?? ''}`,
             "Referencia Cliente": `${service?.reference ?? ''}`,
             "Tipo de Custodia": `${service?.custodyType ?? ''}`,
+            "Nro Guía": `${service?.nroGuide ?? ''}`,
+            "Nro Guía Interno Cliente": `${service?.nroGuideInternal ?? ''}`,
             "# Contenedores": `${service?.quantyContainers ?? '0'}`,
             "# Vehículos": `${service?.quantyVehiculars ?? '0'}`,
             "Fecha Creación": `${service?.creationDate ?? ''}`,
