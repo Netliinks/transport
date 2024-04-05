@@ -655,7 +655,7 @@ export class Services {
                     "quantyContainers": `${inputsCollection.containers.value}`,
                     "observation": `${inputsCollection.observation.value}`,
                 });
-                let searchExist = await getSearch("name", inputsCollection.name.value.toUpperCase(), "Service");
+                //let searchExist = await getSearch("name", inputsCollection.name.value.toUpperCase(), "Service")
                 if (inputsCollection.name.value === '' || inputsCollection.name.value === undefined) {
                     alert("¡Nombre vacío!");
                 }
@@ -670,10 +670,9 @@ export class Services {
                 }
                 else if (inputsCollection.email.value === '' || inputsCollection.email.value === undefined) {
                     alert("¡Email vacío!");
-                }
-                else if (searchExist != undefined) {
-                    alert("Servicio ya existe!");
-                }
+                } /*else if(searchExist != undefined){
+                    alert("Servicio ya existe!")
+                }*/
                 else {
                     registerEntity(raw, 'Service').then((res) => {
                         setTimeout(() => {
@@ -876,17 +875,16 @@ export class Services {
                     "nroGuideInternal": `${$value.nroGuideInternal?.value}`,
                     "observation": `${$value.observation?.value}`,
                 });
-                let searchExist = [];
-                searchExist[0] = 'none';
-                if ($value.name.value.toUpperCase() != service.name) {
-                    searchExist[1] = await getSearch("name", $value.name.value.toUpperCase(), "Service");
-                }
+                /*let searchExist = []
+                  searchExist[0] = 'none'
+                  if($value.name.value.toUpperCase() != service.name){
+                      searchExist[1] = await getSearch("name", $value.name.value.toUpperCase(), "Service")
+                  }*/
                 // @ts-ignore
                 if ($value.name.value === '' || $value.name.value === undefined) {
                     alert("Nombre vacío!");
-                }
-                else if (searchExist[1] != undefined || searchExist[0] != 'none') {
-                    alert("Servicio ya existe!");
+                    //}else if(searchExist[1] != undefined || searchExist[0] != 'none'){
+                    //alert("Servicio ya existe!")
                 }
                 else {
                     update(raw);
