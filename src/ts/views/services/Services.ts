@@ -602,7 +602,15 @@ export class Services {
           // @ts-ignore
           document.getElementById("entity-vehicle").value = data.quantyVehiculars
           // @ts-ignore
-          document.getElementById("entity-containers").value = data.quantyContainers
+          const nroContainers: InterfaceElement = document.getElementById("entity-containers")
+          if(parseInt(data.quantyContainers)>6){
+            var option = document.createElement("option")
+            option.text = data.quantyContainers
+            nroContainers.add(option)
+            nroContainers.value = data.quantyContainers
+          }else{
+            nroContainers.value = data.quantyContainers
+          }
           this.close()
           UUpdate(entityID, data)
       }
